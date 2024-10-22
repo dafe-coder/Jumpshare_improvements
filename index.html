@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Video player</title>
+		<link rel="stylesheet" href="./style.css" />
+	</head>
+	<body>
+		<div class="container">
+			<div class="video-wrap">
+				<video id="player" class="video" src="/ui_fixing.mp4"></video>
+				<div class="controls">
+					<div class="controls-time-rail">
+						<div class="chapter-rail"></div>
+					</div>
+					<div class="controls-bottom">
+						<div class="controls-bottom-left">
+							<button
+								class="play-pause"
+								id="play-or-pause"
+								aria-label="Play/Pause"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="16"
+									height="16"
+									viewBox="0 0 16 16"
+									fill="none"
+								>
+									<path
+										d="M15.5 7.5C15.8 7.6 15.9 8 15.7 8.3C15.6 8.4 15.6 8.5 15.5 8.5L4.1 15.5C3.6 15.8 3.3 15.6 3.3 15V1C3.3 0.500004 3.7 0.200004 4.1 0.500004L15.5 7.5Z"
+										fill="white"
+									/>
+								</svg>
+								<svg
+									style="display: none"
+									width="11"
+									height="16"
+									viewBox="0 0 11 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M1.5 0C2.328 0 3 0.671573 3 1.5V14.5C3 15.3284 2.328 16 1.5 16C0.672 16 0 15.3284 0 14.5V1.5C0 0.671573 0.672 0 1.5 0ZM9.5 0C10.328 0 11 0.671573 11 1.5V14.5C11 15.3284 10.328 16 9.5 16C8.672 16 8 15.3284 8 14.5V1.5C8 0.671573 8.672 0 9.5 0Z"
+										fill="#ffffff"
+									/>
+								</svg>
+							</button>
+							<button class="mute" aria-label="Mute" id="mute">
+								<svg
+									width="16"
+									height="16"
+									viewBox="0 0 16 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M0 10.7366H3.556L8 15.2976V0.702395L3.556 5.2634H0V10.7366ZM9.778 4.3512V11.6488C11.093 11.0285 12 9.6146 12 8C12 6.41277 11.093 5.02623 9.778 4.3512ZM9.778 1.87913C12.347 2.66363 14.222 5.10832 14.222 8C14.222 10.8917 12.347 13.3364 9.778 14.1209V16C13.342 15.1699 16 11.9042 16 8C16 4.09578 13.342 0.830103 9.778 0V1.87913Z"
+										fill="#ffffff"
+									/>
+								</svg>
+								<svg
+									style="display: none"
+									width="16"
+									height="16"
+									viewBox="0 0 16 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M12 8.00445C12 6.43024 11.093 5.07838 9.778 4.42023V6.38577L11.956 8.56476C11.982 8.38688 12 8.20011 12 8.00445ZM14.222 8.00445C14.222 8.84047 14.044 9.62312 13.742 10.3524L15.084 11.6954C15.671 10.5926 16 9.33852 16 8.00445C16 4.19789 13.342 1.0139 9.778 0.213452V2.03669C12.347 2.80156 14.222 5.1851 14.222 8.00445ZM1.129 0L0 1.12062L4.196 5.3274H0V10.6637H3.556L8 15.1106V9.12507L11.778 12.9049C11.182 13.3674 10.516 13.7321 9.778 13.9544V15.7865C11.004 15.5108 12.116 14.9416 13.058 14.1768L14.871 16L16 14.8705L8 6.86604L1.138 0H1.129ZM7.991 0.880489L6.133 2.73041L7.991 4.58922V0.889383V0.880489Z"
+										fill="#ffffff"
+									/>
+								</svg>
+							</button>
+							<input
+								type="range"
+								class="volume"
+								aria-label="Volume"
+								min="0"
+								max="1"
+								step="0.1"
+							/>
+						</div>
+						<button class="fullscreen" aria-label="Fullscreen" id="fullscreen">
+							<svg
+								width="16"
+								height="16"
+								viewBox="0 0 16 16"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path d="M2 0H0V6H2V0Z" fill="#ffffff" />
+								<path d="M0 0V2H6V0H0Z" fill="#ffffff" />
+								<path d="M2 16H0V10H2V16Z" fill="#ffffff" />
+								<path d="M0 14V16H6V14H0Z" fill="#ffffff" />
+								<path d="M14 0H16V6H14V0Z" fill="#ffffff" />
+								<path d="M16 2V0H10V2H16Z" fill="#ffffff" />
+								<path d="M14 16H16V10H14V16Z" fill="#ffffff" />
+								<path d="M16 14V16H10V14H16Z" fill="#ffffff" />
+							</svg>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="./main.js"></script>
+</html>
