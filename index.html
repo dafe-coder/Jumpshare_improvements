@@ -14,7 +14,35 @@
 	</head>
 	<body>
 		<div class="container">
-			<div class="video-wrap">
+			<div class="player-wrap">
+				<div class="player-overlay">
+					<div
+						class="player-overlay-button"
+						aria-label="Play"
+						aria-pressed="false"
+					>
+						<svg
+							class="play_icon"
+							width="90"
+							height="90"
+							viewBox="0 0 90 90"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								id="play_bg_svg"
+								d="M45 90C69.8529 90 90 69.8527 90 44.9999C90 20.1471 69.8529 0 45 0C20.1472 0 0 20.1471 0 44.9999C0 69.8527 20.1472 90 45 90Z"
+								fill="rgba(0, 122, 220, 1)"
+							></path>
+							<path
+								id="inline_play_icon_svg"
+								d="M35 33.268V56.732C35 58.5212 37.0582 59.6083 38.6432 58.6344L57.8999 46.9025C59.3667 46.0192 59.3667 43.9808 57.8999 43.0749L38.6432 31.3656C37.0582 30.3917 35 31.4788 35 33.268Z"
+								fill="white"
+							></path>
+						</svg>
+					</div>
+					<span class="show-player-timer"><span>00</span> sec</span>
+				</div>
 				<div class="play-circle">
 					<svg
 						width="78"
@@ -56,10 +84,11 @@
 						/>
 					</svg>
 				</div>
-				<video id="player" class="video" src="/ui_fixing.mp4"></video>
+				<video id="player" class="video" src="./ui_fixing.mp4"></video>
 				<div class="controls">
-					<div class="controls-time-rail">
-						<div class="chapter-rail"></div>
+					<div id="controls-time-rail" class="controls-time-rail">
+						<div id="slider-progress" class="slider-progress"></div>
+						<div id="slider-thumb" class="slider-thumb"></div>
 					</div>
 					<div class="controls-bottom">
 						<div class="controls-bottom-left">
@@ -138,24 +167,65 @@
 								<span id="controls-duration">00:00</span>
 							</div>
 						</div>
-						<button class="fullscreen" aria-label="Fullscreen" id="fullscreen">
-							<svg
-								width="16"
-								height="16"
-								viewBox="0 0 16 16"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
+						<div class="controls-bottom-right">
+							<button id="playback-rate" class="playback-rate">
+								<span class="playback-rate-count">1</span><span>×</span>
+							</button>
+							<button id="captions" class="captions">
+								<svg
+									width="25"
+									height="16"
+									viewBox="0 0 25 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										fill-rule="evenodd"
+										clip-rule="evenodd"
+										d="M2 1.5H23C23.2761 1.5 23.5 1.72386 23.5 2V14C23.5 14.2761 23.2761 14.5 23 14.5H2C1.72386 14.5 1.5 14.2761 1.5 14V2C1.5 1.72386 1.72386 1.5 2 1.5ZM0 2C0 0.895431 0.895431 0 2 0H23C24.1046 0 25 0.895431 25 2V14C25 15.1046 24.1046 16 23 16H2C0.89543 16 0 15.1046 0 14V2ZM12.0852 9.71197C11.5242 11.208 10.1492 12.154 8.38923 12.154C6.05723 12.154 4.40723 10.504 4.40723 8.10597C4.40723 5.70797 6.05723 4.06897 8.38923 4.06897C10.1492 4.06897 11.5242 5.01497 12.0852 6.49997L10.5892 7.03897C10.2482 6.10397 9.43423 5.52097 8.38923 5.52097C6.99223 5.52097 5.99123 6.55497 5.99123 8.10597C5.99123 9.65697 6.99223 10.691 8.38923 10.691C9.43423 10.691 10.2482 10.119 10.5892 9.18397L12.0852 9.71197ZM20.4534 9.71197C19.8924 11.208 18.5174 12.154 16.7574 12.154C14.4254 12.154 12.7754 10.504 12.7754 8.10597C12.7754 5.70797 14.4254 4.06897 16.7574 4.06897C18.5174 4.06897 19.8924 5.01497 20.4534 6.49997L18.9574 7.03897C18.6164 6.10397 17.8024 5.52097 16.7574 5.52097C15.3604 5.52097 14.3594 6.55497 14.3594 8.10597C14.3594 9.65697 15.3604 10.691 16.7574 10.691C17.8024 10.691 18.6164 10.119 18.9574 9.18397L20.4534 9.71197Z"
+										fill="white"
+									/>
+								</svg>
+							</button>
+							<button id="theatre-mode" class="theatre-mode">
+								<svg
+									width="23"
+									height="16"
+									viewBox="0 0 23 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										fill-rule="evenodd"
+										clip-rule="evenodd"
+										d="M21 1.5H2C1.72386 1.5 1.5 1.72386 1.5 2V14C1.5 14.2761 1.72386 14.5 2 14.5H21C21.2761 14.5 21.5 14.2761 21.5 14V2C21.5 1.72386 21.2761 1.5 21 1.5ZM2 0C0.895431 0 0 0.895431 0 2V14C0 15.1046 0.89543 16 2 16H21C22.1046 16 23 15.1046 23 14V2C23 0.895431 22.1046 0 21 0H2ZM4 8L7 5V11L4 8ZM16 5L19 8L16 11V5Z"
+										fill="white"
+									/>
+								</svg>
+							</button>
+							<button
+								class="fullscreen"
+								aria-label="Fullscreen"
+								id="fullscreen"
 							>
-								<path d="M2 0H0V6H2V0Z" fill="#ffffff" />
-								<path d="M0 0V2H6V0H0Z" fill="#ffffff" />
-								<path d="M2 16H0V10H2V16Z" fill="#ffffff" />
-								<path d="M0 14V16H6V14H0Z" fill="#ffffff" />
-								<path d="M14 0H16V6H14V0Z" fill="#ffffff" />
-								<path d="M16 2V0H10V2H16Z" fill="#ffffff" />
-								<path d="M14 16H16V10H14V16Z" fill="#ffffff" />
-								<path d="M16 14V16H10V14H16Z" fill="#ffffff" />
-							</svg>
-						</button>
+								<svg
+									width="16"
+									height="16"
+									viewBox="0 0 16 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path d="M2 0H0V6H2V0Z" fill="#ffffff" />
+									<path d="M0 0V2H6V0H0Z" fill="#ffffff" />
+									<path d="M2 16H0V10H2V16Z" fill="#ffffff" />
+									<path d="M0 14V16H6V14H0Z" fill="#ffffff" />
+									<path d="M14 0H16V6H14V0Z" fill="#ffffff" />
+									<path d="M16 2V0H10V2H16Z" fill="#ffffff" />
+									<path d="M14 16H16V10H14V16Z" fill="#ffffff" />
+									<path d="M16 14V16H10V14H16Z" fill="#ffffff" />
+								</svg>
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
