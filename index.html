@@ -43,6 +43,14 @@
 					</div>
 					<span class="show-player-timer"><span>00</span> sec</span>
 				</div>
+				<!-- TODO: player play again -->
+				<!-- TODO: volume slider (90% finalised) -->
+				<!-- TODO: Check fontsize -->
+				<!-- TODO: Check sizes -->
+				<!-- TODO: Bug: when played by pressing overlay -->
+				<!-- TODO: Disabled buttons -->
+				<!-- TODO: after muting, the volume slider returns to 50% and should be at the last value -->
+				<!-- TODO: create a variable for volume count -->
 				<div class="play-circle">
 					<svg
 						width="78"
@@ -151,16 +159,9 @@
 										/>
 									</svg>
 								</button>
-								<input
-									id="volume-slider"
-									type="range"
-									class="volume"
-									aria-label="Volume"
-									value="0.5"
-									min="0"
-									max="1"
-									step="0.1"
-								/>
+								<div class="volume-slider" id="volume-slider">
+									<div class="volume-slider-progress"></div>
+								</div>
 							</div>
 							<div class="controls-time">
 								<span id="controls-current-time">00:00</span> /

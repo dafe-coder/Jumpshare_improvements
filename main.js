@@ -4,15 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	const playOrPauseBtn = document.getElementById('play-or-pause')
 	const muteBtn = document.getElementById('mute')
 	const fullScreenBtn = document.getElementById('fullscreen')
-	const volumeSlider = document.getElementById('volume-slider')
 	const currentTime = document.getElementById('controls-current-time')
 	const duration = document.getElementById('controls-duration')
 	const playbackRate = document.getElementById('playback-rate')
 	const showPlayerOverlayTimer = document.querySelector(
 		'.show-player-timer span'
 	)
-
-	let volumeSliderValue = 0.5
 
 	function toggleSiblingElement(parentElement, element, showFirst = false) {
 		if (showFirst) {
@@ -26,11 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			parentElement.querySelector(`${element}:last-child`).style.display =
 				'block'
 		}
-	}
-
-	function chooseVolume() {
-		player.volume = volumeSlider.value
-		volumeSliderValue = volumeSlider.value
 	}
 
 	function toggleFullScreen() {
@@ -79,11 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (!player.muted) {
 			player.muted = true
 			toggleSiblingElement(muteBtn, 'svg')
-			volumeSlider.value = 0
+			updateProgressVolume(0)
 		} else {
 			player.muted = false
 			toggleSiblingElement(muteBtn, 'svg', true)
-			volumeSlider.value = volumeSliderValue
+			updateProgressVolume(0.5)
 		}
 	}
 
@@ -134,11 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	muteBtn.addEventListener('click', mute)
 	fullScreenBtn.addEventListener('click', toggleFullScreen)
 	playbackRate.addEventListener('click', choosePlaybackRate)
-	volumeSlider.addEventListener('input', chooseVolume)
 	player.addEventListener('click', playOrPause)
 	player.addEventListener('loadedmetadata', () => {
 		duration.innerText = formatTime(player.duration)
 		showPlayerOverlayTimer.innerText = Math.floor(player.duration)
+		player.volume = 0.5
 
 		// overlay player
 		const playerOverlay = document.querySelector('.player-overlay')
@@ -156,6 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const sliderProgress = document.getElementById('slider-progress')
 	const sliderThumb = document.getElementById('slider-thumb')
 	let isDragging = false
+	let isDraggingType = 'time'
 
 	function updateSlider() {
 		const progressPercent = (player.currentTime / player.duration) * 100
@@ -164,33 +157,60 @@ document.addEventListener('DOMContentLoaded', () => {
 		currentTime.innerHTML = formatTime(player.currentTime)
 	}
 
-	function moveSlider(event) {
-		const rect = controlsTimeRail.getBoundingClientRect()
-		const offsetX = event.clientX - rect.left
-		const width = rect.width
-		const percentage = offsetX / width
-		const newTime = player.duration * percentage
+	function moveSlider(event, elem) {
+		const rect = elem.getBoundingClientRect()
+		if (rect.width > 0) {
+			const offsetX = event.clientX - rect.left
+			const width = rect.width
+			const percentage = offsetX / width
 
-		player.currentTime = newTime
-		updateSlider()
+			if (isDraggingType === 'time') {
+				const newTime = player.duration * percentage
+				player.currentTime = newTime
+				updateSlider()
+			}
+			if (isDraggingType === 'volume' && percentage >= 0 && percentage <= 1) {
+				player.volume = percentage
+				updateProgressVolume(percentage)
+			}
+		}
 	}
 
 	controlsTimeRail.addEventListener('mousedown', event => {
 		isDragging = true
-		moveSlider(event)
+		isDraggingType = 'time'
+		moveSlider(event, controlsTimeRail, isDraggingType)
 	})
 
-	window.addEventListener('mousemove', event => {
-		if (isDragging) {
-			moveSlider(event)
-		}
-	})
-
-	window.addEventListener('mouseup', () => {
-		isDragging = false
-	})
 	player.addEventListener('timeupdate', () => {
 		currentTime.innerText = formatTime(player.currentTime)
 		updateSlider()
+	})
+
+	// Volume slider
+
+	const volumeSlider = document.getElementById('volume-slider')
+
+	function updateProgressVolume(percentage) {
+		const progressPercent = percentage * 100
+		volumeSlider.querySelector('.volume-slider-progress').style.width =
+			progressPercent + '%'
+	}
+
+	volumeSlider.addEventListener('mousedown', event => {
+		isDragging = true
+		isDraggingType = 'volume'
+		moveSlider(event, volumeSlider, isDraggingType)
+	})
+
+	window.addEventListener('mousemove', event => {
+		if (isDragging && isDraggingType === 'time') {
+			moveSlider(event, controlsTimeRail)
+		} else if (isDragging && isDraggingType === 'volume') {
+			moveSlider(event, volumeSlider)
+		}
+	})
+	window.addEventListener('mouseup', () => {
+		isDragging = false
 	})
 })
