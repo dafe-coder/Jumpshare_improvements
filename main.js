@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		'.show-player-timer span'
 	)
 
+	let playerVolumeCount = 0.5
+
 	function toggleSiblingElement(parentElement, element, showFirst = false) {
 		if (showFirst) {
 			parentElement.querySelector(`${element}:first-child`).style.display =
@@ -75,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		} else {
 			player.muted = false
 			toggleSiblingElement(muteBtn, 'svg', true)
-			updateProgressVolume(0.5)
+			updateProgressVolume(playerVolumeCount)
 		}
 	}
 
@@ -130,20 +132,22 @@ document.addEventListener('DOMContentLoaded', () => {
 	player.addEventListener('loadedmetadata', () => {
 		duration.innerText = formatTime(player.duration)
 		showPlayerOverlayTimer.innerText = Math.floor(player.duration)
-		player.volume = 0.5
+		player.volume = playerVolumeCount
 
 		// overlay player
-		const playerOverlay = document.querySelector('.player-overlay')
-		playerOverlay.addEventListener('click', () => {
+		const playerOverlayStart = document.querySelector('.player-overlay-start')
+
+		playerOverlayStart.addEventListener('click', () => {
 			player.play()
-			playerOverlay.style.display = 'none'
+			playerOverlayStart.style.display = 'none'
 			document
 				.querySelector('.player-wrap')
 				.classList.add('player-overlay-played')
+			toggleSiblingElement(playOrPauseBtn, 'svg')
 		})
 	})
 
-	// slider player (time rail)
+	// Slider player (time rail)
 	const controlsTimeRail = document.getElementById('controls-time-rail')
 	const sliderProgress = document.getElementById('slider-progress')
 	const sliderThumb = document.getElementById('slider-thumb')
@@ -170,6 +174,12 @@ document.addEventListener('DOMContentLoaded', () => {
 				updateSlider()
 			}
 			if (isDraggingType === 'volume' && percentage >= 0 && percentage <= 1) {
+				if (percentage === 0) {
+					toggleSiblingElement(muteBtn, 'svg')
+				} else {
+					toggleSiblingElement(muteBtn, 'svg', true)
+				}
+				playerVolumeCount = percentage
 				player.volume = percentage
 				updateProgressVolume(percentage)
 			}
@@ -212,5 +222,33 @@ document.addEventListener('DOMContentLoaded', () => {
 	})
 	window.addEventListener('mouseup', () => {
 		isDragging = false
+	})
+
+	// When the video ends
+	const playerOverlayEnd = document.querySelector('.player-overlay-end')
+	const playerOverlayBtnEnd = document.querySelector(
+		'.player-overlay-button-end'
+	)
+
+	player.addEventListener('ended', () => {
+		playerOverlayEnd.style.display = 'flex'
+	})
+
+	playerOverlayBtnEnd.addEventListener('click', () => {
+		player.currentTime = 0
+		player.play()
+		playerOverlayEnd.style.display = 'none'
+	})
+
+	// Theatre mode
+	const theatreBtn = document.getElementById('theatre-mode')
+	theatreBtn.addEventListener('click', () => {
+		const playerWrap = document.querySelector('.player-wrap')
+		playerWrap.classList.toggle('theatre-mode-wrap')
+		if (playerWrap.classList.contains('theatre-mode-wrap')) {
+			toggleSiblingElement(theatreBtn, 'svg')
+		} else {
+			toggleSiblingElement(theatreBtn, 'svg', true)
+		}
 	})
 })

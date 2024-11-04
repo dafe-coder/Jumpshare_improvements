@@ -10,22 +10,33 @@ html {
 	height: 100%;
 	font-family: 'Inter', serif;
 }
+html.dark {
+	background-color: #1c1c1c;
+}
 
 /* Layout */
 .container {
-	max-width: 1000px;
+	max-width: 1200px;
 	margin: 0 auto;
 	width: 100%;
 	padding: 0 20px;
+
+	display: flex;
+	flex-direction: column;
 }
 
 .player-wrap {
-	margin: 40px 0;
+	margin: 40px auto;
 	display: flex;
 	position: relative;
 	background: white;
+	max-width: 800px;
 
 	overflow: hidden;
+	transition: all ease 0.3s;
+}
+.theatre-mode-wrap {
+	max-width: 100%;
 }
 
 /* Video */
@@ -68,6 +79,11 @@ html {
 
 	background: transparent;
 	border: none;
+}
+
+.controls button[disabled] {
+	opacity: 0.6;
+	cursor: default;
 }
 
 button.theatre-mode {
@@ -196,13 +212,13 @@ button.playback-rate {
 	font-weight: 400;
 
 	transition: all 0.2s ease-in-out;
+	z-index: 1;
 }
-
-.player-overlay:hover {
+.player-overlay-start:hover {
 	background-color: rgba(0, 0, 0, 0.1);
 }
 
-.player-overlay:hover .show-video-timer {
+.player-overlay-start:hover .show-player-timer {
 	opacity: 1;
 }
 
@@ -213,6 +229,7 @@ button.playback-rate {
 	width: 80px;
 
 	position: relative;
+	z-index: 1;
 }
 
 .player-overlay-button svg {
@@ -236,6 +253,30 @@ button.playback-rate {
 	animation: shadow-pulse 1.8s infinite;
 	border-radius: 100px;
 	position: absolute;
+}
+
+.player-overlay-end {
+	display: none;
+	cursor: default;
+	background-color: rgba(0, 0, 0, 0.75);
+}
+
+.player-overlay-button-end {
+	background: transparent;
+	border: none;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+
+	font-size: 18.5px;
+	color: #ffffff;
+	cursor: pointer;
+}
+
+.player-overlay-button-end svg {
+	width: 18px;
 }
 
 @keyframes shadow-pulse {
