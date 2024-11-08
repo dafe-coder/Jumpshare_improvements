@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" class="dark1">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -41,7 +41,7 @@
 							></path>
 						</svg>
 					</div>
-					<span class="show-player-timer"><span>00</span> sec</span>
+					<span class="show-player-timer"><span>00</span></span>
 				</div>
 				<div class="player-overlay player-overlay-end">
 					<button class="player-overlay-button-end">
@@ -64,12 +64,8 @@
 						<span>Watch Again</span>
 					</button>
 				</div>
-				<!-- TODO: incorrectly calculates minutes and hours when hovering over the start overlay -->
-				<!-- TODO: Our fullscreen controls -->
-				<!-- TODO: Hover effect on overlay start like old player -->
 				<!-- TODO: Chapters -->
 				<!-- TODO: Captions -->
-				<!-- TODO: progress bar it should be working when user click like 10px above or 10px below the seekbar -->
 				<!-- TODO: Player changes the height when video loads -->
 				<div class="play-circle">
 					<svg
@@ -112,7 +108,6 @@
 						/>
 					</svg>
 				</div>
-				<video id="player" class="video" src="./ui_fixing.mp4"></video>
 				<div class="controls">
 					<div id="controls-time-rail" class="controls-time-rail">
 						<div id="slider-progress" class="slider-progress"></div>
@@ -121,7 +116,7 @@
 					<div class="controls-bottom">
 						<div class="controls-bottom-left">
 							<button
-								class="play-pause"
+								class="play-pause controls-btn"
 								id="play-or-pause"
 								aria-label="Play/Pause"
 							>
@@ -152,7 +147,7 @@
 								</svg>
 							</button>
 							<div class="mute-block">
-								<button class="mute" aria-label="Mute" id="mute">
+								<button class="mute controls-btn" aria-label="Mute" id="mute">
 									<svg
 										width="16"
 										height="16"
@@ -189,10 +184,10 @@
 							</div>
 						</div>
 						<div class="controls-bottom-right">
-							<button id="playback-rate" class="playback-rate">
+							<button id="playback-rate" class="controls-btn playback-rate">
 								<span class="playback-rate-count">1</span><span>×</span>
 							</button>
-							<button id="captions" class="captions" disabled>
+							<button id="captions" class="controls-btn captions" disabled>
 								<svg
 									width="25"
 									height="16"
@@ -208,7 +203,12 @@
 									/>
 								</svg>
 							</button>
-							<button id="chapters" class="chapters" disabled>
+							<a
+								href="#chapter"
+								id="chapters"
+								class="controls-btn chapters"
+								disabled
+							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									width="23"
@@ -223,8 +223,8 @@
 										fill="white"
 									/>
 								</svg>
-							</button>
-							<button id="theatre-mode" class="theatre-mode">
+							</a>
+							<button id="theatre-mode" class="controls-btn theatre-mode">
 								<svg
 									width="23"
 									height="16"
@@ -256,7 +256,7 @@
 								</svg>
 							</button>
 							<button
-								class="fullscreen"
+								class="controls-btn fullscreen"
 								aria-label="Fullscreen"
 								id="fullscreen"
 							>
@@ -278,6 +278,163 @@
 								</svg>
 							</button>
 						</div>
+					</div>
+				</div>
+				<video
+					preload="auto"
+					id="player"
+					class="video"
+					src="./ui_fixing.mp4"
+					controls="false"
+					poster="./cover.png"
+				></video>
+			</div>
+			<div class="summary_chapters_container" id="chapter">
+				<div class="summary_chapters_div">
+					<div class="video_summary_div">
+						<div
+							style="
+								display: flex;
+								justify-content: space-between;
+								position: relative;
+							"
+						>
+							<h2 style="margin-bottom: 12px">Summary</h2>
+						</div>
+						<p id="editor-summary" class="video_summary" spellcheck="false">
+							Lorem ipsum dolor sit amet consectetur adipisicing elit. Pariatur
+							ex magnam nemo nulla obcaecati vero minima iure dolor quisquam
+							excepturi debitis quibusdam reiciendis tenetur quos suscipit amet
+							maiores itaque sequi quo officiis ratione aliquid autem, natus
+							voluptatibus! Aut quas omnis iure nobis sit at? Fugit aut libero
+							totam, veritatis expedita nulla recusandae eos ea dicta.
+							Temporibus odit rem, expedita beatae cumque odio aperiam rerum
+							alias fuga dolorem magnam? In accusamus, necessitatibus voluptatem
+							pariatur sit omnis reprehenderit nihil saepe voluptas ducimus
+							neque commodi aliquam ad iste facilis ipsum quod. Dolores soluta,
+							dignissimos voluptas vero excepturi nostrum illum placeat ab sint
+							accusantium blanditiis quod fuga. Dignissimos corporis doloremque
+							quam? Et, magni dolorem odit, consequatur repudiandae autem ex eum
+							dolorum nisi iste assumenda.
+						</p>
+					</div>
+
+					<div class="video_chapters_div" style="position: relative">
+						<div style="display: flex; gap: 10px; align-items: baseline">
+							<h2 style="margin-top: 10px; margin-bottom: 0">Chapters</h2>
+						</div>
+						<ul class="video_chapters">
+							<li>
+								<a
+									href="javascript:;"
+									data-chapterstamp="0"
+									data-chapterstampend="99.419"
+									data-chapterstamp2="0"
+									data-chapterstamp2end="3.14"
+									>00:00</a
+								>Product Optimization
+							</li>
+							<li>
+								<a
+									href="javascript:;"
+									data-chapterstamp="99.42"
+									data-chapterstampend="189.378"
+									data-chapterstamp2="99.42"
+									data-chapterstamp2end="102.56"
+									>01:39</a
+								>Desktop App Notification Improvement
+							</li>
+							<li>
+								<a
+									href="javascript:;"
+									data-chapterstamp="189.379"
+									data-chapterstampend="274.17900000000003"
+									data-chapterstamp2="189.379"
+									data-chapterstamp2end="194.46"
+									>03:09</a
+								>Workspace Membership Communication
+							</li>
+							<li>
+								<a
+									href="javascript:;"
+									data-chapterstamp="274.18"
+									data-chapterstampend="872.558"
+									data-chapterstamp2="274.18"
+									data-chapterstamp2end="278.259"
+									>04:34</a
+								>Product Development
+							</li>
+							<li>
+								<a
+									href="javascript:;"
+									data-chapterstamp="872.559"
+									data-chapterstampend="2083.959"
+									data-chapterstamp2="872.559"
+									data-chapterstamp2end="874.039"
+									>14:32</a
+								>Homepage Use Cases
+							</li>
+							<li>
+								<a
+									href="javascript:;"
+									data-chapterstamp="2083.96"
+									data-chapterstampend="2371.7679999999996"
+									data-chapterstamp2="2083.96"
+									data-chapterstamp2end="2089.079"
+									>34:43</a
+								>Feature Progress
+							</li>
+							<li>
+								<a
+									href="javascript:;"
+									data-chapterstamp="2371.769"
+									data-chapterstampend="2442.828"
+									data-chapterstamp2="2371.769"
+									data-chapterstamp2end="2374.829"
+									>39:31</a
+								>Excitement for Blog Posts
+							</li>
+							<li>
+								<a
+									href="javascript:;"
+									data-chapterstamp="2442.829"
+									data-chapterstampend="2535.299"
+									data-chapterstamp2="2442.829"
+									data-chapterstamp2end="2446.369"
+									>40:42</a
+								>Technical Fixes and Maintenance
+							</li>
+							<li>
+								<a
+									href="javascript:;"
+									data-chapterstamp="2535.3"
+									data-chapterstampend="3502.129"
+									data-chapterstamp2="2535.3"
+									data-chapterstamp2end="2537.719"
+									>42:15</a
+								>Database Encryption and Maintenance
+							</li>
+							<li>
+								<a
+									href="javascript:;"
+									data-chapterstamp="3502.13"
+									data-chapterstampend="4065.499"
+									data-chapterstamp2="3502.13"
+									data-chapterstamp2end="3504.369"
+									>58:22</a
+								>Change Management System and Security Policies
+							</li>
+							<li>
+								<a
+									href="javascript:;"
+									data-chapterstamp="4065.5"
+									data-chapterstampend="4407.793"
+									data-chapterstamp2="4065.5"
+									data-chapterstamp2end="4072.639"
+									>67:45</a
+								>Auditing Period Preparation and Task Delegation
+							</li>
+						</ul>
 					</div>
 				</div>
 			</div>

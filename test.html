@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Кастомные контролы видео в полноэкранном режиме</title>
+		<style>
+			/* Стили контейнера и кастомных контролов */
+			#video-container {
+				position: relative;
+				max-width: 800px;
+				margin: auto;
+				background: black;
+			}
+			video {
+				width: 100%;
+			}
+			.controls {
+				position: absolute;
+				bottom: 10px;
+				width: 100%;
+				display: flex;
+				justify-content: space-around;
+				opacity: 0.8;
+				background: rgba(0, 0, 0, 0.6);
+				color: white;
+				padding: 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="video-container">
+			<video id="video" src="your-video-file.mp4" controls="false"></video>
+			<div class="controls">
+				<button onclick="togglePlayPause()">⏯️ Пауза/Плей</button>
+				<button onclick="toggleFullScreen()">🔳 Полноэкранный режим</button>
+			</div>
+		</div>
+
+		<script>
+			const video = document.getElementById('video')
+			const container = document.getElementById('video-container')
+
+			function togglePlayPause() {
+				if (video.paused) {
+					video.play()
+				} else {
+					video.pause()
+				}
+			}
+
+			function toggleFullScreen() {
+				if (!document.fullscreenElement) {
+					container.requestFullscreen()
+				} else {
+					document.exitFullscreen()
+				}
+			}
+		</script>
+	</body>
+</html>

@@ -3,13 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	const player = document.getElementById('player')
 	const playOrPauseBtn = document.getElementById('play-or-pause')
 	const muteBtn = document.getElementById('mute')
-	const fullScreenBtn = document.getElementById('fullscreen')
 	const currentTime = document.getElementById('controls-current-time')
 	const duration = document.getElementById('controls-duration')
 	const playbackRate = document.getElementById('playback-rate')
 	const showPlayerOverlayTimer = document.querySelector(
 		'.show-player-timer span'
 	)
+	// Hide native controls
+	player.controls = false
 
 	let playerVolumeCount = 0.5
 
@@ -24,18 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
 				'none'
 			parentElement.querySelector(`${element}:last-child`).style.display =
 				'block'
-		}
-	}
-
-	function toggleFullScreen() {
-		if (player.requestFullscreen) {
-			player.requestFullscreen()
-		} else if (player.webkitRequestFullscreen) {
-			/* Safari */
-			player.webkitRequestFullscreen()
-		} else if (player.msRequestFullscreen) {
-			/* IE11 */
-			player.msRequestFullscreen()
 		}
 	}
 
@@ -81,12 +70,22 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
-	function formatTime(seconds) {
+	function formatTime(seconds, named = false) {
 		const minutes = Math.floor(seconds / 60)
 		const sec = Math.floor(seconds % 60)
-		return (
-			(minutes < 10 ? '0' : '') + minutes + ':' + (sec < 10 ? '0' : '') + sec
-		)
+		if (!named) {
+			return (
+				(minutes < 10 ? '0' : '') + minutes + ':' + (sec < 10 ? '0' : '') + sec
+			)
+		} else {
+			return (
+				(minutes < 10 && minutes > 0 ? '0' : '') +
+				(minutes > 0 ? minutes : '') +
+				(minutes > 0 ? ' min ' : '') +
+				(sec < 10 ? '0' : '') +
+				(sec + ' sec')
+			)
+		}
 	}
 
 	function choosePlaybackRate() {
@@ -126,12 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	playOrPauseBtn.addEventListener('click', playOrPause)
 	muteBtn.addEventListener('click', mute)
-	fullScreenBtn.addEventListener('click', toggleFullScreen)
 	playbackRate.addEventListener('click', choosePlaybackRate)
 	player.addEventListener('click', playOrPause)
 	player.addEventListener('loadedmetadata', () => {
 		duration.innerText = formatTime(player.duration)
-		showPlayerOverlayTimer.innerText = Math.floor(player.duration)
+		showPlayerOverlayTimer.innerText = formatTime(player.duration, true)
 		player.volume = playerVolumeCount
 
 		// overlay player
@@ -168,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			const width = rect.width
 			const percentage = offsetX / width
 
-			if (isDraggingType === 'time') {
+			if (isDraggingType === 'time' && percentage >= 0 && percentage <= 0.99) {
 				const newTime = player.duration * percentage
 				player.currentTime = newTime
 				updateSlider()
@@ -232,12 +230,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	player.addEventListener('ended', () => {
 		playerOverlayEnd.style.display = 'flex'
+		toggleSiblingElement(playOrPauseBtn, 'svg', true)
 	})
 
 	playerOverlayBtnEnd.addEventListener('click', () => {
 		player.currentTime = 0
 		player.play()
 		playerOverlayEnd.style.display = 'none'
+		toggleSiblingElement(playOrPauseBtn, 'svg')
 	})
 
 	// Theatre mode
@@ -249,6 +249,74 @@ document.addEventListener('DOMContentLoaded', () => {
 			toggleSiblingElement(theatreBtn, 'svg')
 		} else {
 			toggleSiblingElement(theatreBtn, 'svg', true)
+		}
+	})
+
+	// Fullscreen
+	const fullScreenBtn = document.getElementById('fullscreen')
+
+	fullScreenBtn.addEventListener('click', toggleFullScreen)
+
+	function toggleFullScreen() {
+		const playerWrap = document.querySelector('.player-wrap')
+		if (!document.fullscreenElement) {
+			if (playerWrap.requestFullscreen) {
+				playerWrap.requestFullscreen()
+			} else if (playerWrap.webkitRequestFullscreen) {
+				playerWrap.webkitRequestFullscreen()
+			} else if (playerWrap.msRequestFullscreen) {
+				playerWrap.msRequestFullscreen()
+			}
+		} else {
+			if (document.exitFullscreen) {
+				document.exitFullscreen()
+			} else if (document.webkitExitFullscreen) {
+				document.webkitExitFullscreen()
+			} else if (document.msExitFullscreen) {
+			}
+		}
+	}
+
+	const toggleFullscreenStyles = e => {
+		e.preventDefault()
+
+		const isFullscreen = !!document.fullscreenElement
+		if (isFullscreen) {
+			setTimeout(() => {
+				document.querySelector('.controls').style.position = 'fixed'
+			}, 0)
+		} else {
+			document.querySelector('.controls').style.position = 'absolute'
+		}
+	}
+
+	document.addEventListener('fullscreenchange', toggleFullscreenStyles)
+	document.addEventListener('webkitfullscreenchange', toggleFullscreenStyles)
+	document.addEventListener('mozfullscreenchange', toggleFullscreenStyles)
+
+	// Keyboard
+	document.addEventListener('keydown', e => {
+		const skipAmount = 10
+		if (player.currentTime > 0) {
+			if (e.code === 'Space') {
+				e.preventDefault()
+				if (player.paused || player.ended) {
+					player.play()
+					toggleSiblingElement(playOrPauseBtn, 'svg')
+				} else {
+					player.pause()
+					toggleSiblingElement(playOrPauseBtn, 'svg', true)
+				}
+			}
+			if (e.code === 'ArrowLeft') {
+				player.currentTime -= skipAmount
+			}
+			if (e.code === 'ArrowRight') {
+				player.currentTime += skipAmount
+			}
+			if (e.code === 'KeyK') {
+				toggleFullScreen()
+			}
 		}
 	})
 })
