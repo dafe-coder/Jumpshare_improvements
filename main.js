@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	const showPlayerOverlayTimer = document.querySelector(
 		'.show-player-timer span'
 	)
+	const controls = document.querySelector('.controls')
+	let controlsShowID = null
 	// Hide native controls
 	player.controls = false
 
@@ -28,6 +30,18 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
+	function hideShowControlsOnHover() {
+		if (!player.paused) {
+			controls.classList.add('active')
+			clearTimeout(controlsShowID)
+			controlsShowID = setTimeout(() => {
+				controls.classList.remove('active')
+			}, 4000)
+		}
+	}
+
+	player.addEventListener('mousemove', hideShowControlsOnHover)
+
 	function playOrPause() {
 		const playCircle = document.querySelector('.play-circle')
 		let timerId = null
@@ -43,8 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
 				playCircle.style.transform = 'translate(-50%, -50%) scale(1.2)'
 				clearTimeout(timerId)
 			}, 300)
+			hideShowControlsOnHover()
 		} else {
 			player.pause()
+			clearTimeout(controlsShowID)
+			controls.classList.add('active')
 			toggleSiblingElement(playOrPauseBtn, 'svg', true)
 			toggleSiblingElement(playCircle, 'svg')
 			playCircle.style.transform = 'translate(-50%, -50%) scale(1.7)'
@@ -142,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				.querySelector('.player-wrap')
 				.classList.add('player-overlay-played')
 			toggleSiblingElement(playOrPauseBtn, 'svg')
+			controls.classList.add('active')
 		})
 	})
 
@@ -318,5 +336,17 @@ document.addEventListener('DOMContentLoaded', () => {
 				toggleFullScreen()
 			}
 		}
+	})
+
+	//  On loading
+	const loadingImg = document.querySelector('.loading-bg-img')
+	player.addEventListener('waiting', () => {
+		loadingImg.style.display = 'block'
+	})
+	player.addEventListener('canplay', () => {
+		loadingImg.style.display = 'none'
+	})
+	player.addEventListener('playing', () => {
+		loadingImg.style.display = 'none'
 	})
 })

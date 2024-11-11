@@ -73,7 +73,7 @@ video::-webkit-media-controls-overlay-play-button {
 	transition: all ease 0.2s;
 }
 
-.player-overlay-played:hover .controls {
+.controls.active {
 	bottom: 0;
 }
 
@@ -315,6 +315,31 @@ button.playback-rate {
 	}
 }
 
+/* Loading */
+
+.loading-bg-img {
+	position: absolute;
+	display: none;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%) rotate(0);
+	height: 80px;
+	width: 80px;
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 50%;
+	display: block;
+	border: 3px solid rgba(0, 0, 0, 0.4);
+	border-top-color: #fff;
+	animation: spinner2 1000ms linear infinite;
+	box-sizing: border-box;
+	z-index: 50;
+}
+
+@keyframes spinner2 {
+	to {
+		transform: translate(-50%, -50%) rotate(360deg);
+	}
+}
 /* Volume slider */
 
 .mute-block {
