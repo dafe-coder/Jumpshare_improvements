@@ -17,7 +17,7 @@ const dataChapters = {
 					S: 'Organizing Your Workflow',
 				},
 				line: {
-					S: '19',
+					S: '10',
 				},
 			},
 		},
@@ -27,7 +27,7 @@ const dataChapters = {
 					S: 'Utilizing External Drives for Storage',
 				},
 				line: {
-					S: '41',
+					S: '14',
 				},
 			},
 		},
@@ -37,7 +37,7 @@ const dataChapters = {
 					S: 'Choosing the Right Editing Software',
 				},
 				line: {
-					S: '63',
+					S: '25',
 				},
 			},
 		},
@@ -47,7 +47,7 @@ const dataChapters = {
 					S: 'Trimming and Editing Process',
 				},
 				line: {
-					S: '95',
+					S: '40',
 				},
 			},
 		},
@@ -57,7 +57,7 @@ const dataChapters = {
 					S: 'Incorporating B-roll and Stock Footage',
 				},
 				line: {
-					S: '152',
+					S: '45',
 				},
 			},
 		},
@@ -67,7 +67,7 @@ const dataChapters = {
 					S: 'Adding Text and Templates',
 				},
 				line: {
-					S: '185',
+					S: '50',
 				},
 			},
 		},
@@ -77,7 +77,7 @@ const dataChapters = {
 					S: 'Reviewing and Finalizing the Edit',
 				},
 				line: {
-					S: '206',
+					S: '51',
 				},
 			},
 		},
@@ -87,7 +87,7 @@ const dataChapters = {
 					S: 'Rendering and Uploading with Camtasia',
 				},
 				line: {
-					S: '213',
+					S: '52',
 				},
 			},
 		},
@@ -97,7 +97,7 @@ const dataChapters = {
 					S: 'Continuous Improvement in Editing',
 				},
 				line: {
-					S: '238',
+					S: '55',
 				},
 			},
 		},
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		duration.innerText = formatTime(player.duration)
 		showPlayerOverlayTimer.innerText = formatTime(player.duration, true)
 		player.volume = playerVolumeCount
-		player.textTracks[1].mode = 'hidden'
+		player.textTracks[0].mode = 'hidden'
 
 		// overlay player
 		const playerOverlayStart = document.querySelector('.player-overlay-start')
@@ -498,7 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	captionTrack.addEventListener('cuechange', () => {
-		const activeCues = player.textTracks[1].activeCues
+		const activeCues = player.textTracks[0].activeCues
 		activeCuesLength = activeCues.length
 
 		if (isShowCaptions && activeCues.length > 0) {
@@ -509,24 +509,27 @@ document.addEventListener('DOMContentLoaded', () => {
 	})
 
 	function loadChapters() {
-		const track = player.textTracks[0]
-
-		track.mode = 'hidden'
-		if (track.cues && track.cues.length > 0) {
+		if (dataChapters.chapters && dataChapters.chapters.length > 0) {
 			const chaptersMenu = document.querySelector('.video_chapters')
 			const chapterSliderItems = document.querySelector('.chapter-slider-items')
 
-			for (let i = 0; i < track.cues.length; i++) {
-				const cue = track.cues[i]
+			for (let i = 0; i < dataChapters.chapters.length; i++) {
+				const chapter = dataChapters.chapters[i]
+				const chapterStart = chapter.M.line.S
+				const chapterEnd = dataChapters.chapters[i + 1]
+					? dataChapters.chapters[i + 1].M.line.S
+					: player.duration
+				const chapterTitle = chapter.M.name.S
+
 				const chapterButton = `<li>
 								<a
 									href="javascript:;"
-									data-chapterstamp="${cue.startTime}"
-									data-chapterstampend="${cue.endTime}"
+									data-chapterstamp="${chapterStart}"
+									data-chapterstampend="${chapterEnd}"
 									data-chapterstamp2="0"
 									data-chapterstamp2end="3.14"
-									>${formatTime(cue.startTime)}</a
-								>${cue.text}
+									>${formatTime(chapterStart)}</a
+								>${chapterTitle}
 							</li>`
 
 				chaptersMenu.addEventListener('click', e => {
@@ -535,9 +538,11 @@ document.addEventListener('DOMContentLoaded', () => {
 					}
 				})
 				const widthChapterSliderItem =
-					((cue.endTime - cue.startTime) / player.duration) * 100
+					((chapterEnd - chapterStart) / player.duration) * 100
 				const chapterSliderItem = `<span style="width:${widthChapterSliderItem}%">
-					<span class="chapter-slider-title">${cue.text}</span>
+					<span class="chapter-slider-title">${chapterTitle}</span>
+					<span class="chapter-slider-loading"></span>
+					<span class="chapter-slider-progress"></span>
 				</span>`
 
 				chaptersMenu.innerHTML += chapterButton
