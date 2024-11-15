@@ -1,4 +1,109 @@
 'use strict'
+const dataChapters = {
+	chapters: [
+		{
+			M: {
+				name: {
+					S: 'Foundations of Video Editing',
+				},
+				line: {
+					S: '1',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Organizing Your Workflow',
+				},
+				line: {
+					S: '19',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Utilizing External Drives for Storage',
+				},
+				line: {
+					S: '41',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Choosing the Right Editing Software',
+				},
+				line: {
+					S: '63',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Trimming and Editing Process',
+				},
+				line: {
+					S: '95',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Incorporating B-roll and Stock Footage',
+				},
+				line: {
+					S: '152',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Adding Text and Templates',
+				},
+				line: {
+					S: '185',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Reviewing and Finalizing the Edit',
+				},
+				line: {
+					S: '206',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Rendering and Uploading with Camtasia',
+				},
+				line: {
+					S: '213',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Continuous Improvement in Editing',
+				},
+				line: {
+					S: '238',
+				},
+			},
+		},
+	],
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 	const player = document.getElementById('player')
 	const playOrPauseBtn = document.getElementById('play-or-pause')
@@ -148,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		duration.innerText = formatTime(player.duration)
 		showPlayerOverlayTimer.innerText = formatTime(player.duration, true)
 		player.volume = playerVolumeCount
+		player.textTracks[1].mode = 'hidden'
 
 		// overlay player
 		const playerOverlayStart = document.querySelector('.player-overlay-start')
@@ -161,6 +267,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			toggleSiblingElement(playOrPauseBtn, 'svg')
 			controls.classList.add('active')
 		})
+
+		loadChapters()
 	})
 
 	// Slider player (time rail)
@@ -349,4 +457,92 @@ document.addEventListener('DOMContentLoaded', () => {
 	player.addEventListener('playing', () => {
 		loadingImg.style.display = 'none'
 	})
+
+	// Captions
+	const captionTrack = document.getElementById('captions-track')
+	const captionBtn = document.getElementById('captions-btn')
+	const customCaptions = document.querySelector('.custom-captions')
+	let isShowCaptions = false
+	let activeCuesLength = 0
+	customCaptions.style.display = 'none'
+
+	captionBtn.addEventListener('click', () => {
+		if (isShowCaptions) {
+			isShowCaptions = false
+			customCaptions.style.display = 'none'
+			toggleSiblingElement(captionBtn, 'svg', true)
+		} else {
+			if (activeCuesLength > 0) {
+				customCaptions.style.display = 'block'
+			} else {
+				customCaptions.style.display = 'none'
+			}
+			isShowCaptions = true
+			toggleSiblingElement(captionBtn, 'svg')
+		}
+	})
+
+	function showCaptions(text) {
+		if (text) {
+			customCaptions.innerText = text
+		}
+
+		customCaptions.style.display = 'block'
+	}
+
+	function hideCaptions(text) {
+		if (text) {
+			customCaptions.innerText = text
+		}
+		customCaptions.style.display = 'none'
+	}
+
+	captionTrack.addEventListener('cuechange', () => {
+		const activeCues = player.textTracks[1].activeCues
+		activeCuesLength = activeCues.length
+
+		if (isShowCaptions && activeCues.length > 0) {
+			showCaptions(activeCues[0].text)
+		} else {
+			hideCaptions(activeCues.length > 0 && activeCues[0].text)
+		}
+	})
+
+	function loadChapters() {
+		const track = player.textTracks[0]
+
+		track.mode = 'hidden'
+		if (track.cues && track.cues.length > 0) {
+			const chaptersMenu = document.querySelector('.video_chapters')
+			const chapterSliderItems = document.querySelector('.chapter-slider-items')
+
+			for (let i = 0; i < track.cues.length; i++) {
+				const cue = track.cues[i]
+				const chapterButton = `<li>
+								<a
+									href="javascript:;"
+									data-chapterstamp="${cue.startTime}"
+									data-chapterstampend="${cue.endTime}"
+									data-chapterstamp2="0"
+									data-chapterstamp2end="3.14"
+									>${formatTime(cue.startTime)}</a
+								>${cue.text}
+							</li>`
+
+				chaptersMenu.addEventListener('click', e => {
+					if (e.target.tagName === 'A') {
+						player.currentTime = e.target.dataset.chapterstamp
+					}
+				})
+				const widthChapterSliderItem =
+					((cue.endTime - cue.startTime) / player.duration) * 100
+				const chapterSliderItem = `<span style="width:${widthChapterSliderItem}%">
+					<span class="chapter-slider-title">${cue.text}</span>
+				</span>`
+
+				chaptersMenu.innerHTML += chapterButton
+				chapterSliderItems.innerHTML += chapterSliderItem
+			}
+		}
+	}
 })

@@ -65,8 +65,6 @@
 					</button>
 				</div>
 				<!-- TODO: CC Button: CC button will toggle the captions in the video player. -->
-				<!-- TODO: Loading Indicator: A visual indicator (e.g., a spinner) to show when the video is loading. -->
-				<!-- TODO: Make it show a control when hovering over the video and have it show for 4 seconds (only after the play) and hidden -->
 				<!-- TODO: Chapters -->
 				<!-- TODO: Captions -->
 				<!-- TODO: Player changes the height when video loads -->
@@ -111,11 +109,14 @@
 						/>
 					</svg>
 				</div>
+				<div class="custom-captions"></div>
 				<span class="loading-bg-img"></span>
 				<div class="controls">
 					<div id="controls-time-rail" class="controls-time-rail">
 						<div id="slider-progress" class="slider-progress"></div>
 						<div id="slider-thumb" class="slider-thumb"></div>
+						<div class='chapter-slider-items'>
+						</div>
 					</div>
 					<div class="controls-bottom">
 						<div class="controls-bottom-left">
@@ -191,7 +192,7 @@
 							<button id="playback-rate" class="controls-btn playback-rate">
 								<span class="playback-rate-count">1</span><span>×</span>
 							</button>
-							<button id="captions" class="controls-btn captions" disabled>
+							<button id="captions-btn" class="controls-btn captions">
 								<svg
 									width="25"
 									height="16"
@@ -206,6 +207,9 @@
 										fill="white"
 									/>
 								</svg>
+								<svg style='display:none;' xmlns="http://www.w3.org/2000/svg" width="25" height="16" viewBox="0 0 25 16" fill="none">
+									<path fill-rule="evenodd" clip-rule="evenodd" d="M2 0C0.895431 0 0 0.895431 0 2V14C0 15.1046 0.89543 16 2 16H23C24.1046 16 25 15.1046 25 14V2C25 0.895431 24.1046 0 23 0H2ZM12.0852 9.71197C11.5242 11.208 10.1492 12.154 8.38923 12.154C6.05723 12.154 4.40723 10.504 4.40723 8.10597C4.40723 5.70797 6.05723 4.06897 8.38923 4.06897C10.1492 4.06897 11.5242 5.01497 12.0852 6.49997L10.5892 7.03897C10.2482 6.10397 9.43423 5.52097 8.38923 5.52097C6.99223 5.52097 5.99123 6.55497 5.99123 8.10597C5.99123 9.65697 6.99223 10.691 8.38923 10.691C9.43423 10.691 10.2482 10.119 10.5892 9.18397L12.0852 9.71197ZM20.4534 9.71197C19.8924 11.208 18.5174 12.154 16.7574 12.154C14.4254 12.154 12.7754 10.504 12.7754 8.10597C12.7754 5.70797 14.4254 4.06897 16.7574 4.06897C18.5174 4.06897 19.8924 5.01497 20.4534 6.49997L18.9574 7.03897C18.6164 6.10397 17.8024 5.52097 16.7574 5.52097C15.3604 5.52097 14.3594 6.55497 14.3594 8.10597C14.3594 9.65697 15.3604 10.691 16.7574 10.691C17.8024 10.691 18.6164 10.119 18.9574 9.18397L20.4534 9.71197Z" fill="white"/>
+									</svg>
 							</button>
 							<a
 								href="#chapter"
@@ -288,10 +292,12 @@
 					preload="auto"
 					id="player"
 					class="video"
-					src="./ui_fixing.mp4"
-					controls="false"
 					poster="./cover.png"
-				></video>
+				>
+					<source src="./ui_fixing.mp4" type="video/mp4">
+					<track id='chapters-track' src='./chapters.vtt' kind='chapters' srclang='en' label='Chapters' default></track>
+				 	<track id='captions-track' src='./ui_fixing.vtt' kind='captions' srclang='en' label='English' default></track>
+				</video>
 			</div>
 			<div class="summary_chapters_container" id="chapter">
 				<div class="summary_chapters_div">
@@ -328,7 +334,7 @@
 							<h2 style="margin-top: 10px; margin-bottom: 0">Chapters</h2>
 						</div>
 						<ul class="video_chapters">
-							<li>
+							<!-- <li>
 								<a
 									href="javascript:;"
 									data-chapterstamp="0"
@@ -337,107 +343,7 @@
 									data-chapterstamp2end="3.14"
 									>00:00</a
 								>Product Optimization
-							</li>
-							<li>
-								<a
-									href="javascript:;"
-									data-chapterstamp="99.42"
-									data-chapterstampend="189.378"
-									data-chapterstamp2="99.42"
-									data-chapterstamp2end="102.56"
-									>01:39</a
-								>Desktop App Notification Improvement
-							</li>
-							<li>
-								<a
-									href="javascript:;"
-									data-chapterstamp="189.379"
-									data-chapterstampend="274.17900000000003"
-									data-chapterstamp2="189.379"
-									data-chapterstamp2end="194.46"
-									>03:09</a
-								>Workspace Membership Communication
-							</li>
-							<li>
-								<a
-									href="javascript:;"
-									data-chapterstamp="274.18"
-									data-chapterstampend="872.558"
-									data-chapterstamp2="274.18"
-									data-chapterstamp2end="278.259"
-									>04:34</a
-								>Product Development
-							</li>
-							<li>
-								<a
-									href="javascript:;"
-									data-chapterstamp="872.559"
-									data-chapterstampend="2083.959"
-									data-chapterstamp2="872.559"
-									data-chapterstamp2end="874.039"
-									>14:32</a
-								>Homepage Use Cases
-							</li>
-							<li>
-								<a
-									href="javascript:;"
-									data-chapterstamp="2083.96"
-									data-chapterstampend="2371.7679999999996"
-									data-chapterstamp2="2083.96"
-									data-chapterstamp2end="2089.079"
-									>34:43</a
-								>Feature Progress
-							</li>
-							<li>
-								<a
-									href="javascript:;"
-									data-chapterstamp="2371.769"
-									data-chapterstampend="2442.828"
-									data-chapterstamp2="2371.769"
-									data-chapterstamp2end="2374.829"
-									>39:31</a
-								>Excitement for Blog Posts
-							</li>
-							<li>
-								<a
-									href="javascript:;"
-									data-chapterstamp="2442.829"
-									data-chapterstampend="2535.299"
-									data-chapterstamp2="2442.829"
-									data-chapterstamp2end="2446.369"
-									>40:42</a
-								>Technical Fixes and Maintenance
-							</li>
-							<li>
-								<a
-									href="javascript:;"
-									data-chapterstamp="2535.3"
-									data-chapterstampend="3502.129"
-									data-chapterstamp2="2535.3"
-									data-chapterstamp2end="2537.719"
-									>42:15</a
-								>Database Encryption and Maintenance
-							</li>
-							<li>
-								<a
-									href="javascript:;"
-									data-chapterstamp="3502.13"
-									data-chapterstampend="4065.499"
-									data-chapterstamp2="3502.13"
-									data-chapterstamp2end="3504.369"
-									>58:22</a
-								>Change Management System and Security Policies
-							</li>
-							<li>
-								<a
-									href="javascript:;"
-									data-chapterstamp="4065.5"
-									data-chapterstampend="4407.793"
-									data-chapterstamp2="4065.5"
-									data-chapterstamp2end="4072.639"
-									>67:45</a
-								>Auditing Period Preparation and Task Delegation
-							</li>
+							</li> -->
 						</ul>
 					</div>
 				</div>

@@ -1,0 +1,104 @@
+{
+	"chapters": [
+		{
+			"M": {
+				"name": {
+					"S": "Foundations of Video Editing"
+				},
+				"line": {
+					"S": "1"
+				}
+			}
+		},
+		{
+			"M": {
+				"name": {
+					"S": "Organizing Your Workflow"
+				},
+				"line": {
+					"S": "19"
+				}
+			}
+		},
+		{
+			"M": {
+				"name": {
+					"S": "Utilizing External Drives for Storage"
+				},
+				"line": {
+					"S": "41"
+				}
+			}
+		},
+		{
+			"M": {
+				"name": {
+					"S": "Choosing the Right Editing Software"
+				},
+				"line": {
+					"S": "63"
+				}
+			}
+		},
+		{
+			"M": {
+				"name": {
+					"S": "Trimming and Editing Process"
+				},
+				"line": {
+					"S": "95"
+				}
+			}
+		},
+		{
+			"M": {
+				"name": {
+					"S": "Incorporating B-roll and Stock Footage"
+				},
+				"line": {
+					"S": "152"
+				}
+			}
+		},
+		{
+			"M": {
+				"name": {
+					"S": "Adding Text and Templates"
+				},
+				"line": {
+					"S": "185"
+				}
+			}
+		},
+		{
+			"M": {
+				"name": {
+					"S": "Reviewing and Finalizing the Edit"
+				},
+				"line": {
+					"S": "206"
+				}
+			}
+		},
+		{
+			"M": {
+				"name": {
+					"S": "Rendering and Uploading with Camtasia"
+				},
+				"line": {
+					"S": "213"
+				}
+			}
+		},
+		{
+			"M": {
+				"name": {
+					"S": "Continuous Improvement in Editing"
+				},
+				"line": {
+					"S": "238"
+				}
+			}
+		}
+	]
+}
