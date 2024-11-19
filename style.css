@@ -192,6 +192,12 @@ button.captions {
 	height: 6px;
 	width: 100%;
 	z-index: 2;
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Chrome/Safari/Opera */
+	-khtml-user-select: none; /* Konqueror */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none;
 }
 .chapter-slider-items {
 	width: 100%;
@@ -230,7 +236,7 @@ button.captions {
 	top: -18px;
 }
 
-.slider-progress {
+.chapter-slider-progress {
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -244,8 +250,10 @@ button.captions {
 
 .slider-thumb {
 	position: absolute;
-	top: -4px;
+	top: 50%;
+	transform: translateY(-50%);
 	left: 0;
+	display: none;
 
 	cursor: pointer;
 	width: 15px;
@@ -254,6 +262,7 @@ button.captions {
 	background-color: #2f76ff;
 	border-radius: 50%;
 	z-index: 2;
+	display: none;
 }
 
 button.playback-rate {

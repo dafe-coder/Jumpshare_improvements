@@ -250,10 +250,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	playbackRate.addEventListener('click', choosePlaybackRate)
 	player.addEventListener('click', playOrPause)
 	player.addEventListener('loadedmetadata', () => {
+		if (player.textTracks.length > 0) {
+			player.textTracks[0].mode = 'hidden'
+		}
 		duration.innerText = formatTime(player.duration)
 		showPlayerOverlayTimer.innerText = formatTime(player.duration, true)
 		player.volume = playerVolumeCount
-		player.textTracks[0].mode = 'hidden'
 
 		// overlay player
 		const playerOverlayStart = document.querySelector('.player-overlay-start')
@@ -273,15 +275,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// Slider player (time rail)
 	const controlsTimeRail = document.getElementById('controls-time-rail')
-	const sliderProgress = document.getElementById('slider-progress')
-	const sliderThumb = document.getElementById('slider-thumb')
+	const sliderRail = document.getElementById('controls-time-rail')
 	let isDragging = false
 	let isDraggingType = 'time'
+	let activeChapter = 1
+
+	function chooseActiveChapter() {
+		dataChapters.chapters.forEach((item, idx) => {
+			const start = item.M.line.S
+			const end = dataChapters.chapters[idx + 1]
+				? dataChapters.chapters[idx + 1].M.line.S
+				: player.duration
+			if (player.currentTime >= start && player.currentTime <= end) {
+				activeChapter = idx + 1
+			}
+		})
+	}
 
 	function updateSlider() {
-		const progressPercent = (player.currentTime / player.duration) * 100
-		sliderProgress.style.width = progressPercent + '%'
-		sliderThumb.style.left = progressPercent + '%'
+		const startValue = dataChapters.chapters[activeChapter - 1].M.line.S
+		const endValue = dataChapters.chapters[activeChapter]
+			? dataChapters.chapters[activeChapter].M.line.S
+			: player.duration
+		const progressRailPercent =
+			((player.currentTime - startValue) / (endValue - startValue)) * 100
+		// const progressThumbPercent = (player.currentTime / player.duration) * 100
+		const sliderThumb = sliderRail.querySelectorAll('.slider-thumb')
+		const sliderRailItemsProgress = sliderRail.querySelectorAll(
+			'.chapter-slider-progress'
+		)
+
+		sliderRailItemsProgress.forEach((item, idx) => {
+			if (idx < activeChapter - 1) {
+				item.style.width = '100%'
+			} else {
+				item.style.width = 0
+			}
+		})
+		sliderThumb.forEach(item => {
+			item.style.left = 0
+			item.style.display = 'none'
+		})
+
+		// if (
+		// 	player.currentTime < startValue &&
+		// 	player.currentTime > 0 &&
+		// 	activeChapter > 1
+		// ) {
+		// 	console.log('go back')
+
+		// 	sliderThumb.forEach((item, idx) => {
+		// 		if (idx > activeChapter - 1) {
+		// 			item.style.left = 0
+		// 			item.style.display = 'none'
+		// 		}
+		// 	})
+		// 	sliderRailItemsProgress.forEach((item, idx) => {
+		// 		if (idx > activeChapter - 1) {
+		// 			item.style.width = 0
+		// 		}
+		// 	})
+		// 	--activeChapter
+		// }
+
+		if (progressRailPercent <= 99.99) {
+			sliderRailItemsProgress[activeChapter - 1].style.width =
+				progressRailPercent + '%'
+			sliderThumb[activeChapter - 1].style.display = 'block'
+			sliderThumb[activeChapter - 1].style.left = progressRailPercent + '%'
+			sliderThumb[activeChapter - 1].style.marginLeft = '-2px'
+		} else {
+			sliderRailItemsProgress[activeChapter - 1].style.width = '100%'
+			sliderThumb[activeChapter - 1].style.display = 'none'
+			++activeChapter
+		}
 		currentTime.innerHTML = formatTime(player.currentTime)
 	}
 
@@ -295,6 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (isDraggingType === 'time' && percentage >= 0 && percentage <= 0.99) {
 				const newTime = player.duration * percentage
 				player.currentTime = newTime
+				chooseActiveChapter()
 				updateSlider()
 			}
 			if (isDraggingType === 'volume' && percentage >= 0 && percentage <= 1) {
@@ -534,6 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 				chaptersMenu.addEventListener('click', e => {
 					if (e.target.tagName === 'A') {
+						chooseActiveChapter()
 						player.currentTime = e.target.dataset.chapterstamp
 					}
 				})
