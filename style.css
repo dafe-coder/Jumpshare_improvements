@@ -203,7 +203,6 @@ button.captions {
 	width: 100%;
 	height: 100%;
 	display: flex;
-	gap: 3px;
 }
 .chapter-slider-items > span {
 	position: relative;
@@ -211,6 +210,7 @@ button.captions {
 	background-color: rgba(255, 255, 255, 0.5);
 	transition: all ease 0.2s;
 }
+
 .chapter-slider-items > span:hover {
 	height: 10px;
 	margin-top: -2px;
@@ -253,7 +253,6 @@ button.captions {
 	top: 50%;
 	transform: translateY(-50%);
 	left: 0;
-	display: none;
 
 	cursor: pointer;
 	width: 15px;
@@ -262,7 +261,6 @@ button.captions {
 	background-color: #2f76ff;
 	border-radius: 50%;
 	z-index: 2;
-	display: none;
 }
 
 button.playback-rate {

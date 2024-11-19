@@ -7,7 +7,7 @@ const dataChapters = {
 					S: 'Foundations of Video Editing',
 				},
 				line: {
-					S: '1',
+					S: '0',
 				},
 			},
 		},
@@ -276,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Slider player (time rail)
 	const controlsTimeRail = document.getElementById('controls-time-rail')
 	const sliderRail = document.getElementById('controls-time-rail')
+	const sliderThumb = document.getElementById('slider-thumb')
 	let isDragging = false
 	let isDraggingType = 'time'
 	let activeChapter = 1
@@ -299,10 +300,17 @@ document.addEventListener('DOMContentLoaded', () => {
 			: player.duration
 		const progressRailPercent =
 			((player.currentTime - startValue) / (endValue - startValue)) * 100
-		// const progressThumbPercent = (player.currentTime / player.duration) * 100
-		const sliderThumb = sliderRail.querySelectorAll('.slider-thumb')
+		const progressThumbPercent = (player.currentTime / player.duration) * 100
+		// const sliderThumb = sliderRail.querySelectorAll('.slider-thumb')
 		const sliderRailItemsProgress = sliderRail.querySelectorAll(
 			'.chapter-slider-progress'
+		)
+		console.log(
+			player.currentTime,
+			' + ',
+			progressRailPercent,
+			' + ',
+			startValue
 		)
 
 		sliderRailItemsProgress.forEach((item, idx) => {
@@ -312,10 +320,10 @@ document.addEventListener('DOMContentLoaded', () => {
 				item.style.width = 0
 			}
 		})
-		sliderThumb.forEach(item => {
-			item.style.left = 0
-			item.style.display = 'none'
-		})
+		// sliderThumb.forEach(item => {
+		// 	item.style.left = 0
+		// 	item.style.display = 'none'
+		// })
 
 		// if (
 		// 	player.currentTime < startValue &&
@@ -337,16 +345,13 @@ document.addEventListener('DOMContentLoaded', () => {
 		// 	})
 		// 	--activeChapter
 		// }
+		sliderThumb.style.left = progressThumbPercent + '%'
 
 		if (progressRailPercent <= 99.99) {
 			sliderRailItemsProgress[activeChapter - 1].style.width =
 				progressRailPercent + '%'
-			sliderThumb[activeChapter - 1].style.display = 'block'
-			sliderThumb[activeChapter - 1].style.left = progressRailPercent + '%'
-			sliderThumb[activeChapter - 1].style.marginLeft = '-2px'
 		} else {
 			sliderRailItemsProgress[activeChapter - 1].style.width = '100%'
-			sliderThumb[activeChapter - 1].style.display = 'none'
 			++activeChapter
 		}
 		currentTime.innerHTML = formatTime(player.currentTime)
@@ -606,6 +611,8 @@ document.addEventListener('DOMContentLoaded', () => {
 						player.currentTime = e.target.dataset.chapterstamp
 					}
 				})
+				console.log(chapterEnd, chapterStart, chapterEnd - chapterStart)
+
 				const widthChapterSliderItem =
 					((chapterEnd - chapterStart) / player.duration) * 100
 				const chapterSliderItem = `<span style="width:${widthChapterSliderItem}%">
