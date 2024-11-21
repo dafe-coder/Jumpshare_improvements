@@ -305,13 +305,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		const sliderRailItemsProgress = sliderRail.querySelectorAll(
 			'.chapter-slider-progress'
 		)
-		console.log(
-			player.currentTime,
-			' + ',
-			progressRailPercent,
-			' + ',
-			startValue
-		)
 
 		sliderRailItemsProgress.forEach((item, idx) => {
 			if (idx < activeChapter - 1) {
@@ -320,31 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				item.style.width = 0
 			}
 		})
-		// sliderThumb.forEach(item => {
-		// 	item.style.left = 0
-		// 	item.style.display = 'none'
-		// })
 
-		// if (
-		// 	player.currentTime < startValue &&
-		// 	player.currentTime > 0 &&
-		// 	activeChapter > 1
-		// ) {
-		// 	console.log('go back')
-
-		// 	sliderThumb.forEach((item, idx) => {
-		// 		if (idx > activeChapter - 1) {
-		// 			item.style.left = 0
-		// 			item.style.display = 'none'
-		// 		}
-		// 	})
-		// 	sliderRailItemsProgress.forEach((item, idx) => {
-		// 		if (idx > activeChapter - 1) {
-		// 			item.style.width = 0
-		// 		}
-		// 	})
-		// 	--activeChapter
-		// }
 		sliderThumb.style.left = progressThumbPercent + '%'
 
 		if (progressRailPercent <= 99.99) {
@@ -580,6 +549,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			hideCaptions(activeCues.length > 0 && activeCues[0].text)
 		}
 	})
+	let calcTHisn = 0
 
 	function loadChapters() {
 		if (dataChapters.chapters && dataChapters.chapters.length > 0) {
@@ -611,11 +581,26 @@ document.addEventListener('DOMContentLoaded', () => {
 						player.currentTime = e.target.dataset.chapterstamp
 					}
 				})
-				console.log(chapterEnd, chapterStart, chapterEnd - chapterStart)
 
 				const widthChapterSliderItem =
 					((chapterEnd - chapterStart) / player.duration) * 100
-				const chapterSliderItem = `<span style="width:${widthChapterSliderItem}%">
+
+				const widthChapterSliderItemWithMargins = getAdjustedPercentage(
+					chapterSliderItems,
+					widthChapterSliderItem,
+					3
+				)
+
+				const marginRight =
+					i !== dataChapters.chapters.length - 1 ? 'margin-right:3px' : ''
+				const width =
+					i !== dataChapters.chapters.length - 1
+						? widthChapterSliderItemWithMargins
+						: widthChapterSliderItem + '%'
+				calcTHisn =
+					Number(widthChapterSliderItemWithMargins.replace('%', '')) + calcTHisn
+				console.log(calcTHisn)
+				const chapterSliderItem = `<span style="width:${width};${marginRight}">
 					<span class="chapter-slider-title">${chapterTitle}</span>
 					<span class="chapter-slider-loading"></span>
 					<span class="chapter-slider-progress"></span>
@@ -625,5 +610,16 @@ document.addEventListener('DOMContentLoaded', () => {
 				chapterSliderItems.innerHTML += chapterSliderItem
 			}
 		}
+	}
+	function getAdjustedPercentage(parentElement, percentage, pixels) {
+		const parentWidth = parentElement.offsetWidth
+
+		const percentageWidth = parentWidth * (percentage / 100)
+
+		const newWidth = percentageWidth - pixels
+
+		const adjustedPercentage = (newWidth / parentWidth) * 100
+
+		return `${adjustedPercentage}%`
 	}
 })
