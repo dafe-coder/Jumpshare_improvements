@@ -207,6 +207,21 @@ button.captions {
 .chapter-slider-items > span {
 	position: relative;
 	height: 100%;
+}
+
+.chapter-slider-items > span:last-of-type .chapter-slider-bg {
+	width: 100%;
+}
+.chapter-slider-items > span:last-of-type .chapter-slider-progress {
+	max-width: 100%;
+}
+
+.chapter-slider-bg {
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: calc(100% - 3px);
 	background-color: rgba(255, 255, 255, 0.5);
 	transition: all ease 0.2s;
 }
@@ -243,9 +258,11 @@ button.captions {
 
 	width: 0;
 	height: 100%;
+	max-width: calc(100% - 3px);
 
 	background-color: #2f76ff;
 	z-index: 2;
+	margin-right: 3px;
 }
 
 .slider-thumb {
@@ -257,6 +274,7 @@ button.captions {
 	cursor: pointer;
 	width: 15px;
 	height: 15px;
+	margin-left: -3px;
 
 	background-color: #2f76ff;
 	border-radius: 50%;

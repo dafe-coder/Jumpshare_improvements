@@ -41,56 +41,7 @@ const dataChapters = {
 				},
 			},
 		},
-		{
-			M: {
-				name: {
-					S: 'Trimming and Editing Process',
-				},
-				line: {
-					S: '40',
-				},
-			},
-		},
-		{
-			M: {
-				name: {
-					S: 'Incorporating B-roll and Stock Footage',
-				},
-				line: {
-					S: '45',
-				},
-			},
-		},
-		{
-			M: {
-				name: {
-					S: 'Adding Text and Templates',
-				},
-				line: {
-					S: '50',
-				},
-			},
-		},
-		{
-			M: {
-				name: {
-					S: 'Reviewing and Finalizing the Edit',
-				},
-				line: {
-					S: '51',
-				},
-			},
-		},
-		{
-			M: {
-				name: {
-					S: 'Rendering and Uploading with Camtasia',
-				},
-				line: {
-					S: '52',
-				},
-			},
-		},
+
 		{
 			M: {
 				name: {
@@ -249,10 +200,16 @@ document.addEventListener('DOMContentLoaded', () => {
 	muteBtn.addEventListener('click', mute)
 	playbackRate.addEventListener('click', choosePlaybackRate)
 	player.addEventListener('click', playOrPause)
-	player.addEventListener('loadedmetadata', () => {
-		if (player.textTracks.length > 0) {
-			player.textTracks[0].mode = 'hidden'
+	function hideTextTracks() {
+		for (let i = 0; i < player.textTracks.length; i++) {
+			player.textTracks[i].mode = 'hidden'
 		}
+	}
+	hideTextTracks()
+	player.addEventListener('loadedmetadata', () => {
+		setTimeout(() => {
+			hideTextTracks()
+		}, 10)
 		duration.innerText = formatTime(player.duration)
 		showPlayerOverlayTimer.innerText = formatTime(player.duration, true)
 		player.volume = playerVolumeCount
@@ -549,8 +506,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			hideCaptions(activeCues.length > 0 && activeCues[0].text)
 		}
 	})
-	let calcTHisn = 0
-
 	function loadChapters() {
 		if (dataChapters.chapters && dataChapters.chapters.length > 0) {
 			const chaptersMenu = document.querySelector('.video_chapters')
@@ -585,25 +540,11 @@ document.addEventListener('DOMContentLoaded', () => {
 				const widthChapterSliderItem =
 					((chapterEnd - chapterStart) / player.duration) * 100
 
-				const widthChapterSliderItemWithMargins = getAdjustedPercentage(
-					chapterSliderItems,
-					widthChapterSliderItem,
-					3
-				)
-
-				const marginRight =
-					i !== dataChapters.chapters.length - 1 ? 'margin-right:3px' : ''
-				const width =
-					i !== dataChapters.chapters.length - 1
-						? widthChapterSliderItemWithMargins
-						: widthChapterSliderItem + '%'
-				calcTHisn =
-					Number(widthChapterSliderItemWithMargins.replace('%', '')) + calcTHisn
-				console.log(calcTHisn)
-				const chapterSliderItem = `<span style="width:${width};${marginRight}">
+				const chapterSliderItem = `<span style="width:${widthChapterSliderItem}%;">
 					<span class="chapter-slider-title">${chapterTitle}</span>
 					<span class="chapter-slider-loading"></span>
 					<span class="chapter-slider-progress"></span>
+					<span class="chapter-slider-bg"></span>
 				</span>`
 
 				chaptersMenu.innerHTML += chapterButton
