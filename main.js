@@ -41,7 +41,56 @@ const dataChapters = {
 				},
 			},
 		},
-
+		{
+			M: {
+				name: {
+					S: 'Trimming and Editing Process',
+				},
+				line: {
+					S: '40',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Incorporating B-roll and Stock Footage',
+				},
+				line: {
+					S: '45',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Adding Text and Templates',
+				},
+				line: {
+					S: '50',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Reviewing and Finalizing the Edit',
+				},
+				line: {
+					S: '51',
+				},
+			},
+		},
+		{
+			M: {
+				name: {
+					S: 'Rendering and Uploading with Camtasia',
+				},
+				line: {
+					S: '52',
+				},
+			},
+		},
 		{
 			M: {
 				name: {
@@ -258,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const progressRailPercent =
 			((player.currentTime - startValue) / (endValue - startValue)) * 100
 		const progressThumbPercent = (player.currentTime / player.duration) * 100
-		// const sliderThumb = sliderRail.querySelectorAll('.slider-thumb')
+
 		const sliderRailItemsProgress = sliderRail.querySelectorAll(
 			'.chapter-slider-progress'
 		)
@@ -356,6 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	player.addEventListener('ended', () => {
 		playerOverlayEnd.style.display = 'flex'
 		toggleSiblingElement(playOrPauseBtn, 'svg', true)
+		activeChapter = 1
 	})
 
 	playerOverlayBtnEnd.addEventListener('click', () => {
@@ -506,6 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			hideCaptions(activeCues.length > 0 && activeCues[0].text)
 		}
 	})
+
 	function loadChapters() {
 		if (dataChapters.chapters && dataChapters.chapters.length > 0) {
 			const chaptersMenu = document.querySelector('.video_chapters')
@@ -539,28 +590,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
 				const widthChapterSliderItem =
 					((chapterEnd - chapterStart) / player.duration) * 100
+				const chapterSliderItem = document.createElement('span')
+				chapterSliderItem.classList.add('chapter-slider-item')
+				chapterSliderItem.style.width = `${widthChapterSliderItem}%`
 
-				const chapterSliderItem = `<span style="width:${widthChapterSliderItem}%;">
-					<span class="chapter-slider-title">${chapterTitle}</span>
-					<span class="chapter-slider-loading"></span>
-					<span class="chapter-slider-progress"></span>
-					<span class="chapter-slider-bg"></span>
-				</span>`
+				// Создаем элементы отдельно
+				const chapterTitleElement = document.createElement('span')
+				chapterTitleElement.classList.add('chapter-slider-title')
+				chapterTitleElement.textContent = chapterTitle
+
+				const chapterLoadingElement = document.createElement('span')
+				chapterLoadingElement.classList.add('chapter-slider-loading')
+
+				const chapterProgressElement = document.createElement('span')
+				chapterProgressElement.classList.add('chapter-slider-progress')
+
+				const chapterBgElement = document.createElement('span')
+				chapterBgElement.classList.add('chapter-slider-bg')
+
+				chapterSliderItem.appendChild(chapterTitleElement)
+				chapterSliderItem.appendChild(chapterLoadingElement)
+				chapterSliderItem.appendChild(chapterProgressElement)
+				chapterSliderItem.appendChild(chapterBgElement)
+
+				chapterSliderItem.addEventListener('mouseenter', () => {
+					console.log('mouseenter')
+
+					const spanTitle = chapterSliderItem.querySelector(
+						'.chapter-slider-title'
+					)
+					const rect = spanTitle.getBoundingClientRect()
+					const playerPos = player.getBoundingClientRect()
+					const relativePosition = {
+						top: rect.top - playerPos.top,
+						left: rect.left - playerPos.left,
+					}
+					if (
+						rect.width + relativePosition.left >
+						player.getBoundingClientRect().width
+					) {
+						spanTitle.style.left = 'auto'
+						spanTitle.style.right = '0'
+						if (i == dataChapters.chapters.length - 1) {
+							spanTitle.style.right = '10px'
+						}
+					}
+				})
 
 				chaptersMenu.innerHTML += chapterButton
-				chapterSliderItems.innerHTML += chapterSliderItem
+				chapterSliderItems.appendChild(chapterSliderItem)
 			}
 		}
-	}
-	function getAdjustedPercentage(parentElement, percentage, pixels) {
-		const parentWidth = parentElement.offsetWidth
-
-		const percentageWidth = parentWidth * (percentage / 100)
-
-		const newWidth = percentageWidth - pixels
-
-		const adjustedPercentage = (newWidth / parentWidth) * 100
-
-		return `${adjustedPercentage}%`
 	}
 })

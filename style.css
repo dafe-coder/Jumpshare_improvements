@@ -102,13 +102,13 @@ video::-webkit-media-controls-overlay-play-button {
 	z-index: 1;
 }
 
-/* .controls::after {
+.controls::after {
 	content: '';
 	position: absolute;
 	left: 0;
 	bottom: 0;
 	width: 100%;
-	height: 70px;
+	height: calc(100% + 20px);
 	background: linear-gradient(
 		0deg,
 		rgba(0, 0, 0, 0.7791491596638656) 0%,
@@ -116,7 +116,7 @@ video::-webkit-media-controls-overlay-play-button {
 		rgba(0, 212, 255, 0) 100%
 	);
 	z-index: -1;
-} */
+}
 .controls.active {
 	bottom: 0;
 }
@@ -207,8 +207,12 @@ button.captions {
 .chapter-slider-items > span {
 	position: relative;
 	height: 100%;
+	transition: all ease 0.2s;
 }
 
+.chapter-slider-items > span:first-of-type .chapter-slider-title {
+	margin-left: 6px;
+}
 .chapter-slider-items > span:last-of-type .chapter-slider-bg {
 	width: 100%;
 }
@@ -235,7 +239,6 @@ button.captions {
 	position: absolute;
 	opacity: 0;
 	background: 0;
-	margin-left: 6px;
 	color: #fff;
 	top: -5px;
 	font-size: 13px;
@@ -268,7 +271,7 @@ button.captions {
 .slider-thumb {
 	position: absolute;
 	top: 50%;
-	transform: translateY(-50%);
+	transform: translateY(-50%) scale(0);
 	left: 0;
 
 	cursor: pointer;
@@ -279,6 +282,15 @@ button.captions {
 	background-color: #2f76ff;
 	border-radius: 50%;
 	z-index: 2;
+	pointer-events: none;
+	opacity: 0;
+	transition:
+		opacity ease 0.2s,
+		transform ease 0.2s;
+}
+.controls-time-rail:hover .slider-thumb {
+	opacity: 1;
+	transform: translateY(-50%) scale(1);
 }
 
 button.playback-rate {
