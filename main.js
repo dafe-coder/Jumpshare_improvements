@@ -496,15 +496,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	})
 
 	//  On loading
-	const loadingImg = document.querySelector('.loading-bg-img')
+	const loadingBgSpinner = document.querySelector('.loading-bg-img')
 	player.addEventListener('waiting', () => {
-		loadingImg.style.display = 'block'
+		loadingBgSpinner.style.display = 'block'
 	})
 	player.addEventListener('canplay', () => {
-		loadingImg.style.display = 'none'
+		loadingBgSpinner.style.display = 'none'
 	})
 	player.addEventListener('playing', () => {
-		loadingImg.style.display = 'none'
+		loadingBgSpinner.style.display = 'none'
 	})
 
 	// Captions
@@ -535,7 +535,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (text) {
 			customCaptions.innerText = text
 		}
-
 		customCaptions.style.display = 'block'
 	}
 
@@ -548,6 +547,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	captionTrack.addEventListener('cuechange', () => {
 		const activeCues = player.textTracks[0].activeCues
+
 		activeCuesLength = activeCues.length
 
 		if (isShowCaptions && activeCues.length > 0) {
@@ -558,88 +558,93 @@ document.addEventListener('DOMContentLoaded', () => {
 	})
 
 	function loadChapters() {
-		if (dataChapters.chapters && dataChapters.chapters.length > 0) {
-			const chaptersMenu = document.querySelector('.video_chapters')
-			const chapterSliderItems = document.querySelector('.chapter-slider-items')
+		if (!dataChapters?.chapters?.length) return
 
-			for (let i = 0; i < dataChapters.chapters.length; i++) {
-				const chapter = dataChapters.chapters[i]
-				const chapterStart = chapter.M.line.S
-				const chapterEnd = dataChapters.chapters[i + 1]
-					? dataChapters.chapters[i + 1].M.line.S
-					: player.duration
-				const chapterTitle = chapter.M.name.S
+		const chaptersMenu = document.querySelector('.video_chapters')
+		const chapterSliderItems = document.querySelector('.chapter-slider-items')
 
-				const chapterButton = `<li>
-								<a
-									href="javascript:;"
-									data-chapterstamp="${chapterStart}"
-									data-chapterstampend="${chapterEnd}"
-									data-chapterstamp2="0"
-									data-chapterstamp2end="3.14"
-									>${formatTime(chapterStart)}</a
-								>${chapterTitle}
-							</li>`
-
-				chaptersMenu.addEventListener('click', e => {
-					if (e.target.tagName === 'A') {
-						chooseActiveChapter()
-						player.currentTime = e.target.dataset.chapterstamp
-					}
-				})
-
-				const widthChapterSliderItem =
-					((chapterEnd - chapterStart) / player.duration) * 100
-				const chapterSliderItem = document.createElement('span')
-				chapterSliderItem.classList.add('chapter-slider-item')
-				chapterSliderItem.style.width = `${widthChapterSliderItem}%`
-
-				// Создаем элементы отдельно
-				const chapterTitleElement = document.createElement('span')
-				chapterTitleElement.classList.add('chapter-slider-title')
-				chapterTitleElement.textContent = chapterTitle
-
-				const chapterLoadingElement = document.createElement('span')
-				chapterLoadingElement.classList.add('chapter-slider-loading')
-
-				const chapterProgressElement = document.createElement('span')
-				chapterProgressElement.classList.add('chapter-slider-progress')
-
-				const chapterBgElement = document.createElement('span')
-				chapterBgElement.classList.add('chapter-slider-bg')
-
-				chapterSliderItem.appendChild(chapterTitleElement)
-				chapterSliderItem.appendChild(chapterLoadingElement)
-				chapterSliderItem.appendChild(chapterProgressElement)
-				chapterSliderItem.appendChild(chapterBgElement)
-
-				chapterSliderItem.addEventListener('mouseenter', () => {
-					console.log('mouseenter')
-
-					const spanTitle = chapterSliderItem.querySelector(
-						'.chapter-slider-title'
-					)
-					const rect = spanTitle.getBoundingClientRect()
-					const playerPos = player.getBoundingClientRect()
-					const relativePosition = {
-						top: rect.top - playerPos.top,
-						left: rect.left - playerPos.left,
-					}
-					if (
-						rect.width + relativePosition.left >
-						player.getBoundingClientRect().width
-					) {
-						spanTitle.style.left = 'auto'
-						spanTitle.style.right = '0'
-						if (i == dataChapters.chapters.length - 1) {
-							spanTitle.style.right = '10px'
-						}
-					}
-				})
-
-				chaptersMenu.innerHTML += chapterButton
-				chapterSliderItems.appendChild(chapterSliderItem)
-			}
+		const createChapterButton = (chapter, chapterStart, chapterEnd) => {
+			return `<li>
+				<a href="javascript:;" 
+				   data-chapterstamp="${chapterStart}"
+				   data-chapterstampend="${chapterEnd}"
+				>${formatTime(chapterStart)}</a
+				>${chapter.M.name.S}
+			</li>`
 		}
+
+		const createSliderItem = (chapter, chapterStart, chapterEnd) => {
+			const width = ((chapterEnd - chapterStart) / player.duration) * 100
+			const item = document.createElement('span')
+			item.classList.add('chapter-slider-item')
+			item.style.width = `${width}%`
+
+			const elements = [
+				['chapter-slider-title', chapter.M.name.S],
+				['chapter-slider-loading', ''],
+				['chapter-slider-progress', ''],
+				['chapter-slider-bg', ''],
+			].map(([className, text]) => {
+				const el = document.createElement('span')
+				el.classList.add(className)
+				if (text) el.textContent = text
+				return el
+			})
+
+			elements.forEach(el => item.appendChild(el))
+			return { item, titleElement: elements[0] }
+		}
+
+		chaptersMenu.addEventListener('click', e => {
+			if (e.target.tagName === 'A') {
+				chooseActiveChapter()
+				player.currentTime = Number(e.target.dataset.chapterstamp)
+			}
+		})
+
+		dataChapters.chapters.forEach((chapter, i) => {
+			const chapterStart = chapter.M.line.S
+			const chapterEnd =
+				dataChapters.chapters[i + 1]?.M.line.S ?? player.duration
+
+			chaptersMenu.innerHTML += createChapterButton(
+				chapter,
+				chapterStart,
+				chapterEnd
+			)
+
+			const { item, titleElement } = createSliderItem(
+				chapter,
+				chapterStart,
+				chapterEnd
+			)
+			chapterSliderItems.appendChild(item)
+
+			requestAnimationFrame(() => {
+				const rect = titleElement.getBoundingClientRect()
+				const playerPos = player.getBoundingClientRect()
+				const relativePosition = {
+					top: rect.top - playerPos.top,
+					left: rect.left - playerPos.left,
+				}
+
+				if (rect.width + relativePosition.left > playerPos.width) {
+					titleElement.style.left = 'auto'
+					titleElement.style.right =
+						i === dataChapters.chapters.length - 1 ? '10px' : '0'
+				}
+			})
+		})
 	}
+
+	// Errors
+	player.addEventListener('error', () => {
+		console.error('Video Error:', e)
+		// loadingBgSpinner.style.display = 'none'
+	})
+
+	// ARIA attributes for control buttons
+	playOrPauseBtn.setAttribute('aria-label', 'Play/Pause')
+	muteBtn.setAttribute('aria-label', 'Mute')
+	fullScreenBtn.setAttribute('aria-label', 'Fullscreen')
 })
