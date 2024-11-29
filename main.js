@@ -104,21 +104,132 @@ const dataChapters = {
 	],
 }
 
+const dataComments = {
+	comments: [
+		{
+			id: '2912',
+			item_code: 'Dino1qV66wxgBu2jL1ID',
+			comment: 'This need to be color too.',
+			parent_comment_id: '0',
+			replies_count: '4',
+			media_timestamp: '4.00859',
+			commentator: null,
+			date_created: '2024-07-18 06:24:34',
+			date_updated: null,
+			annotation_json:
+				'[{"color":"#F73D72","id":"0","type":"rectangle","x1":"52.44","y1":"58.50","x2":"56.45","y2":"53.98"},{"color":"#F73D72","id":"1","type":"arrow","x1":"62.34","y1":"63.14","x2":"56.39","y2":"53.15"}]',
+			latest_reply: {
+				id: '2923',
+				item_code: 'Dino1qV66wxgBu2jL1ID',
+				comment: 'Fifth one',
+				media_timestamp: '0',
+				parent_comment_id: '2912',
+				commentator: null,
+				date_created: '2024-07-19 15:51:04',
+				date_updated: null,
+				user: {
+					avatar_hash:
+						'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
+					first_name: 'sal',
+					last_name: 'kh',
+					email: 'salman@jumpshare.com',
+				},
+				is_super_owner: true,
+				is_owner: true,
+				comment_time: 'Jul 19',
+			},
+			user: {
+				avatar_hash:
+					'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
+				first_name: 'sal',
+				last_name: 'kh',
+				email: 'salman@jumpshare.com',
+			},
+			is_super_owner: true,
+			is_owner: true,
+			comment_time: 'Jul 18',
+		},
+		{
+			id: '2917',
+			item_code: 'Dino1qV66wxgBu2jL1ID',
+			comment: `Very big comment to check the length. I wonder how it will come out. I assume it will look good. But it's worth checking it out. I'm excited to improve this part of the product. Thanks for the output!`,
+			parent_comment_id: '0',
+			replies_count: '0',
+			media_timestamp: '20.5064',
+			commentator: null,
+			date_created: '2024-07-19 12:04:22',
+			date_updated: null,
+			annotation_json:
+				'[{"color":"#F73D72","id":"0","type":"rectangle","x1":"64.48","y1":"21.52","x2":"73.24","y2":"31.27"}]',
+			user: {
+				avatar_hash:
+					'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
+				first_name: 'sal',
+				last_name: 'kh',
+				email: 'salman@jumpshare.com',
+			},
+			is_super_owner: true,
+			is_owner: true,
+			comment_time: 'Jul 19',
+		},
+		{
+			id: '2924',
+			item_code: 'Dino1qV66wxgBu2jL1ID',
+			comment: 'This is first one',
+			parent_comment_id: '0',
+			replies_count: '4',
+			media_timestamp: '1.13977',
+			commentator: null,
+			date_created: '2024-07-19 15:52:59',
+			date_updated: null,
+			annotation_json: null,
+			latest_reply: {
+				id: '2928',
+				item_code: 'Dino1qV66wxgBu2jL1ID',
+				comment: 'Fifth',
+				media_timestamp: '0',
+				parent_comment_id: '2924',
+				commentator: null,
+				date_created: '2024-07-19 15:53:28',
+				date_updated: null,
+				user: {
+					avatar_hash:
+						'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
+					first_name: 'sal',
+					last_name: 'kh',
+					email: 'salman@jumpshare.com',
+				},
+				is_super_owner: true,
+				is_owner: true,
+				comment_time: 'Jul 19',
+			},
+			user: {
+				avatar_hash:
+					'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
+				first_name: 'sal',
+				last_name: 'kh',
+				email: 'salman@jumpshare.com',
+			},
+			is_super_owner: true,
+			is_owner: true,
+			comment_time: 'Jul 19',
+		},
+	],
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 	const player = document.getElementById('player')
 	const playOrPauseBtn = document.getElementById('play-or-pause')
+	const playerCtaButton = document.querySelector('.player-cta-button')
 	const muteBtn = document.getElementById('mute')
 	const currentTime = document.getElementById('controls-current-time')
 	const duration = document.getElementById('controls-duration')
 	const playbackRate = document.getElementById('playback-rate')
-	const showPlayerOverlayTimer = document.querySelector(
-		'.show-player-timer span'
-	)
+	const showPlayerOverlayTimer = document.querySelector('.show-player-timer')
 	const controls = document.querySelector('.controls')
 	let controlsShowID = null
 	// Hide native controls
 	player.controls = false
-
 	let playerVolumeCount = 0.5
 
 	function toggleSiblingElement(parentElement, element, showFirst = false) {
@@ -135,8 +246,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
-	function hideShowControlsOnHover() {
-		if (!player.paused) {
+	function hideShowControlsOnHover(e) {
+		if (!player.paused && e && e.target && e.target !== controls) {
 			controls.classList.add('active')
 			clearTimeout(controlsShowID)
 			controlsShowID = setTimeout(() => {
@@ -144,7 +255,10 @@ document.addEventListener('DOMContentLoaded', () => {
 			}, 4000)
 		}
 	}
-
+	controls.addEventListener('mousemove', () => {
+		controls.classList.add('active')
+		clearTimeout(controlsShowID)
+	})
 	player.addEventListener('mousemove', hideShowControlsOnHover)
 
 	function playOrPause() {
@@ -155,12 +269,10 @@ document.addEventListener('DOMContentLoaded', () => {
 			player.play()
 			toggleSiblingElement(playOrPauseBtn, 'svg')
 			toggleSiblingElement(playCircle, 'svg', true)
-			playCircle.style.transform = 'translate(-50%, -50%) scale(1.7)'
-			playCircle.style.opacity = '1'
+			playCircle.querySelector('svg').style.animation =
+				'playAnim 0.4s ease-in-out'
 			timerId = setTimeout(() => {
-				playCircle.style.opacity = '0'
-				playCircle.style.transform = 'translate(-50%, -50%) scale(1.2)'
-				clearTimeout(timerId)
+				playCircle.querySelector('svg').style.animation = ''
 			}, 300)
 			hideShowControlsOnHover()
 		} else {
@@ -169,13 +281,10 @@ document.addEventListener('DOMContentLoaded', () => {
 			controls.classList.add('active')
 			toggleSiblingElement(playOrPauseBtn, 'svg', true)
 			toggleSiblingElement(playCircle, 'svg')
-			playCircle.style.transform = 'translate(-50%, -50%) scale(1.7)'
-			playCircle.style.opacity = '1'
-
+			playCircle.querySelector('svg:last-child').style.animation =
+				'playAnim 0.4s ease-in-out'
 			timerId = setTimeout(() => {
-				playCircle.style.opacity = '0'
-				playCircle.style.transform = 'translate(-50%, -50%) scale(1.2)'
-				clearTimeout(timerId)
+				playCircle.querySelector('svg:last-child').style.animation = ''
 			}, 300)
 		}
 	}
@@ -260,9 +369,14 @@ document.addEventListener('DOMContentLoaded', () => {
 			hideTextTracks()
 		}, 10)
 		duration.innerText = formatTime(player.duration)
-		showPlayerOverlayTimer.innerText = formatTime(player.duration, true)
+		showPlayerOverlayTimer.style.display = 'block'
+		showPlayerOverlayTimer.querySelector('span').innerText = formatTime(
+			player.duration,
+			true
+		)
 		player.volume = playerVolumeCount
-
+		// Load comments
+		loadComments()
 		// overlay player
 		const playerOverlayStart = document.querySelector('.player-overlay-start')
 
@@ -274,6 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				.classList.add('player-overlay-played')
 			toggleSiblingElement(playOrPauseBtn, 'svg')
 			controls.classList.add('active')
+			playerCtaButton.classList.remove('hidden')
 		})
 
 		loadChapters()
@@ -366,6 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	player.addEventListener('timeupdate', () => {
 		currentTime.innerText = formatTime(player.currentTime)
+		checkIsCommentActive(player.currentTime)
 		updateSlider()
 	})
 
@@ -402,8 +518,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		'.player-overlay-button-end'
 	)
 
+	if (playerCtaButton && playerOverlayEnd && playerOverlayBtnEnd) {
+		const playerCtaButtonCopy = playerCtaButton.cloneNode(true)
+		playerCtaButtonCopy.classList.add('centered')
+		playerOverlayEnd.appendChild(playerCtaButtonCopy)
+	}
+
 	player.addEventListener('ended', () => {
 		playerOverlayEnd.style.display = 'flex'
+		playerCtaButton.classList.add('hidden')
 		toggleSiblingElement(playOrPauseBtn, 'svg', true)
 		activeChapter = 1
 	})
@@ -412,6 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		player.currentTime = 0
 		player.play()
 		playerOverlayEnd.style.display = 'none'
+		playerCtaButton.classList.remove('hidden')
 		toggleSiblingElement(playOrPauseBtn, 'svg')
 	})
 
@@ -597,8 +721,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		chaptersMenu.addEventListener('click', e => {
 			if (e.target.tagName === 'A') {
-				chooseActiveChapter()
 				player.currentTime = Number(e.target.dataset.chapterstamp)
+				chooseActiveChapter()
 			}
 		})
 
@@ -634,6 +758,71 @@ document.addEventListener('DOMContentLoaded', () => {
 						i === dataChapters.chapters.length - 1 ? '10px' : '0'
 				}
 			})
+		})
+	}
+
+	// Comments
+	function loadComments() {
+		if (!dataComments?.comments?.length) return
+
+		const commentsContainer = document.querySelector('.controls-comments')
+		const createComment = comment => {
+			const left = (comment.media_timestamp / player.duration) * 100
+
+			return `<div class="controls-comments-item" style="left: ${left}%" data-timestamp="${comment.media_timestamp}">
+							<div class='controls-comments-avatar'>
+								<span>${comment.user.first_name.charAt(0)}</span>
+								<!-- <img src="" /> -->
+							</div>
+							<div class='controls-comments-info'>
+								<div class='controls-comments-info-text'>
+									<h5>
+										${comment.user.first_name + ' ' + comment.user.last_name}
+										<span>${comment.comment_time}</span>
+									</h5>
+									<p>${comment.comment}</p>
+									${comment.replies_count > 0 ? `<span class='controls-comments-info-reply'>${comment.replies_count} + other comment</span>` : ''}
+								</div>
+								<svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M1 13L7 7L1 1" stroke="#f1f1f1" stroke-width="1.5" stroke-linejoin="round"></path>
+								</svg>
+							</div>
+						</div>`
+		}
+
+		dataComments.comments.forEach(comment => {
+			commentsContainer.innerHTML += createComment(comment)
+		})
+	}
+
+	function checkIsCommentActive(currentTime) {
+		const commentsItems = document.querySelectorAll('.controls-comments-item')
+		const COMMENT_DURATION = 5
+
+		const sortedComments = Array.from(commentsItems).sort((a, b) => {
+			return parseFloat(a.dataset.timestamp) - parseFloat(b.dataset.timestamp)
+		})
+
+		sortedComments.forEach((item, index) => {
+			const commentTimestamp = parseFloat(item.dataset.timestamp)
+			const nextComment = sortedComments[index + 1]
+			const nextCommentTimestamp = nextComment
+				? parseFloat(nextComment.dataset.timestamp)
+				: Infinity
+			const commentEndTime = commentTimestamp + COMMENT_DURATION
+
+			if (currentTime < commentTimestamp) {
+				item.classList.remove('active')
+			} else if (currentTime >= commentTimestamp) {
+				if (
+					currentTime < nextCommentTimestamp &&
+					currentTime <= commentEndTime
+				) {
+					item.classList.add('active')
+				} else {
+					item.classList.remove('active')
+				}
+			}
 		})
 	}
 
