@@ -217,16 +217,37 @@ const dataComments = {
 	],
 }
 
+const dataCTA = {
+	status: 1,
+	item_code: 'dPPx88gfFBPsxQTyfPfG',
+	title: 'Test',
+	link: 'http://google.com',
+	txt_color: '#FFFFFF',
+	btn_color: '#1891ED',
+	btn_type: '2',
+	cta_type: 'link',
+	cta_appearance: '0',
+	cta_position: 'top-right',
+	show_user_photo: '0',
+	show_pulsing_effect: '0',
+	cta_from: '0.00',
+	avatar_url:
+		"<figure class='c-avatar c-avatar--s c-avatar--no-img pull-left' data-original-title='Dmytro Pryvezentsev' data-initials='D' style='border: 1px solid #802476; background-color: #802476'></figure>",
+	google_link_final: '',
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 	const player = document.getElementById('player')
+	const playerWrap = document.querySelector('.player-wrap')
 	const playOrPauseBtn = document.getElementById('play-or-pause')
-	const playerCtaButton = document.querySelector('.player-cta-button')
 	const muteBtn = document.getElementById('mute')
 	const currentTime = document.getElementById('controls-current-time')
 	const duration = document.getElementById('controls-duration')
 	const playbackRate = document.getElementById('playback-rate')
 	const showPlayerOverlayTimer = document.querySelector('.show-player-timer')
 	const controls = document.querySelector('.controls')
+	const commentsContainer = document.querySelector('.controls-comments')
+
 	let controlsShowID = null
 	// Hide native controls
 	player.controls = false
@@ -287,6 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				playCircle.querySelector('svg:last-child').style.animation = ''
 			}, 300)
 		}
+		clearTimeout(timerId)
 	}
 
 	function mute() {
@@ -375,12 +397,17 @@ document.addEventListener('DOMContentLoaded', () => {
 			true
 		)
 		player.volume = playerVolumeCount
+
 		// Load comments
 		loadComments()
+
 		// overlay player
 		const playerOverlayStart = document.querySelector('.player-overlay-start')
 
 		playerOverlayStart.addEventListener('click', () => {
+			commentsContainer.style.display = 'block'
+			// Generate CTA button
+			generateCTAButton(dataCTA)
 			player.play()
 			playerOverlayStart.style.display = 'none'
 			document
@@ -388,7 +415,6 @@ document.addEventListener('DOMContentLoaded', () => {
 				.classList.add('player-overlay-played')
 			toggleSiblingElement(playOrPauseBtn, 'svg')
 			controls.classList.add('active')
-			playerCtaButton.classList.remove('hidden')
 		})
 
 		loadChapters()
@@ -518,31 +544,33 @@ document.addEventListener('DOMContentLoaded', () => {
 		'.player-overlay-button-end'
 	)
 
-	if (playerCtaButton && playerOverlayEnd && playerOverlayBtnEnd) {
-		const playerCtaButtonCopy = playerCtaButton.cloneNode(true)
-		playerCtaButtonCopy.classList.add('centered')
-		playerOverlayEnd.appendChild(playerCtaButtonCopy)
-	}
-
 	player.addEventListener('ended', () => {
+		const playerCtaButtonDefault = document.querySelector(
+			'.player-cta-button-default'
+		)
+		controls.classList.remove('active')
+		commentsContainer.style.display = 'none'
 		playerOverlayEnd.style.display = 'flex'
-		playerCtaButton.classList.add('hidden')
+		playerCtaButtonDefault.classList.add('hidden')
 		toggleSiblingElement(playOrPauseBtn, 'svg', true)
 		activeChapter = 1
 	})
 
 	playerOverlayBtnEnd.addEventListener('click', () => {
+		const playerCtaButtonDefault = document.querySelector(
+			'.player-cta-button-default'
+		)
+		commentsContainer.style.display = 'block'
 		player.currentTime = 0
 		player.play()
 		playerOverlayEnd.style.display = 'none'
-		playerCtaButton.classList.remove('hidden')
+		playerCtaButtonDefault.classList.remove('hidden')
 		toggleSiblingElement(playOrPauseBtn, 'svg')
 	})
 
 	// Theatre mode
 	const theatreBtn = document.getElementById('theatre-mode')
 	theatreBtn.addEventListener('click', () => {
-		const playerWrap = document.querySelector('.player-wrap')
 		playerWrap.classList.toggle('theatre-mode-wrap')
 		if (playerWrap.classList.contains('theatre-mode-wrap')) {
 			toggleSiblingElement(theatreBtn, 'svg')
@@ -557,7 +585,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	fullScreenBtn.addEventListener('click', toggleFullScreen)
 
 	function toggleFullScreen() {
-		const playerWrap = document.querySelector('.player-wrap')
 		if (!document.fullscreenElement) {
 			if (playerWrap.requestFullscreen) {
 				playerWrap.requestFullscreen()
@@ -765,7 +792,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	function loadComments() {
 		if (!dataComments?.comments?.length) return
 
-		const commentsContainer = document.querySelector('.controls-comments')
 		const createComment = comment => {
 			const left = (comment.media_timestamp / player.duration) * 100
 
@@ -792,6 +818,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		dataComments.comments.forEach(comment => {
 			commentsContainer.innerHTML += createComment(comment)
+		})
+
+		commentsContainer.addEventListener('click', e => {
+			if (e.target.closest('.controls-comments-item')) {
+				player.currentTime = Number(
+					e.target.closest('.controls-comments-item').dataset.timestamp
+				)
+				chooseActiveChapter()
+				updateSlider()
+			}
 		})
 	}
 
@@ -824,6 +860,23 @@ document.addEventListener('DOMContentLoaded', () => {
 				}
 			}
 		})
+	}
+
+	// Generate СTA Button
+	const generateCTAButton = dataCTA => {
+		const ctaButton = document.createElement('a')
+		ctaButton.href = dataCTA.link
+		ctaButton.className = `player-cta-button-default player-cta-button ${dataCTA.cta_position}`
+		ctaButton.style.backgroundColor = dataCTA.btn_color
+		ctaButton.style.color = dataCTA.txt_color
+		ctaButton.textContent = dataCTA.title
+
+		playerWrap.appendChild(ctaButton)
+
+		const ctaButtonClone = ctaButton.cloneNode(true)
+		ctaButtonClone.classList.add('centered')
+		ctaButtonClone.classList.remove('player-cta-button-default')
+		playerOverlayEnd.appendChild(ctaButtonClone)
 	}
 
 	// Errors
