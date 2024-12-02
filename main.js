@@ -237,6 +237,12 @@ const dataCTA = {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+	const playerSettings = {
+		themeColor: {
+			primary: '#1891ED',
+			secondary: 'rgba(255, 255, 255, 0.5)',
+		},
+	}
 	const player = document.getElementById('player')
 	const playerWrap = document.querySelector('.player-wrap')
 	const playOrPauseBtn = document.getElementById('play-or-pause')
@@ -390,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		setTimeout(() => {
 			hideTextTracks()
 		}, 10)
+		applyPlayerColorTheme({ primary: '#1891ED' })
 		duration.innerText = formatTime(player.duration)
 		showPlayerOverlayTimer.style.display = 'block'
 		showPlayerOverlayTimer.querySelector('span').innerText = formatTime(
@@ -738,6 +745,12 @@ document.addEventListener('DOMContentLoaded', () => {
 			].map(([className, text]) => {
 				const el = document.createElement('span')
 				el.classList.add(className)
+				if (className === 'chapter-slider-progress') {
+					el.style.backgroundColor = playerSettings.themeColor.primary
+				}
+				if (className === 'chapter-slider-bg') {
+					el.style.backgroundColor = playerSettings.themeColor.secondary
+				}
 				if (text) el.textContent = text
 				return el
 			})
@@ -877,6 +890,18 @@ document.addEventListener('DOMContentLoaded', () => {
 		ctaButtonClone.classList.add('centered')
 		ctaButtonClone.classList.remove('player-cta-button-default')
 		playerOverlayEnd.appendChild(ctaButtonClone)
+	}
+
+	function applyPlayerColorTheme({
+		primary = playerSettings.themeColor.primary,
+		secondary = playerSettings.themeColor.secondary,
+	}) {
+		playerSettings.themeColor.primary = primary
+		playerSettings.themeColor.secondary = secondary
+		sliderThumb.style.backgroundColor = primary
+		document.querySelector('.player-overlay-button svg path').style.fill =
+			primary
+		document.documentElement.style.setProperty('--pulse-color', primary)
 	}
 
 	// Errors
