@@ -242,7 +242,16 @@ document.addEventListener('DOMContentLoaded', () => {
 			primary: '#1891ED',
 			secondary: 'rgba(255, 255, 255, 0.5)',
 		},
+		comments: {
+			addComment,
+			deleteComment,
+			loadComments,
+		},
+		chapters: {
+			loadChapters,
+		},
 	}
+
 	const player = document.getElementById('player')
 	const playerWrap = document.querySelector('.player-wrap')
 	const playOrPauseBtn = document.getElementById('play-or-pause')
@@ -258,20 +267,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Hide native controls
 	player.controls = false
 	let playerVolumeCount = 0.5
-
-	function toggleSiblingElement(parentElement, element, showFirst = false) {
-		if (showFirst) {
-			parentElement.querySelector(`${element}:first-child`).style.display =
-				'block'
-			parentElement.querySelector(`${element}:last-child`).style.display =
-				'none'
-		} else {
-			parentElement.querySelector(`${element}:first-child`).style.display =
-				'none'
-			parentElement.querySelector(`${element}:last-child`).style.display =
-				'block'
-		}
-	}
 
 	function hideShowControlsOnHover(e) {
 		if (!player.paused && e && e.target && e.target !== controls) {
@@ -326,24 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			player.muted = false
 			toggleSiblingElement(muteBtn, 'svg', true)
 			updateProgressVolume(playerVolumeCount)
-		}
-	}
-
-	function formatTime(seconds, named = false) {
-		const minutes = Math.floor(seconds / 60)
-		const sec = Math.floor(seconds % 60)
-		if (!named) {
-			return (
-				(minutes < 10 ? '0' : '') + minutes + ':' + (sec < 10 ? '0' : '') + sec
-			)
-		} else {
-			return (
-				(minutes < 10 && minutes > 0 ? '0' : '') +
-				(minutes > 0 ? minutes : '') +
-				(minutes > 0 ? ' min ' : '') +
-				(sec < 10 ? '0' : '') +
-				(sec + ' sec')
-			)
 		}
 	}
 
@@ -406,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		player.volume = playerVolumeCount
 
 		// Load comments
-		loadComments()
+		playerSettings.comments.loadComments(dataComments)
 
 		// overlay player
 		const playerOverlayStart = document.querySelector('.player-overlay-start')
@@ -424,7 +401,11 @@ document.addEventListener('DOMContentLoaded', () => {
 			controls.classList.add('active')
 		})
 
-		loadChapters()
+		playerSettings.chapters.loadChapters(dataChapters)
+		playerSettings.comments.addComment(
+			'00:26 Added a comment using the "addComment" method',
+			dataComments
+		)
 	})
 
 	// Slider player (time rail)
@@ -643,9 +624,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 			if (e.code === 'ArrowLeft') {
 				player.currentTime -= skipAmount
+				chooseActiveChapter()
+				updateSlider()
 			}
 			if (e.code === 'ArrowRight') {
 				player.currentTime += skipAmount
+				chooseActiveChapter()
+				updateSlider()
 			}
 			if (e.code === 'KeyK') {
 				toggleFullScreen()
@@ -715,7 +700,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	})
 
-	function loadChapters() {
+	function loadChapters(dataChapters) {
 		if (!dataChapters?.chapters?.length) return
 
 		const chaptersMenu = document.querySelector('.video_chapters')
@@ -802,32 +787,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	// Comments
-	function loadComments() {
+	function loadComments(dataComments) {
 		if (!dataComments?.comments?.length) return
-
-		const createComment = comment => {
-			const left = (comment.media_timestamp / player.duration) * 100
-
-			return `<div class="controls-comments-item" style="left: ${left}%" data-timestamp="${comment.media_timestamp}">
-							<div class='controls-comments-avatar'>
-								<span>${comment.user.first_name.charAt(0)}</span>
-								<!-- <img src="" /> -->
-							</div>
-							<div class='controls-comments-info'>
-								<div class='controls-comments-info-text'>
-									<h5>
-										${comment.user.first_name + ' ' + comment.user.last_name}
-										<span>${comment.comment_time}</span>
-									</h5>
-									<p>${comment.comment}</p>
-									${comment.replies_count > 0 ? `<span class='controls-comments-info-reply'>${comment.replies_count} + other comment</span>` : ''}
-								</div>
-								<svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-									<path d="M1 13L7 7L1 1" stroke="#f1f1f1" stroke-width="1.5" stroke-linejoin="round"></path>
-								</svg>
-							</div>
-						</div>`
-		}
 
 		dataComments.comments.forEach(comment => {
 			commentsContainer.innerHTML += createComment(comment)
@@ -842,6 +803,75 @@ document.addEventListener('DOMContentLoaded', () => {
 				updateSlider()
 			}
 		})
+	}
+
+	const createComment = comment => {
+		const left = (comment.media_timestamp / player.duration) * 100
+
+		return `<div class="controls-comments-item" style="left: ${left}%" data-timestamp="${comment.media_timestamp}" data-id="${comment.id}">
+						<div class='controls-comments-avatar'>
+							<span>${comment.user.first_name.charAt(0)}</span>
+							<!-- <img src="" /> -->
+						</div>
+						<div class='controls-comments-info'>
+							<div class='controls-comments-info-text'>
+								<h5>
+									${comment.user.first_name + ' ' + comment.user.last_name}
+									<span>${comment.comment_time}</span>
+								</h5>
+								<p>${comment.comment}</p>
+								${comment.replies_count > 0 ? `<span class='controls-comments-info-reply'>${comment.replies_count}+ other comment</span>` : ''}
+							</div>
+							<svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M1 13L7 7L1 1" stroke="#f1f1f1" stroke-width="1.5" stroke-linejoin="round"></path>
+							</svg>
+						</div>
+					</div>`
+	}
+
+	function addComment(dataCommentStr, dataComments) {
+		function parseTimeAndComment(input) {
+			const [timeStr, ...commentParts] = input.split(' ')
+			const comment = commentParts.join(' ')
+			const timeParts = timeStr.split(':')
+
+			let totalSeconds = 0
+
+			if (timeParts.length === 3) {
+				const [hours, minutes, seconds] = timeParts
+				totalSeconds = +hours * 3600 + +minutes * 60 + +seconds
+			} else if (timeParts.length === 2) {
+				const [minutes, seconds] = timeParts
+				totalSeconds = +minutes * 60 + +seconds
+			}
+			console.log(totalSeconds)
+			return {
+				seconds: totalSeconds,
+				comment,
+			}
+		}
+
+		const { seconds, comment } = parseTimeAndComment(dataCommentStr)
+
+		const dataComment = {
+			id: '29121241421',
+			user: {
+				first_name: dataComments.comments[0].user.first_name,
+				last_name: dataComments.comments[0].user.last_name,
+			},
+			media_timestamp: seconds,
+			comment_time: getCurrentDateFormatted(new Date()),
+			comment: comment,
+			replies_count: 0,
+		}
+		commentsContainer.innerHTML += createComment(dataComment)
+	}
+
+	function deleteComment(commentId) {
+		const commentItem = document.querySelector(
+			`.controls-comments-item[data-id="${commentId}"]`
+		)
+		commentItem.remove()
 	}
 
 	function checkIsCommentActive(currentTime) {
@@ -914,4 +944,57 @@ document.addEventListener('DOMContentLoaded', () => {
 	playOrPauseBtn.setAttribute('aria-label', 'Play/Pause')
 	muteBtn.setAttribute('aria-label', 'Mute')
 	fullScreenBtn.setAttribute('aria-label', 'Fullscreen')
+
+	// Helper functions
+	function getCurrentDateFormatted(date) {
+		const monthNames = [
+			'Jan',
+			'Feb',
+			'Mar',
+			'Apr',
+			'May',
+			'Jun',
+			'Jul',
+			'Aug',
+			'Sep',
+			'Oct',
+			'Nov',
+			'Dec',
+		]
+		const day = date.getDate()
+		const month = monthNames[date.getMonth()]
+		return `${month} ${day}`
+	}
+
+	function formatTime(seconds, named = false) {
+		const minutes = Math.floor(seconds / 60)
+		const sec = Math.floor(seconds % 60)
+		if (!named) {
+			return (
+				(minutes < 10 ? '0' : '') + minutes + ':' + (sec < 10 ? '0' : '') + sec
+			)
+		} else {
+			return (
+				(minutes < 10 && minutes > 0 ? '0' : '') +
+				(minutes > 0 ? minutes : '') +
+				(minutes > 0 ? ' min ' : '') +
+				(sec < 10 ? '0' : '') +
+				(sec + ' sec')
+			)
+		}
+	}
+
+	function toggleSiblingElement(parentElement, element, showFirst = false) {
+		if (showFirst) {
+			parentElement.querySelector(`${element}:first-child`).style.display =
+				'block'
+			parentElement.querySelector(`${element}:last-child`).style.display =
+				'none'
+		} else {
+			parentElement.querySelector(`${element}:first-child`).style.display =
+				'none'
+			parentElement.querySelector(`${element}:last-child`).style.display =
+				'block'
+		}
+	}
 })

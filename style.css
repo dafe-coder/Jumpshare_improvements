@@ -5,8 +5,42 @@
 * Browsers: last 4 version
 */
 
+@font-face {
+	font-family: 'Cerebri Sans Regular';
+	src: url('https://db.onlinewebfonts.com/t/bb018e64d01355748d8ddc53553850b9.eot');
+	src:
+		url('https://db.onlinewebfonts.com/t/bb018e64d01355748d8ddc53553850b9.eot?#iefix')
+			format('embedded-opentype'),
+		url('https://db.onlinewebfonts.com/t/bb018e64d01355748d8ddc53553850b9.woff2')
+			format('woff2'),
+		url('https://db.onlinewebfonts.com/t/bb018e64d01355748d8ddc53553850b9.woff')
+			format('woff'),
+		url('https://db.onlinewebfonts.com/t/bb018e64d01355748d8ddc53553850b9.ttf')
+			format('truetype'),
+		url('https://db.onlinewebfonts.com/t/bb018e64d01355748d8ddc53553850b9.svg#Cerebri Sans Regular')
+			format('svg');
+}
+
+@font-face {
+	font-family: 'Cerebri Sans Medium';
+	src: url('https://db.onlinewebfonts.com/t/ee40a8d0fd4ade6e3b5b959fe74166ab.eot');
+	src:
+		url('https://db.onlinewebfonts.com/t/ee40a8d0fd4ade6e3b5b959fe74166ab.eot?#iefix')
+			format('embedded-opentype'),
+		url('https://db.onlinewebfonts.com/t/ee40a8d0fd4ade6e3b5b959fe74166ab.woff2')
+			format('woff2'),
+		url('https://db.onlinewebfonts.com/t/ee40a8d0fd4ade6e3b5b959fe74166ab.woff')
+			format('woff'),
+		url('https://db.onlinewebfonts.com/t/ee40a8d0fd4ade6e3b5b959fe74166ab.ttf')
+			format('truetype'),
+		url('https://db.onlinewebfonts.com/t/ee40a8d0fd4ade6e3b5b959fe74166ab.svg#Cerebri Sans Medium')
+			format('svg');
+}
+
 :root {
 	--pulse-color: rgba(0, 122, 220, 1);
+	--sans-font: 'Cerebri Sans Regular', sans-serif;
+	--sans-medium-font: 'Cerebri Sans Medium', sans-serif;
 }
 
 // Default styles
@@ -23,7 +57,8 @@ body {
 html {
 	width: 100%;
 	height: 100%;
-	font-family: 'Inter', serif;
+	font-family: var(--sans-font);
+	font-weight: 400;
 	scroll-behavior: smooth;
 }
 html.dark {
@@ -63,7 +98,8 @@ html.dark {
 }
 .theatre-mode-wrap {
 	max-width: 100%;
-	height: calc(100vh - 80px);
+	height: calc(70vh);
+	min-height: 300px;
 }
 
 /* Video */
@@ -321,10 +357,9 @@ button.playback-rate {
 	width: auto;
 }
 .playback-rate-count {
-	font-weight: 600;
+	font-family: var(--sans-medium-font);
 }
 .playback-rate span:last-child {
-	margin-bottom: -2px;
 	margin-left: 2px;
 }
 
@@ -541,11 +576,20 @@ button.playback-rate {
 	background-color: #1891ed;
 	color: #fff;
 	border-radius: 50px;
+	box-shadow:
+		0 4px 7px -2px rgba(0, 0, 0, 0.19),
+		inset 0 0 0 1px rgba(0, 0, 0, 0.12);
 	font-size: 16.5px;
-	font-weight: 500;
+	font-family: var(--sans-medium-font);
 	z-index: 99;
 	text-align: center;
 	text-decoration: none;
+	/* transition: all ease 0.2s; */
+}
+.player-cta-button:hover {
+	box-shadow:
+		0 calc(0.5 * 8px) calc(1.25 * 8px) rgba(0, 0, 0, 0.05),
+		inset 0 0 0 1000px rgba(69, 69, 69, 0.2);
 }
 .player-cta-button.top-left {
 	top: 16px;
@@ -739,7 +783,7 @@ button.playback-rate {
 	margin-top: 0;
 	font-size: 15px;
 	color: #3b3d3e;
-	font-weight: 600;
+	font-family: var(--sans-medium-font);
 }
 
 .summary_chapters_container .summary_chapters_div p.video_summary {
@@ -894,11 +938,10 @@ button.playback-rate {
 	margin: 0;
 	text-align: left;
 	color: #fff;
-	font-weight: 600;
+	font-family: var(--sans-medium-font);
 	pointer-events: none;
 	white-space: nowrap;
 	margin-bottom: 3px;
-	font-weight: 500;
 	display: none;
 }
 .controls-comments-info-text h5 span {
@@ -941,7 +984,9 @@ button.playback-rate {
 	display: flex;
 	min-width: max-content;
 }
-
+.controls-comments-item:hover {
+	z-index: 100;
+}
 .controls-comments-item:hover .controls-comments-info-text h5,
 .controls-comments-item:hover .controls-comments-info-text p,
 .controls-comments-item:hover
