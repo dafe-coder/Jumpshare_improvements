@@ -98,8 +98,9 @@ html.dark {
 }
 .theatre-mode-wrap {
 	max-width: 100%;
-	height: calc(70vh);
+	height: calc(100vh - 80px);
 	min-height: 300px;
+	width: 100%;
 }
 
 /* Video */
