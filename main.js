@@ -268,20 +268,33 @@ document.addEventListener('DOMContentLoaded', () => {
 	player.controls = false
 	let playerVolumeCount = 0.5
 
+	function showHideControls(hide = false) {
+		if (!hide) {
+			controls.classList.add('active')
+		} else {
+			controls.classList.remove('active')
+		}
+	}
+
 	function hideShowControlsOnHover(e) {
 		if (!player.paused && e && e.target && e.target !== controls) {
-			controls.classList.add('active')
+			showHideControls()
 			clearTimeout(controlsShowID)
 			controlsShowID = setTimeout(() => {
-				controls.classList.remove('active')
+				showHideControls(true)
 			}, 4000)
 		}
 	}
 	controls.addEventListener('mousemove', () => {
-		controls.classList.add('active')
+		showHideControls()
 		clearTimeout(controlsShowID)
 	})
 	player.addEventListener('mousemove', hideShowControlsOnHover)
+	playerWrap.addEventListener('mouseleave', () => {
+		if (!player.paused) {
+			showHideControls(true)
+		}
+	})
 
 	function playOrPause() {
 		const playCircle = document.querySelector('.play-circle')
@@ -300,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		} else {
 			player.pause()
 			clearTimeout(controlsShowID)
-			controls.classList.add('active')
+			showHideControls()
 			toggleSiblingElement(playOrPauseBtn, 'svg', true)
 			toggleSiblingElement(playCircle, 'svg')
 			playCircle.querySelector('svg:last-child').style.animation =
@@ -385,6 +398,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		// Load comments
 		playerSettings.comments.loadComments(dataComments)
 
+		// Update active chapter title
+		updateActiveChapterTitle()
+
 		// overlay player
 		const playerOverlayStart = document.querySelector('.player-overlay-start')
 
@@ -398,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				.querySelector('.player-wrap')
 				.classList.add('player-overlay-played')
 			toggleSiblingElement(playOrPauseBtn, 'svg')
-			controls.classList.add('active')
+			showHideControls()
 		})
 
 		playerSettings.chapters.loadChapters(dataChapters)
@@ -412,6 +428,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	const controlsTimeRail = document.getElementById('controls-time-rail')
 	const sliderRail = document.getElementById('controls-time-rail')
 	const sliderThumb = document.getElementById('slider-thumb')
+	const activeChapterTitle = document.querySelector(
+		'.controls-active-chapter-title'
+	)
 	let isDragging = false
 	let isDraggingType = 'time'
 	let activeChapter = 1
@@ -461,6 +480,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		currentTime.innerHTML = formatTime(player.currentTime)
 	}
 
+	function updateActiveChapterTitle() {
+		activeChapterTitle.querySelector('span').innerText =
+			dataChapters.chapters[activeChapter - 1].M.name.S
+	}
+
 	function moveSlider(event, elem) {
 		const rect = elem.getBoundingClientRect()
 		if (rect.width > 0) {
@@ -497,6 +521,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		currentTime.innerText = formatTime(player.currentTime)
 		checkIsCommentActive(player.currentTime)
 		updateSlider()
+		updateActiveChapterTitle()
 	})
 
 	// Volume slider
@@ -536,7 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const playerCtaButtonDefault = document.querySelector(
 			'.player-cta-button-default'
 		)
-		controls.classList.remove('active')
+		showHideControls(true)
 		commentsContainer.style.display = 'none'
 		playerOverlayEnd.style.display = 'flex'
 		playerCtaButtonDefault.classList.add('hidden')
@@ -844,7 +869,6 @@ document.addEventListener('DOMContentLoaded', () => {
 				const [minutes, seconds] = timeParts
 				totalSeconds = +minutes * 60 + +seconds
 			}
-			console.log(totalSeconds)
 			return {
 				seconds: totalSeconds,
 				comment,

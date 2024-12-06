@@ -83,6 +83,8 @@ html.dark {
 }
 
 .player-wrap {
+	width: 100%;
+	container-type: inline-size;
 	margin: 40px auto;
 	display: -webkit-box;
 	display: -ms-flexbox;
@@ -278,7 +280,40 @@ button.captions {
 	height: 10px;
 	margin-top: -2px;
 }
-
+.controls-active-chapter-title {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0 0 0 10px;
+	flex-grow: 1;
+	flex-shrink: 1;
+}
+.controls-active-chapter-title span {
+	font-size: 13px;
+	color: #fff;
+	height: 17px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	max-width: 300px;
+}
+.controls-active-chapter-title::before {
+	content: '';
+	height: 4px;
+	width: 4px;
+	border-radius: 4px;
+	left: -12px;
+	display: block;
+	position: absolute;
+	background-color: #fff;
+	top: 8px;
+}
+@container (max-width: 600px) {
+	.controls-active-chapter-title {
+		display: none;
+	}
+}
 .chapter-slider-title {
 	position: absolute;
 	opacity: 0;
@@ -367,6 +402,7 @@ button.playback-rate {
 .controls-time {
 	font-size: 13px;
 	color: #ffffff;
+	flex-shrink: 0;
 }
 
 .play-circle {
@@ -733,6 +769,12 @@ button.playback-rate {
 
 	background-color: #ffffff;
 	border-radius: 2px;
+
+	-webkit-transition: all ease 0.3s;
+
+	-o-transition: all ease 0.3s;
+
+	transition: all ease 0.3s;
 }
 
 .mute-block:hover .volume-slider {
