@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		(playerHeight / playerWidth) * playerWrap.getBoundingClientRect().width
 	)
 
-	playerWrap.style.minHeight =
+	playerWrap.style.height =
 		(playerHeight / playerWidth) * playerWrap.getBoundingClientRect().width +
 		'px'
 
