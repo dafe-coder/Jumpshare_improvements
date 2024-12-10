@@ -262,11 +262,21 @@ document.addEventListener('DOMContentLoaded', () => {
 	const showPlayerOverlayTimer = document.querySelector('.show-player-timer')
 	const controls = document.querySelector('.controls')
 	const commentsContainer = document.querySelector('.controls-comments')
-
 	let controlsShowID = null
 	// Hide native controls
 	player.controls = false
 	let playerVolumeCount = 0.5
+
+	// HLS init
+	var playerSrc = './e764e51d3d424ecd99e35992c9cece5f/ui_fixing.m3u8'
+
+	if (player.canPlayType('application/vnd.apple.mpegurl')) {
+		player.src = playerSrc
+	} else if (Hls.isSupported()) {
+		var hls = new Hls()
+		hls.loadSource(playerSrc)
+		hls.attachMedia(player)
+	}
 
 	function showHideControls(hide = false) {
 		if (!hide) {
