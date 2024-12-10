@@ -17,7 +17,7 @@ const dataChapters = {
 					S: 'Organizing Your Workflow',
 				},
 				line: {
-					S: '10',
+					S: '100',
 				},
 			},
 		},
@@ -27,7 +27,7 @@ const dataChapters = {
 					S: 'Utilizing External Drives for Storage',
 				},
 				line: {
-					S: '14',
+					S: '240',
 				},
 			},
 		},
@@ -37,7 +37,7 @@ const dataChapters = {
 					S: 'Choosing the Right Editing Software',
 				},
 				line: {
-					S: '25',
+					S: '289',
 				},
 			},
 		},
@@ -47,7 +47,7 @@ const dataChapters = {
 					S: 'Trimming and Editing Process',
 				},
 				line: {
-					S: '40',
+					S: '400',
 				},
 			},
 		},
@@ -57,7 +57,7 @@ const dataChapters = {
 					S: 'Incorporating B-roll and Stock Footage',
 				},
 				line: {
-					S: '45',
+					S: '450',
 				},
 			},
 		},
@@ -67,7 +67,7 @@ const dataChapters = {
 					S: 'Adding Text and Templates',
 				},
 				line: {
-					S: '50',
+					S: '600',
 				},
 			},
 		},
@@ -77,7 +77,7 @@ const dataChapters = {
 					S: 'Reviewing and Finalizing the Edit',
 				},
 				line: {
-					S: '51',
+					S: '700',
 				},
 			},
 		},
@@ -87,7 +87,7 @@ const dataChapters = {
 					S: 'Rendering and Uploading with Camtasia',
 				},
 				line: {
-					S: '52',
+					S: '800',
 				},
 			},
 		},
@@ -97,7 +97,7 @@ const dataChapters = {
 					S: 'Continuous Improvement in Editing',
 				},
 				line: {
-					S: '55',
+					S: '1000',
 				},
 			},
 		},
@@ -112,7 +112,7 @@ const dataComments = {
 			comment: 'This need to be color too.',
 			parent_comment_id: '0',
 			replies_count: '4',
-			media_timestamp: '4.00859',
+			media_timestamp: '20.00859',
 			commentator: null,
 			date_created: '2024-07-18 06:24:34',
 			date_updated: null,
@@ -155,7 +155,7 @@ const dataComments = {
 			comment: `Very big comment to check the length. I wonder how it will come out. I assume it will look good. But it's worth checking it out. I'm excited to improve this part of the product. Thanks for the output!`,
 			parent_comment_id: '0',
 			replies_count: '0',
-			media_timestamp: '20.5064',
+			media_timestamp: '400.5064',
 			commentator: null,
 			date_created: '2024-07-19 12:04:22',
 			date_updated: null,
@@ -178,7 +178,7 @@ const dataComments = {
 			comment: 'This is first one',
 			parent_comment_id: '0',
 			replies_count: '4',
-			media_timestamp: '1.13977',
+			media_timestamp: '800',
 			commentator: null,
 			date_created: '2024-07-19 15:52:59',
 			date_updated: null,
@@ -269,12 +269,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// HLS init
 	var playerSrc = './e764e51d3d424ecd99e35992c9cece5f/ui_fixing.m3u8'
+	var playerSrc2 =
+		'./20fd0242e93e4fdda762a05a8107cf73/4K-Nature-Film_-_Flow-Of-Life_-30-Minutes-of-Beautiful-Scenery-Relaxing-Music-for-Meditation.m3u8'
 
 	if (player.canPlayType('application/vnd.apple.mpegurl')) {
-		player.src = playerSrc
+		player.src = playerSrc2
 	} else if (Hls.isSupported()) {
 		var hls = new Hls()
-		hls.loadSource(playerSrc)
+		hls.loadSource(playerSrc2)
 		hls.attachMedia(player)
 	}
 
@@ -455,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		playerSettings.chapters.loadChapters(dataChapters)
 		playerSettings.comments.addComment(
-			'00:26 Added a comment using the "addComment" method',
+			'17:26 Added a comment using the "addComment" method',
 			dataComments
 		)
 	})
