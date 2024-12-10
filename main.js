@@ -278,6 +278,32 @@ document.addEventListener('DOMContentLoaded', () => {
 		hls.attachMedia(player)
 	}
 
+	function handleProgress() {
+		const buffered = player.buffered
+		const chapterSliderItems = document.querySelectorAll('.chapter-slider-item')
+		if (buffered.length > 0 && chapterSliderItems) {
+			const loaded = buffered.end(buffered.length - 1)
+
+			chapterSliderItems.forEach(item => {
+				const progressItem = item.querySelector('.chapter-slider-loading')
+				if (
+					item.dataset.dataSliderEndTime >= loaded &&
+					item.dataset.dataSliderStartTime <= loaded
+				) {
+					const total = item.dataset.dataSliderEndTime
+					const progress = (loaded / total) * 100
+					console.log(progress)
+
+					progressItem.style.width = `${progress}%`
+				} else if (item.dataset.dataSliderEndTime <= loaded) {
+					progressItem.style.width = '100%'
+				}
+			})
+		}
+	}
+	player.addEventListener('progress', handleProgress)
+	player.addEventListener('loadeddata', handleProgress)
+
 	function showHideControls(hide = false) {
 		if (!hide) {
 			controls.classList.add('active')
@@ -755,6 +781,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			const width = ((chapterEnd - chapterStart) / player.duration) * 100
 			const item = document.createElement('span')
 			item.classList.add('chapter-slider-item')
+			item.dataset.dataSliderStartTime = chapterStart
+			item.dataset.dataSliderEndTime = chapterEnd
 			item.style.width = `${width}%`
 
 			const elements = [

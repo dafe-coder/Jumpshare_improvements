@@ -314,6 +314,19 @@ button.captions {
 		display: none;
 	}
 }
+
+.chapter-slider-loading {
+	position: absolute;
+	height: 100%;
+	max-width: calc(100% - 3px);
+	z-index: 1;
+	background-color: rgba(255, 255, 255, 0.4);
+}
+
+.chapter-slider-item:last-child .chapter-slider-loading {
+	max-width: 100%;
+}
+
 .chapter-slider-title {
 	position: absolute;
 	opacity: 0;
