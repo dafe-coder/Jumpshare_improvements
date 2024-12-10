@@ -242,6 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			primary: '#1891ED',
 			secondary: 'rgba(255, 255, 255, 0.5)',
 		},
+		videoSize: '640x360',
 		comments: {
 			addComment,
 			deleteComment,
@@ -265,7 +266,16 @@ document.addEventListener('DOMContentLoaded', () => {
 	let controlsShowID = null
 	// Hide native controls
 	player.controls = false
+	const playerHeight = playerSettings.videoSize.split('x')[1]
+	const playerWidth = playerSettings.videoSize.split('x')[0]
 	let playerVolumeCount = 0.5
+	console.log(
+		(playerHeight / playerWidth) * playerWrap.getBoundingClientRect().width
+	)
+
+	playerWrap.style.minHeight =
+		(playerHeight / playerWidth) * playerWrap.getBoundingClientRect().width +
+		'px'
 
 	// HLS init
 	var playerSrc = './e764e51d3d424ecd99e35992c9cece5f/ui_fixing.m3u8'
