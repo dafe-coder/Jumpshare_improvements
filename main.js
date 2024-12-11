@@ -269,24 +269,26 @@ document.addEventListener('DOMContentLoaded', () => {
 	const playerHeight = playerSettings.videoSize.split('x')[1]
 	const playerWidth = playerSettings.videoSize.split('x')[0]
 	let playerVolumeCount = 0.5
-	console.log(
-		(playerHeight / playerWidth) * playerWrap.getBoundingClientRect().width
-	)
 
 	playerWrap.style.height =
 		(playerHeight / playerWidth) * playerWrap.getBoundingClientRect().width +
 		'px'
 
 	// HLS init
-	var playerSrc = './e764e51d3d424ecd99e35992c9cece5f/ui_fixing.m3u8'
-	var playerSrc2 =
-		'./20fd0242e93e4fdda762a05a8107cf73/4K-Nature-Film_-_Flow-Of-Life_-30-Minutes-of-Beautiful-Scenery-Relaxing-Music-for-Meditation.m3u8'
+	const playerSrc = [
+		'./20fd0242e93e4fdda762a05a8107cf73/4K-Nature-Film_-_Flow-Of-Life_-30-Minutes-of-Beautiful-Scenery-Relaxing-Music-for-Meditation.m3u8',
+		'https://d1ffb1nfch3ckq.cloudfront.net/s095q2%2Ffile%2Fb9b3b32c193e7156d15bdaa2d1929778_f839b6774122ccba2d2b82a1bdc13a48.mp4?response-content-disposition=inline%3Bfilename%3D%22b9b3b32c193e7156d15bdaa2d1929778_f839b6774122ccba2d2b82a1bdc13a48.mp4%22%3B&response-content-type=video%2Fmp4&Expires=1733943645&Signature=EVqiq~KETO974nd288O6-l-soTTJE13EQZ42-mfCpPbJEjxuxdvXoxiBQSc7utUuNCjyXME0E9vx1EzpFyvT2Y78o8xVS46gbo608GAC4NAfUXIJs2jVhnE-N1e~1GhznOlibVO~HNT7poTmIFJilhE7TPrwokhBa9SMv-PRo4SRW9RTbzqK~nLFQaPtffaw8drvwrFeJAM61d52Qf-opuVOKKX5iP4vo9aFF7MXAvpy2J-cbiml658BXZ~LC8KsJ6SYGCdRD-l8cC-9dtnOunkF0tyM7TudLbS4m-B8U1hX4ou2zWQp9-FEofqxy1KAcaPV9YWcS-kIXwli4X-hnA__&Key-Pair-Id=APKAJT5WQLLEOADKLHBQ',
+	]
+	let activePlayerSrc = 0
 
-	if (player.canPlayType('application/vnd.apple.mpegurl')) {
-		player.src = playerSrc2
+	if (
+		player.canPlayType('application/vnd.apple.mpegurl') ||
+		playerSrc[activePlayerSrc].includes('.mp4')
+	) {
+		player.src = playerSrc[activePlayerSrc]
 	} else if (Hls.isSupported()) {
 		var hls = new Hls()
-		hls.loadSource(playerSrc2)
+		hls.loadSource(playerSrc[activePlayerSrc])
 		hls.attachMedia(player)
 	}
 
@@ -304,8 +306,6 @@ document.addEventListener('DOMContentLoaded', () => {
 				) {
 					const total = item.dataset.dataSliderEndTime
 					const progress = (loaded / total) * 100
-					console.log(progress)
-
 					progressItem.style.width = `${progress}%`
 				} else if (item.dataset.dataSliderEndTime <= loaded) {
 					progressItem.style.width = '100%'
