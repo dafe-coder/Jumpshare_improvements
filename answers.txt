@@ -1,0 +1,49 @@
+1) how does it handle base path of the video chunk? Like if the playlist file has chunks from two different videos, with 2 different paths, how can we handle that?
+
+(Absolute paths)
+If each video has its own separate directories, you can use absolute paths in the .m3u8 file for each chunk. For example:
+
+#EXTINF:5.0,
+http://example.com/video1/chunk1.ts
+#EXTINF:5.0,
+http://example.com/video1/chunk2.ts
+#EXT-X-DISCONTINUITY
+#EXTINF:5.0,
+http://example.com/video2/chunk1.ts
+#EXTINF:5.0,
+http://example.com/video2/chunk2.ts
+
+I use relative paths,
+I will attach the m3u8 file and you can have a look, I implemented this using #EXT-X-DISCONTINUITY, I added in two different places in the middle of the player another video with a different size (Time of the other video is 08:51 and 12:18)
+
+
+2) And instead of giving it url of m3u8 file, can we pass it the file-data manually?
+
+Yes, you can pass the contents of the .m3u8 file manually to the HLS player instead of specifying a URL. For example, in HLS.js you can dynamically load a playlist using a string or Blob.
+
+const m3u8Content = `
+#EXTM3U
+#EXT-X-VERSION:3
+#EXTINF:5.0,
+video1/chunk1.ts
+#EXTINF:5.0,
+video1/chunk2.ts
+#EXT-X-DISCONTINUITY
+#EXTINF:2.0,
+video2/chunk1.ts
+#EXTINF:2.1,
+video2/chunk2.ts
+#EXT-X-ENDLIST
+`;
+
+// Create Blob from m3u8 data
+const blob = new Blob([m3u8Content], { type: 'application/vnd.apple.mpegurl' });
+// Create a URL for this Blob
+const blobUrl = URL.createObjectURL(blob);
+
+
+3) Pls also explore can the chunk size be different in size? This may be needed if we trim a file from the mid of a chunk
+
+Chunk sizes can vary in HLS, but it is important that cropping or resizing chunks does not disrupt keyframes or cause playback problems.
+
+Let's say you want to trim the video at the 10th second of the second chunk. In this case, you create a new chunk that will start from the nearest keyframe after trimming, and its size may be different from the default.
