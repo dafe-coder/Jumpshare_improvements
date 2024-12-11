@@ -100,7 +100,7 @@ html.dark {
 }
 .theatre-mode-wrap {
 	max-width: 100%;
-	height: calc(100vh - 80px);
+	height: calc(100vh - 80px) !important;
 	min-height: 300px;
 	width: 100%;
 }
