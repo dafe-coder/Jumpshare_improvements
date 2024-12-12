@@ -14,7 +14,8 @@
 	</head>
 	<body>
 		<div class="container">
-			<div class="player-wrap">
+			<div class="player-wrap" id="video_wrapper">
+				<canvas id="annotation_canvas"></canvas>
 				<div class="player-overlay player-overlay-start">
 					<div
 						class="player-overlay-button"
@@ -106,12 +107,10 @@
 				<div class="custom-captions"></div>
 				<span class="loading-bg-img"></span>
 				<div class="controls">
-					<div class="controls-comments">
-					</div>
+					<div class="controls-comments"></div>
 					<div id="controls-time-rail" class="controls-time-rail">
 						<div id="slider-thumb" class="slider-thumb"></div>
-						<div class='chapter-slider-items'>
-						</div>
+						<div class="chapter-slider-items"></div>
 					</div>
 					<div class="controls-bottom">
 						<div class="controls-bottom-left">
@@ -205,9 +204,21 @@
 										fill="white"
 									/>
 								</svg>
-								<svg style='display:none;' xmlns="http://www.w3.org/2000/svg" width="25" height="16" viewBox="0 0 25 16" fill="none">
-									<path fill-rule="evenodd" clip-rule="evenodd" d="M2 0C0.895431 0 0 0.895431 0 2V14C0 15.1046 0.89543 16 2 16H23C24.1046 16 25 15.1046 25 14V2C25 0.895431 24.1046 0 23 0H2ZM12.0852 9.71197C11.5242 11.208 10.1492 12.154 8.38923 12.154C6.05723 12.154 4.40723 10.504 4.40723 8.10597C4.40723 5.70797 6.05723 4.06897 8.38923 4.06897C10.1492 4.06897 11.5242 5.01497 12.0852 6.49997L10.5892 7.03897C10.2482 6.10397 9.43423 5.52097 8.38923 5.52097C6.99223 5.52097 5.99123 6.55497 5.99123 8.10597C5.99123 9.65697 6.99223 10.691 8.38923 10.691C9.43423 10.691 10.2482 10.119 10.5892 9.18397L12.0852 9.71197ZM20.4534 9.71197C19.8924 11.208 18.5174 12.154 16.7574 12.154C14.4254 12.154 12.7754 10.504 12.7754 8.10597C12.7754 5.70797 14.4254 4.06897 16.7574 4.06897C18.5174 4.06897 19.8924 5.01497 20.4534 6.49997L18.9574 7.03897C18.6164 6.10397 17.8024 5.52097 16.7574 5.52097C15.3604 5.52097 14.3594 6.55497 14.3594 8.10597C14.3594 9.65697 15.3604 10.691 16.7574 10.691C17.8024 10.691 18.6164 10.119 18.9574 9.18397L20.4534 9.71197Z" fill="white"/>
-									</svg>
+								<svg
+									style="display: none"
+									xmlns="http://www.w3.org/2000/svg"
+									width="25"
+									height="16"
+									viewBox="0 0 25 16"
+									fill="none"
+								>
+									<path
+										fill-rule="evenodd"
+										clip-rule="evenodd"
+										d="M2 0C0.895431 0 0 0.895431 0 2V14C0 15.1046 0.89543 16 2 16H23C24.1046 16 25 15.1046 25 14V2C25 0.895431 24.1046 0 23 0H2ZM12.0852 9.71197C11.5242 11.208 10.1492 12.154 8.38923 12.154C6.05723 12.154 4.40723 10.504 4.40723 8.10597C4.40723 5.70797 6.05723 4.06897 8.38923 4.06897C10.1492 4.06897 11.5242 5.01497 12.0852 6.49997L10.5892 7.03897C10.2482 6.10397 9.43423 5.52097 8.38923 5.52097C6.99223 5.52097 5.99123 6.55497 5.99123 8.10597C5.99123 9.65697 6.99223 10.691 8.38923 10.691C9.43423 10.691 10.2482 10.119 10.5892 9.18397L12.0852 9.71197ZM20.4534 9.71197C19.8924 11.208 18.5174 12.154 16.7574 12.154C14.4254 12.154 12.7754 10.504 12.7754 8.10597C12.7754 5.70797 14.4254 4.06897 16.7574 4.06897C18.5174 4.06897 19.8924 5.01497 20.4534 6.49997L18.9574 7.03897C18.6164 6.10397 17.8024 5.52097 16.7574 5.52097C15.3604 5.52097 14.3594 6.55497 14.3594 8.10597C14.3594 9.65697 15.3604 10.691 16.7574 10.691C17.8024 10.691 18.6164 10.119 18.9574 9.18397L20.4534 9.71197Z"
+										fill="white"
+									/>
+								</svg>
 							</button>
 							<a
 								href="#chapter"
@@ -286,14 +297,195 @@
 						</div>
 					</div>
 				</div>
-				<video
-					preload="auto"
-					id="player"
-					class="video"
-					poster="./cover.png"
-				>
-				 	<track id='captions-track' src='./ui_fixing.vtt' kind='captions' srclang='en' label='English' default></track>
+				<video preload="auto" id="player" class="video" poster="./cover.png">
+					<track
+						id="captions-track"
+						src="./ui_fixing.vtt"
+						kind="captions"
+						srclang="en"
+						label="English"
+						default
+					/>
 				</video>
+			</div>
+			<div class="comment-new">
+				<textarea
+					class="comment-new-textarea"
+					placeholder="00:00 Text of the comment"
+				></textarea>
+				<div class="comment-new-nav">
+					<button class="comment-new-nav-button">Post</button>
+					<button class="comment-new-nav-button">Cancel</button>
+					<button id="show-annotation" class="show-annotation">
+						<svg
+							id="anotaiton_icon"
+							width="21"
+							height="17"
+							viewBox="0 0 21 17"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+							data-original-title=""
+							title=""
+						>
+							<path
+								fill-rule="evenodd"
+								clip-rule="evenodd"
+								d="M11.7889 5.52229L11.942 5.37135L16.6635 0.731437C17.6559 -0.243831 19.2649 -0.243794 20.2573 0.731437C21.2497 1.70669 21.2497 3.28789 20.2573 4.26314L16.2181 8.23253L16.065 8.38348L13.2687 11.1315C12.7728 11.6188 11.9399 11.4381 11.6906 10.789C11.5509 10.4254 11.3338 10.0854 11.0366 9.79334C10.742 9.50391 10.3978 9.2869 10.0244 9.14774C9.37442 8.90551 9.19637 8.07001 9.6911 7.58383L11.7889 5.52229ZM12.4712 6.19281L17.3459 1.40196C17.9614 0.797034 18.9594 0.797034 19.575 1.40196C20.1906 2.00689 20.1906 2.98769 19.575 3.59262L14.7004 8.38347L12.5933 10.4541C12.4759 10.1484 12.3171 9.85465 12.1165 9.58159C11.9985 9.4209 11.866 9.26738 11.7189 9.12282C11.5727 8.97914 11.4168 8.84849 11.2526 8.73145C10.978 8.53575 10.6804 8.37807 10.3666 8.2611L12.4712 6.19281ZM5.00318 11.0352L5.00317 11.0352C4.3209 11.8817 3.29181 12.2222 2.32608 12.0416L0.625 11.7234L1.20193 13.3549C1.48484 14.1549 1.96901 14.897 2.64829 15.49C4.72427 17.3023 7.82173 17.036 9.54593 14.897C10.5667 13.6306 10.3992 11.7499 9.17023 10.677C7.91808 9.58378 6.04316 9.74498 5.00318 11.0352ZM8.51348 11.4291C9.3373 12.1483 9.45051 13.4195 8.76625 14.2684C7.39778 15.9661 4.95272 16.1763 3.30504 14.7379C3.07823 14.5399 2.87837 14.3209 2.7059 14.0862C2.46513 13.7585 2.27774 13.3999 2.14491 13.0242C2.51012 13.0926 2.88149 13.106 3.24708 13.0657C4.20302 12.9602 5.11946 12.4869 5.78285 11.6638C6.4671 10.8149 7.68962 10.7098 8.51348 11.4291Z"
+								fill="#72797C"
+							></path>
+						</svg>
+						<svg
+							style="display: none"
+							id="remove_annotateion_icon"
+							width="21"
+							height="17"
+							viewBox="0 0 21 17"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+							data-original-title=""
+							title=""
+						>
+							<path
+								fill-rule="evenodd"
+								clip-rule="evenodd"
+								d="M7.38269 6C7.49266 6.10969 7.49266 6.2897 7.38269 6.39939C7.27301 6.50907 7.0947 6.50907 6.98473 6.39939L5.50168 4.89939L4 6.5C3.88919 6.60969 3.70976 6.60969 3.59895 6.5C3.48842 6.3875 3.48842 6.20752 3.59895 6.09783L5.10063 4.49718L3.60231 3.0922C3.49234 2.98251 3.49234 2.8025 3.60231 2.69281C3.71172 2.58313 3.89003 2.58313 4 2.69281L5.49832 4.10061L6.98192 2.69281C7.09273 2.58313 7.27188 2.58313 7.38269 2.69281C7.49323 2.80531 7.49323 2.98248 7.38269 3.09498L5.89937 4.50282L7.38269 6ZM5.5 0C3.01459 0 1 2.01375 1 4.5C1 6.98625 3.01459 9 5.5 9C7.98541 9 10 6.98625 10 4.5C10 2.01375 7.98541 0 5.5 0Z"
+								fill="#72797C"
+							></path>
+							<path
+								fill-rule="evenodd"
+								clip-rule="evenodd"
+								d="M11.7889 5.52229L11.942 5.37135L16.6635 0.731437C17.6559 -0.243831 19.2649 -0.243794 20.2573 0.731437C21.2497 1.70669 21.2497 3.28789 20.2573 4.26314L16.2181 8.23253L16.065 8.38348L13.2687 11.1315C12.7728 11.6188 11.9399 11.4381 11.6906 10.789C11.5509 10.4254 11.3338 10.0854 11.0366 9.79334C10.742 9.50391 10.3978 9.2869 10.0244 9.14774C9.37442 8.90551 9.19637 8.07001 9.6911 7.58383L11.7889 5.52229ZM12.4712 6.19281L17.3459 1.40196C17.9614 0.797034 18.9594 0.797034 19.575 1.40196C20.1906 2.00689 20.1906 2.98769 19.575 3.59262L14.7004 8.38347L12.5933 10.4541C12.4759 10.1484 12.3171 9.85465 12.1165 9.58159C11.9985 9.4209 11.866 9.26738 11.7189 9.12282C11.5727 8.97914 11.4168 8.84849 11.2526 8.73145C10.978 8.53575 10.6804 8.37807 10.3666 8.2611L12.4712 6.19281ZM5.00318 11.0352L5.00317 11.0352C4.3209 11.8817 3.29181 12.2222 2.32608 12.0416L0.625 11.7234L1.20193 13.3549C1.48484 14.1549 1.96901 14.897 2.64829 15.49C4.72427 17.3023 7.82173 17.036 9.54593 14.897C10.5667 13.6306 10.3992 11.7499 9.17023 10.677C7.91808 9.58378 6.04316 9.74498 5.00318 11.0352ZM8.51348 11.4291C9.3373 12.1483 9.45051 13.4195 8.76625 14.2684C7.39778 15.9661 4.95272 16.1763 3.30504 14.7379C3.07823 14.5399 2.87837 14.3209 2.7059 14.0862C2.46513 13.7585 2.27774 13.3999 2.14491 13.0242C2.51012 13.0926 2.88149 13.106 3.24708 13.0657C4.20302 12.9602 5.11946 12.4869 5.78285 11.6638C6.4671 10.8149 7.68962 10.7098 8.51348 11.4291Z"
+								fill="#72797C"
+							></path>
+						</svg>
+					</button>
+				</div>
+				<div class="comment-bottom">
+					<div class="annotation_panel" id="annotation_panel">
+						<div id="darwing_shapes_wrapper">
+							<span id="delete_shape" class="active"
+								><svg
+									width="14"
+									height="16"
+									viewBox="0 0 14 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M1 4.25H13"
+										stroke="#8F989C"
+										stroke-width="1.5"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									></path>
+									<path
+										d="M5.5 7.25V11.75"
+										stroke="#8F989C"
+										stroke-width="1.5"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									></path>
+									<path
+										d="M8.5 7.25V11.75"
+										stroke="#8F989C"
+										stroke-width="1.5"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									></path>
+									<path
+										d="M1.75 4.25L2.5 13.25C2.5 13.6478 2.65804 14.0294 2.93934 14.3107C3.22064 14.592 3.60218 14.75 4 14.75H10C10.3978 14.75 10.7794 14.592 11.0607 14.3107C11.342 14.0294 11.5 13.6478 11.5 13.25L12.25 4.25"
+										stroke="#8F989C"
+										stroke-width="1.5"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									></path>
+									<path
+										d="M4.75 4.25V2C4.75 1.80109 4.82902 1.61032 4.96967 1.46967C5.11032 1.32902 5.30109 1.25 5.5 1.25H8.5C8.69891 1.25 8.88968 1.32902 9.03033 1.46967C9.17098 1.61032 9.25 1.80109 9.25 2V4.25"
+										stroke="#8F989C"
+										stroke-width="1.5"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									></path>
+								</svg>
+							</span>
+							<span id="arrow_shape" class=""
+								><svg
+									width="16"
+									height="16"
+									viewBox="0 0 16 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M3.12624 6.86474C3.01417 6.59497 2.62185 6.6282 2.55674 6.91296L0.726584 14.9175C0.677287 15.1331 0.870297 15.3261 1.0859 15.2768L9.09043 13.4467C9.3752 13.3815 9.40842 12.9892 9.13865 12.8772L6.71887 11.8719L15.7794 0.505069C15.9279 0.318761 15.6846 0.0755057 15.4983 0.224012L4.13151 9.28452L3.12624 6.86474Z"
+										fill="#8F989C"
+									></path>
+								</svg>
+							</span>
+							<span id="pencil_shape"
+								><svg
+									width="16"
+									height="16"
+									viewBox="0 0 16 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										fill-rule="evenodd"
+										clip-rule="evenodd"
+										d="M10.6038 2.08579L13.6038 5.08579L14.8967 3.79289C15.2872 3.40237 15.2872 2.7692 14.8967 2.37868L13.3109 0.792893C12.9204 0.402369 12.2872 0.402369 11.8967 0.792893L10.6038 2.08579ZM9.75022 2.93934L1.60377 11.0858L0.037062 15.0026C-0.1262 15.4107 0.278839 15.8158 0.686996 15.6525L4.60377 14.0858L12.7502 5.93934C12.9455 5.74408 12.9455 5.4275 12.7502 5.23223L10.4573 2.93934C10.2621 2.74408 9.94548 2.74408 9.75022 2.93934Z"
+										fill="#8F989C"
+									></path>
+								</svg>
+							</span>
+							<span id="line_shape" class=""
+								><svg
+									width="15"
+									height="16"
+									viewBox="0 0 15 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M2 13.5L13 2.5"
+										stroke="#8F989C"
+										stroke-width="4"
+										stroke-linecap="round"
+									></path>
+								</svg>
+							</span>
+							<span id="rect_shape" class=""
+								><svg
+									width="16"
+									height="17"
+									viewBox="0 0 16 17"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<mask id="path-1-inside-1_4310_254" fill="white">
+										<rect y="0.5" width="16" height="16" rx="2"></rect>
+									</mask>
+									<rect
+										y="0.5"
+										width="16"
+										height="16"
+										rx="2"
+										stroke="#72797C"
+										stroke-width="4.4"
+										mask="url(#path-1-inside-1_4310_254)"
+									></rect>
+								</svg>
+							</span>
+						</div>
+						<div id="darwing_colors_wrapper">
+							<span id="yellow_ann" class="annotation_color yellow"></span>
+							<span id="red_ann" class="annotation_color red active"></span>
+							<span id="blue_ann" class="annotation_color blue"></span>
+							<span id="orange_ann" class="annotation_color orange"></span>
+							<span id="green_ann" class="annotation_color green"></span>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="summary_chapters_container" id="chapter">
 				<div class="summary_chapters_div">
@@ -329,23 +521,14 @@
 						<div style="display: flex; gap: 10px; align-items: baseline">
 							<h2 style="margin-top: 10px; margin-bottom: 0">Chapters</h2>
 						</div>
-						<ul class="video_chapters">
-							<!-- <li>
-								<a
-									href="javascript:;"
-									data-chapterstamp="0"
-									data-chapterstampend="99.419"
-									data-chapterstamp2="0"
-									data-chapterstamp2end="3.14"
-									>00:00</a
-								>Product Optimization
-							</li> -->
-						</ul>
+						<ul class="video_chapters"></ul>
 					</div>
 				</div>
 			</div>
 		</div>
 	</body>
+	<script src="./lib/jQyery1.8.3.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/rough.js/2.1.1/rough.js"></script>
 	<script src="./lib/hls.min.js"></script>
 	<script src="./main.js"></script>
 </html>
