@@ -272,13 +272,20 @@ document.addEventListener('DOMContentLoaded', () => {
 	let controlsShowID = null
 	// Hide native controls
 	player.controls = false
-	const playerHeight = playerSettings.videoSize.split('x')[1]
-	const playerWidth = playerSettings.videoSize.split('x')[0]
 	let playerVolumeCount = 0.5
+
 	// Player wrap init height
-	playerWrap.style.height =
-		(playerHeight / playerWidth) * playerWrap.getBoundingClientRect().width +
-		'px'
+	function resizeVideoPlayer() {
+		const playerHeight = playerSettings.videoSize.split('x')[1]
+		const playerWidth = playerSettings.videoSize.split('x')[0]
+		playerWrap.style.height =
+			(playerHeight / playerWidth) * playerWrap.getBoundingClientRect().width +
+			'px'
+	}
+
+	document.addEventListener('resize', () => {
+		resizeVideoPlayer()
+	})
 
 	// Initialize rough.js
 	let isDeleteMode = false
@@ -1014,8 +1021,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			$('#video_wrapper')
 				.resize(() => {
 					if (!$('#annotation_canvas').hasClass('hide')) {
-						$('#annotation_canvas').width($('.video-player').width())
-						$('#annotation_canvas').height($('.video-player').height())
+						$('#annotation_canvas').width($('#player').width())
+						$('#annotation_canvas').height($('#player').height())
 						$('#annotation_canvas')
 							.off('mousemove')
 							.off('mousedown')
