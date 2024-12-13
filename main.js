@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Initialize rough.js
 	let isDeleteMode = false
 	playerSettings.annotation = {
-		handle_annotation_id: '#handle_annotation',
+		handle_annotation_id: '#show-annotation',
 		annotation_panel_id: '#annotation_panel',
 		annotation_canvas_id: '#annotation_canvas',
 		offsetX: 0,
@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
 						)
 					this.currentColor = '#F73D72'
 					this.currentTool = 'rectangle'
-					$('#annotation_panel').remove()
+					// $('#annotation_panel').remove()
 					this.shapes = []
 					playerSettings.annotation.shapes.splice(
 						0,
@@ -363,9 +363,9 @@ document.addEventListener('DOMContentLoaded', () => {
 					this.handle_annotation.addClass('ann_active')
 					$('#annotation_canvas').removeClass('hide')
 					this.attach_annotation_panel()
-					$('#comments_activity').slideDown(100)
-					$('#handle_annotation').css('bottom', '7px')
-					$('#comment_person_icon').css('bottom', '14px')
+					// $('#comments_activity').slideDown(100)
+					// $('#show-annotation').css('bottom', '7px')
+					// $('#comment_person_icon').css('bottom', '14px')
 
 					setTimeout(function () {
 						player.pause()
@@ -373,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				}
 
 				if (!player.startedPlaying) {
-					$('.mejs__overlay-button').addClass('hide')
+					$('.player-overlay-start').addClass('hide')
 				}
 			})
 		},
@@ -384,6 +384,15 @@ document.addEventListener('DOMContentLoaded', () => {
 			$('.player-cta-button').addClass('hide')
 			$('#custom_captions_wrapper').addClass('hide')
 			$('.controls-comments').addClass('hide')
+			// $('#time_stmp_coments_wrpr').addClass('stick_to_bottom')
+		},
+
+		show_seekbar_and_timed_comments: function () {
+			player.pause()
+			$('.controls').addClass('active')
+			$('.player-cta-button').removeClass('hide')
+			$('#custom_captions_wrapper').removeClass('hide')
+			$('.controls-comments').removeClass('hide')
 			// $('#time_stmp_coments_wrpr').addClass('stick_to_bottom')
 		},
 
@@ -563,7 +572,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		initializ_canvas: function () {
 			console.log('initializ_canvas')
 			this.annotation_has_started = true
-			console.log(this.annotation_canvas)
 
 			if (this.annotation_canvas[0]) {
 				this.ctx = this.annotation_canvas[0].getContext('2d')
@@ -580,7 +588,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		},
 
 		attach_drawing_controls: function (comment_id) {
-			$('#annotation_panel').remove()
+			// $('#annotation_panel').remove()
 			const template = `<div class="annotation_panel" id="annotation_panel">
 									<div id="darwing_shapes_wrapper">
 										<span id="delete_shape"><svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 4.25H13" stroke="#8F989C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 7.25V11.75" stroke="#8F989C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 7.25V11.75" stroke="#8F989C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.75 4.25L2.5 13.25C2.5 13.6478 2.65804 14.0294 2.93934 14.3107C3.22064 14.592 3.60218 14.75 4 14.75H10C10.3978 14.75 10.7794 14.592 11.0607 14.3107C11.342 14.0294 11.5 13.6478 11.5 13.25L12.25 4.25" stroke="#8F989C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.75 4.25V2C4.75 1.80109 4.82902 1.61032 4.96967 1.46967C5.11032 1.32902 5.30109 1.25 5.5 1.25H8.5C8.69891 1.25 8.88968 1.32902 9.03033 1.46967C9.17098 1.61032 9.25 1.80109 9.25 2V4.25" stroke="#8F989C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -607,7 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		attach_annotation_panel: function () {
 			$('#annotation_canvas').addClass('darwingMode')
-			this.attach_drawing_controls()
+			// this.attach_drawing_controls()
 			if (!this.event_added) {
 				this.initializ_canvas()
 				this.attach_event_listeners_to_canvas()
@@ -975,7 +983,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					this.annotation_canvas[0].height
 				)
 			this.shapes = []
-			$('#annotation_panel').remove()
+			// $('#annotation_panel').remove()
 			this.annotation_has_started = false
 			$('#annotation_canvas').removeClass('darwingMode')
 			$('.player-cta-button').removeClass('hide')
@@ -996,7 +1004,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			this.currentColor = '#F73D72'
 			this.currentTool = 'rectangle'
 			if (hide_below_bar && this.annotation_has_started) {
-				$('#annotation_panel').remove()
+				// $('#annotation_panel').remove()
 				playerSettings.media.makePlayableCondition()
 			}
 		},
@@ -1031,15 +1039,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (showAnnotationBtn.classList.contains('active')) {
 			toggleSiblingElement(showAnnotationBtn, 'svg')
 			document.querySelector('#annotation_panel').classList.add('active')
-			annotationCanvasElement.style.display = 'block'
+			// annotationCanvasElement.style.display = 'block'
 			playerSettings.annotation.initializ_canvas()
 			playerSettings.annotation.hide_seekbar_and_timed_comments()
 		} else {
 			toggleSiblingElement(showAnnotationBtn, 'svg', true)
 			document.querySelector('#annotation_panel').classList.remove('active')
 			playerSettings.annotation.reset_annotation()
-			annotationCanvasElement.style.display = 'none'
 			playerSettings.annotation.show_seekbar_and_timed_comments()
+			// annotationCanvasElement.style.display = 'none'
 		}
 	})
 
