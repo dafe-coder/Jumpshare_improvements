@@ -941,11 +941,30 @@ button.playback-rate {
 	border-radius: 50%;
 	background-color: #f52394;
 	border: 2px solid #fff;
-	overflow: hidden;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	opacity: 0.7;
+	position: relative;
+}
+.controls-comments-avatar-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	background-color: #f52394;
+	border-radius: 50%;
+	overflow: hidden;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: -1;
+}
+
+.controls-comments-avatar-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	background-color: #f52394;
 }
 .controls-comments-item.active .controls-comments-avatar {
 	opacity: 1;
@@ -958,12 +977,6 @@ button.playback-rate {
 	bottom: 100%;
 	left: 0;
 	height: 10px;
-}
-.controls-comments-avatar img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	background-color: #f52394;
 }
 .controls-comments-avatar span {
 	text-align: center;
@@ -1068,6 +1081,88 @@ canvas.darwingMode {
 }
 #annotation_canvas.delete_mode {
 	cursor: url('./assets/del_cursor.svg'), auto;
+}
+.annotation_panel {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	opacity: 0;
+	transition: all 0.3s ease;
+}
+.annotation_panel.active {
+	opacity: 1;
+}
+#darwing_colors_wrapper {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	padding: 10px;
+}
+.annotation_panel .annotation_color {
+	height: 15px;
+	width: 15px;
+	border-radius: 10px;
+	cursor: pointer;
+	position: relative;
+}
+.annotation_panel .active svg rect,
+.annotation_panel .active#line_shape svg path {
+	stroke: #2f76ff;
+}
+.annotation_panel .active#line_shape svg path {
+	fill: #2f76ff;
+}
+.annotation_panel .active svg path {
+	fill: #2f76ff;
+}
+#delete_shape.active svg path {
+	fill: transparent !important;
+	stroke: #2f76ff !important;
+}
+
+.annotation_panel .annotation_color.red {
+	background-color: #f73d72;
+}
+
+.annotation_panel .annotation_color.green {
+	background-color: #34e33b;
+}
+
+.annotation_panel .annotation_color.yellow {
+	background-color: #fdf14c;
+}
+
+.annotation_panel .annotation_color.blue {
+	background-color: #3696f6;
+}
+
+.annotation_panel .annotation_color.orange {
+	background-color: #fb9348;
+}
+.annotation_panel .annotation_color.active:before {
+	content: '';
+	position: absolute;
+	display: block;
+	background-color: inherit;
+	height: 21px;
+	width: 21px;
+	opacity: 0.3;
+	border-radius: 15px;
+	top: -3px;
+	left: -3px;
+}
+
+.annotation-comment-indicator {
+	position: absolute;
+	background-color: #f52394;
+	top: -3px;
+	left: 16px;
+	border-radius: 10px;
+	height: 7px;
+	width: 7px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 /* New comment  */
 .comment-new {

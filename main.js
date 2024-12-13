@@ -1038,6 +1038,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (annotationCanvasElement) {
 		playerSettings.annotation.initialize()
 		playerSettings.annotation.attach_controls()
+		// playerSettings.annotation.attach_annotation_to_dom(dataComments)
 	}
 
 	const showAnnotationBtn = document.querySelector('#show-annotation')
@@ -1680,7 +1681,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		return `<div class="controls-comments-item" style="left: ${left}%" data-timestamp="${comment.media_timestamp}" data-id="${comment.id}">
 						<div class='controls-comments-avatar'>
 							<span>${comment.user.first_name.charAt(0)}</span>
+							<div class='controls-comments-avatar-image'>
 							<!-- <img src="" /> -->
+							</div>
+							${comment.annotation_json !== null ? "<span class='annotation-comment-indicator'></span>" : ''}
 						</div>
 						<div class='controls-comments-info'>
 							<div class='controls-comments-info-text'>
