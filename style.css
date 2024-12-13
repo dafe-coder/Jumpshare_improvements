@@ -1073,7 +1073,7 @@ button.playback-rate {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	z-index: 1000;
+	z-index: 1;
 }
 canvas.darwingMode {
 	z-index: 140000000;
@@ -1154,7 +1154,7 @@ canvas.darwingMode {
 
 .annotation-comment-indicator {
 	position: absolute;
-	background-color: #f52394;
+	background-color: #f73d72;
 	top: -3px;
 	left: 16px;
 	border-radius: 10px;
@@ -1238,6 +1238,9 @@ canvas.darwingMode {
 }
 #darwing_shapes_wrapper span {
 	cursor: pointer;
+}
+.pointer-events-none {
+	pointer-events: none;
 }
 .hidden,
 .hide {

@@ -935,6 +935,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			// setTimeout(() => {
 			this.reset_annotation()
 			this.annotation_panel.removeClass('hide')
+			this.annotation_panel.addClass('pointer-events-none')
 			$('#annotation_canvas').removeClass('hide')
 			const current_annotation_obj = this.previous_annotation.find(
 				item => item.comment_id == id
@@ -954,30 +955,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					)
 				})
 			}
-			// }, 300)
 		},
-
-		// attach_edit_comment_annotation: function() {
-		//     this.initializ_canvas();
-		//     this.attach_event_listeners_to_canvas();
-		// },
-
-		// attach_annotation_edit_controls: function(comment_id) {
-		//     this.shapes = [];
-		//     this.ctx && this.ctx.clearRect(0, 0, this.annotation_canvas[0].width, this.annotation_canvas[0].height);
-		//     $("#annotation_canvas").removeClass('hide').addClass("darwingMode");
-		//     if (this.editMode) {
-		//         $(".edit_anno_action").removeClass("ann_active");
-		//         $(".annotation_panel").remove();
-		//         this.editMode = false;
-		//     } else {
-		//         $(".edit_anno_action").addClass("ann_active");
-		//         this.attach_drawing_controls(comment_id);
-		//         this.editMode = true;
-		//     }
-		//     var y = $("#comments_wrapper").scrollTop();  //your current y position on the page
-		//     $("#comments_wrapper").scrollTop(y+100);
-		// },
 
 		hide_current_annotation_with_time: function () {
 			$('#annotation_canvas').addClass('hide')
@@ -1038,7 +1016,16 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (annotationCanvasElement) {
 		playerSettings.annotation.initialize()
 		playerSettings.annotation.attach_controls()
-		// playerSettings.annotation.attach_annotation_to_dom(dataComments)
+		dataComments.comments.forEach(comment => {
+			if (comment.annotation_json !== null) {
+				playerSettings.annotation.attach_annotation_to_dom(
+					comment.annotation_json,
+					comment.id
+				)
+			}
+		})
+
+		console.log(playerSettings.annotation.previous_annotation)
 	}
 
 	const showAnnotationBtn = document.querySelector('#show-annotation')
@@ -1665,9 +1652,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		})
 
 		commentsContainer.addEventListener('click', e => {
-			if (e.target.closest('.controls-comments-item')) {
-				player.currentTime = Number(
-					e.target.closest('.controls-comments-item').dataset.timestamp
+			const commentItem = e.target.closest('.controls-comments-item')
+			if (commentItem) {
+				player.currentTime = Number(commentItem.dataset.timestamp)
+				playerSettings.annotation.show_current_annotation_with_time(
+					commentItem.dataset.id
 				)
 				chooseActiveChapter()
 				updateSlider()
@@ -1684,7 +1673,7 @@ document.addEventListener('DOMContentLoaded', () => {
 							<div class='controls-comments-avatar-image'>
 							<!-- <img src="" /> -->
 							</div>
-							${comment.annotation_json !== null ? "<span class='annotation-comment-indicator'></span>" : ''}
+							${comment.annotation_json && comment.annotation_json !== null ? "<span class='annotation-comment-indicator'></span>" : ''}
 						</div>
 						<div class='controls-comments-info'>
 							<div class='controls-comments-info-text'>
@@ -1734,6 +1723,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			media_timestamp: seconds,
 			comment_time: getCurrentDateFormatted(new Date()),
 			comment: comment,
+			annotation_json: null,
 			replies_count: 0,
 		}
 		commentsContainer.innerHTML += createComment(dataComment)
