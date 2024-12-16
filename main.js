@@ -935,7 +935,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			// setTimeout(() => {
 			this.reset_annotation()
 			this.annotation_panel.removeClass('hide')
-			this.annotation_panel.addClass('pointer-events-none')
+			$('#annotation_canvas').addClass('pointer-events-none')
 			$('#annotation_canvas').removeClass('hide')
 			const current_annotation_obj = this.previous_annotation.find(
 				item => item.comment_id == id
@@ -960,6 +960,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		hide_current_annotation_with_time: function () {
 			$('#annotation_canvas').addClass('hide')
 			$('#resume_the_video').remove()
+			$('#annotation_canvas').removeClass('pointer-events-none')
 			this.ctx &&
 				this.ctx.clearRect(
 					0,
@@ -1024,8 +1025,6 @@ document.addEventListener('DOMContentLoaded', () => {
 				)
 			}
 		})
-
-		console.log(playerSettings.annotation.previous_annotation)
 	}
 
 	const showAnnotationBtn = document.querySelector('#show-annotation')
@@ -1239,20 +1238,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		playerSettings.chapters.loadChapters(dataChapters)
 		playerSettings.comments.addComment(
-			'17:26 Added a comment using the "addComment" method',
+			{
+				seconds: parseToSeconds('17:26'),
+				comment: ' Added a comment using the "addComment" method',
+			},
 			dataComments
 		)
 	})
 
-	// const addCommentBtn = document.querySelector('#add-comment')
-	// const commentText = document.querySelector('#comment-text')
-
-	// addCommentBtn.addEventListener('click', () => {
-	// 	if (commentText.value !== '' && commentText.value.includes(' ')) {
-	// 		playerSettings.comments.addComment(commentText.value, dataComments)
-	// 		commentText.value = ''
-	// 	}
-	// })
+	const commentNewTextareaWrapper = document.querySelector(
+		'.comment-new-textarea-wrapper'
+	)
+	const addCommentBtn = document.querySelector('#add-comment')
+	const commentText = document.querySelector('#comment-text')
+	commentNewTextareaWrapper.addEventListener('click', () => {
+		player.pause()
+	})
+	addCommentBtn.addEventListener('click', () => {
+		if (commentText.value !== '') {
+			playerSettings.comments.addComment(
+				{ seconds: player.currentTime, comment: commentText.value },
+				dataComments
+			)
+			commentText.value = ''
+		}
+	})
 
 	// Slider player (time rail)
 	const controlsTimeRail = document.getElementById('controls-time-rail')
@@ -1308,6 +1318,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			++activeChapter
 		}
 		currentTime.innerHTML = formatTime(player.currentTime)
+		document.querySelector('.comment-new-timestamp').innerText = formatTime(
+			player.currentTime
+		)
 	}
 
 	function updateActiveChapterTitle() {
@@ -1466,7 +1479,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Keyboard
 	document.addEventListener('keydown', e => {
 		const skipAmount = 10
-		if (player.currentTime > 0) {
+		const isTyping = ['INPUT', 'TEXTAREA'].includes(
+			document.activeElement.tagName
+		)
+
+		if (player.currentTime > 0 && !isTyping) {
 			if (e.code === 'Space') {
 				e.preventDefault()
 				if (player.paused || player.ended) {
@@ -1654,6 +1671,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		commentsContainer.addEventListener('click', e => {
 			const commentItem = e.target.closest('.controls-comments-item')
 			if (commentItem) {
+				player.pause()
 				player.currentTime = Number(commentItem.dataset.timestamp)
 				playerSettings.annotation.show_current_annotation_with_time(
 					commentItem.dataset.id
@@ -1692,30 +1710,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function addComment(dataCommentStr, dataComments) {
-		function parseTimeAndComment(input) {
-			const [timeStr, ...commentParts] = input.split(' ')
-			const comment = commentParts.join(' ')
-			const timeParts = timeStr.split(':')
-
-			let totalSeconds = 0
-
-			if (timeParts.length === 3) {
-				const [hours, minutes, seconds] = timeParts
-				totalSeconds = +hours * 3600 + +minutes * 60 + +seconds
-			} else if (timeParts.length === 2) {
-				const [minutes, seconds] = timeParts
-				totalSeconds = +minutes * 60 + +seconds
-			}
-			return {
-				seconds: totalSeconds,
-				comment,
-			}
-		}
-
-		const { seconds, comment } = parseTimeAndComment(dataCommentStr)
+		const { seconds, comment } = dataCommentStr
 
 		const dataComment = {
-			id: '29121241421',
+			id: Number(new Date().getTime() * Math.random()),
 			user: {
 				first_name: dataComments.comments[0].user.first_name,
 				last_name: dataComments.comments[0].user.last_name,
@@ -1754,13 +1752,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			if (currentTime < commentTimestamp) {
 				item.classList.remove('active')
+				if (item.dataset.id === commentsItems[0].dataset.id) {
+					playerSettings.annotation.hide_current_annotation_with_time(
+						item.dataset.id
+					)
+				}
 			} else if (currentTime >= commentTimestamp) {
 				if (
 					currentTime < nextCommentTimestamp &&
 					currentTime <= commentEndTime
 				) {
+					playerSettings.annotation.show_current_annotation_with_time(
+						item.dataset.id
+					)
 					item.classList.add('active')
 				} else {
+					playerSettings.annotation.hide_current_annotation_with_time(
+						item.dataset.id
+					)
 					item.classList.remove('active')
 				}
 			}
@@ -1858,5 +1867,20 @@ document.addEventListener('DOMContentLoaded', () => {
 			parentElement.querySelector(`${element}:last-child`).style.display =
 				'block'
 		}
+	}
+
+	function parseToSeconds(time) {
+		const timeParts = time.split(':')
+
+		let totalSeconds = 0
+
+		if (timeParts.length === 3) {
+			const [hours, minutes, seconds] = timeParts
+			totalSeconds = +hours * 3600 + +minutes * 60 + +seconds
+		} else if (timeParts.length === 2) {
+			const [minutes, seconds] = timeParts
+			totalSeconds = +minutes * 60 + +seconds
+		}
+		return totalSeconds
 	}
 })

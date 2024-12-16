@@ -308,12 +308,16 @@
 				</video>
 			</div>
 			<div class="comment-new">
-				<textarea
-					class="comment-new-textarea"
-					placeholder="00:00 Text of the comment"
-				></textarea>
+				<div class="comment-new-textarea-wrapper">
+					<span class="comment-new-timestamp">00:00</span>
+					<textarea
+						id="comment-text"
+						class="comment-new-textarea"
+						placeholder="Text of the comment"
+					></textarea>
+				</div>
 				<div class="comment-new-nav">
-					<button class="comment-new-nav-button">Post</button>
+					<button id="add-comment" class="comment-new-nav-button">Post</button>
 					<button class="comment-new-nav-button">Cancel</button>
 					<button id="show-annotation" class="show-annotation">
 						<svg
