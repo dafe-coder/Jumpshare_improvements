@@ -1073,9 +1073,9 @@ button.playback-rate {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	z-index: 1;
+	z-index: 9999;
 }
-canvas.darwingMode {
+canvas#annotation_canvas.darwingMode {
 	z-index: 140000000;
 	cursor: crosshair;
 }
@@ -1164,6 +1164,7 @@ canvas.darwingMode {
 	align-items: center;
 	justify-content: center;
 }
+
 /* New comment  */
 .comment-new {
 	display: flex;
