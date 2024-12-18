@@ -1,5 +1,5 @@
 'use strict'
-import { initializeAnnotation } from './player.annotation.js'
+
 const dataChapters = {
 	chapters: [
 		{
@@ -238,29 +238,6 @@ const dataCTA = {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	const playerSettings = {
-		themeColor: {
-			primary: '#1891ED',
-			secondary: 'rgba(255, 255, 255, 0.5)',
-		},
-		videoSize: '640x360',
-		comments: {
-			addComment,
-			deleteComment,
-			loadComments,
-		},
-		chapters: {
-			loadChapters,
-		},
-		annotation: {
-			annotation_json:
-				'[{"color":"#F73D72","id":"0","type":"rectangle","x1":"49.19","y1":"20.98","x2":"82.96","y2":"77.73"}]',
-		},
-	}
-	window.playerSettings = playerSettings
-
-	initializeAnnotation()
-
 	// Player elements
 	const player = document.getElementById('player')
 	const playerWrap = document.querySelector('.player-wrap')
@@ -280,8 +257,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// Player wrap init height
 	function resizeVideoPlayer() {
-		const playerHeight = playerSettings.videoSize.split('x')[1]
-		const playerWidth = playerSettings.videoSize.split('x')[0]
+		const playerHeight = JSPlayer.Settings.videoSize.split('x')[1]
+		const playerWidth = JSPlayer.Settings.videoSize.split('x')[0]
 		playerWrap.style.height =
 			(playerHeight / playerWidth) * playerWrap.getBoundingClientRect().width +
 			'px'
@@ -294,11 +271,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Initialize rough.js
 
 	if (annotationCanvasElement) {
-		playerSettings.annotation.initialize()
-		playerSettings.annotation.attach_controls()
+		JSPlayer.Annotation.initialize()
+		JSPlayer.Annotation.attach_controls()
 		dataComments.comments.forEach(comment => {
 			if (comment.annotation_json !== null) {
-				playerSettings.annotation.attach_annotation_to_dom(
+				JSPlayer.Annotation.attach_annotation_to_dom(
 					comment.annotation_json,
 					comment.id
 				)
@@ -317,13 +294,13 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (showAnnotationBtn.classList.contains('active')) {
 			toggleSiblingElement(showAnnotationBtn, 'svg')
 			document.querySelector('#annotation_panel').classList.add('active')
-			playerSettings.annotation.initializ_canvas()
-			playerSettings.annotation.hide_seekbar_and_timed_comments()
+			JSPlayer.Annotation.initializ_canvas()
+			JSPlayer.Annotation.hide_seekbar_and_timed_comments()
 		} else {
 			toggleSiblingElement(showAnnotationBtn, 'svg', true)
 			document.querySelector('#annotation_panel').classList.remove('active')
-			playerSettings.annotation.reset_annotation()
-			playerSettings.annotation.show_seekbar_and_timed_comments()
+			JSPlayer.Annotation.reset_annotation()
+			JSPlayer.Annotation.show_seekbar_and_timed_comments()
 		}
 	})
 
@@ -488,16 +465,16 @@ document.addEventListener('DOMContentLoaded', () => {
 			hideTextTracks()
 		}, 10)
 		applyPlayerColorTheme({ primary: '#1891ED' })
-		duration.innerText = formatTime(player.duration)
+		duration.innerText = JSPlayer.Helper.formatTime(player.duration)
 		showPlayerOverlayTimer.style.display = 'block'
-		showPlayerOverlayTimer.querySelector('span').innerText = formatTime(
-			player.duration,
-			true
-		)
+		showPlayerOverlayTimer.querySelector('span').innerText =
+			JSPlayer.Helper.formatTime(player.duration, true)
 		player.volume = playerVolumeCount
 
 		// Load comments
-		playerSettings.comments.loadComments(dataComments)
+
+		JSPlayer.Comments.init(player, commentsContainer)
+		JSPlayer.Comments.load(dataComments)
 
 		// Update active chapter title
 		updateActiveChapterTitle()
@@ -518,10 +495,11 @@ document.addEventListener('DOMContentLoaded', () => {
 			showHideControls()
 		})
 
-		playerSettings.chapters.loadChapters(dataChapters)
-		playerSettings.comments.addComment(
+		JSPlayer.Chapters.init(player)
+		JSPlayer.Chapters.load(dataChapters)
+		JSPlayer.Comments.add(
 			{
-				seconds: parseToSeconds('17:26'),
+				seconds: JSPlayer.Helper.parseToSeconds('17:26'),
 				comment: ' Added a comment using the "addComment" method',
 			},
 			dataComments
@@ -539,8 +517,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	addCommentBtn.addEventListener('click', () => {
 		const id = Number(new Date().getTime() * Math.random())
 		const shapes =
-			playerSettings.annotation.shapes.length > 0
-				? JSON.stringify(playerSettings.annotation.shapes)
+			JSPlayer.Annotation.shapes.length > 0
+				? JSON.stringify(JSPlayer.Annotation.shapes)
 				: null
 
 		const oldAnnotation = []
@@ -561,7 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 
 		if (commentText.value !== '') {
-			playerSettings.comments.addComment(
+			JSPlayer.Comments.add(
 				{
 					id: id,
 					seconds: player.currentTime,
@@ -573,10 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			if (shapes) {
 				oldAnnotation.forEach(item => {
-					playerSettings.annotation.attach_annotation_to_dom(
-						item.annotation,
-						item.id
-					)
+					JSPlayer.Annotation.attach_annotation_to_dom(item.annotation, item.id)
 				})
 			}
 			commentText.value = ''
@@ -592,24 +567,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	)
 	let isDragging = false
 	let isDraggingType = 'time'
-	let activeChapter = 1
 
-	function chooseActiveChapter() {
-		dataChapters.chapters.forEach((item, idx) => {
-			const start = item.M.line.S
-			const end = dataChapters.chapters[idx + 1]
-				? dataChapters.chapters[idx + 1].M.line.S
-				: player.duration
-			if (player.currentTime >= start && player.currentTime <= end) {
-				activeChapter = idx + 1
-			}
-		})
-	}
-
-	function updateSlider() {
-		const startValue = dataChapters.chapters[activeChapter - 1].M.line.S
-		const endValue = dataChapters.chapters[activeChapter]
-			? dataChapters.chapters[activeChapter].M.line.S
+	JSPlayer.Utils.updateSlider = function () {
+		const startValue =
+			dataChapters.chapters[JSPlayer.Chapters.activeChapter - 1].M.line.S
+		const endValue = dataChapters.chapters[JSPlayer.Chapters.activeChapter]
+			? dataChapters.chapters[JSPlayer.Chapters.activeChapter].M.line.S
 			: player.duration
 		const progressRailPercent =
 			((player.currentTime - startValue) / (endValue - startValue)) * 100
@@ -620,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		)
 
 		sliderRailItemsProgress.forEach((item, idx) => {
-			if (idx < activeChapter - 1) {
+			if (idx < JSPlayer.Chapters.activeChapter - 1) {
 				item.style.width = '100%'
 			} else {
 				item.style.width = 0
@@ -630,21 +593,21 @@ document.addEventListener('DOMContentLoaded', () => {
 		sliderThumb.style.left = progressThumbPercent + '%'
 
 		if (progressRailPercent <= 99.99) {
-			sliderRailItemsProgress[activeChapter - 1].style.width =
+			sliderRailItemsProgress[JSPlayer.Chapters.activeChapter - 1].style.width =
 				progressRailPercent + '%'
 		} else {
-			sliderRailItemsProgress[activeChapter - 1].style.width = '100%'
-			++activeChapter
+			sliderRailItemsProgress[JSPlayer.Chapters.activeChapter - 1].style.width =
+				'100%'
+			++JSPlayer.Chapters.activeChapter
 		}
-		currentTime.innerHTML = formatTime(player.currentTime)
-		document.querySelector('.comment-new-timestamp').innerText = formatTime(
-			player.currentTime
-		)
+		currentTime.innerHTML = JSPlayer.Helper.formatTime(player.currentTime)
+		document.querySelector('.comment-new-timestamp').innerText =
+			JSPlayer.Helper.formatTime(player.currentTime)
 	}
 
 	function updateActiveChapterTitle() {
 		activeChapterTitle.querySelector('span').innerText =
-			dataChapters.chapters[activeChapter - 1].M.name.S
+			dataChapters.chapters[JSPlayer.Chapters.activeChapter - 1].M.name.S
 	}
 
 	function moveSlider(event, elem) {
@@ -657,8 +620,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (isDraggingType === 'time' && percentage >= 0 && percentage <= 0.99) {
 				const newTime = player.duration * percentage
 				player.currentTime = newTime
-				chooseActiveChapter()
-				updateSlider()
+				JSPlayer.Chapters.chooseActiveChapter()
+				JSPlayer.Utils.updateSlider()
 			}
 			if (isDraggingType === 'volume' && percentage >= 0 && percentage <= 1) {
 				if (percentage === 0) {
@@ -680,9 +643,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	})
 
 	player.addEventListener('timeupdate', () => {
-		currentTime.innerText = formatTime(player.currentTime)
+		currentTime.innerText = JSPlayer.Helper.formatTime(player.currentTime)
 		checkIsCommentActive(player.currentTime)
-		updateSlider()
+		JSPlayer.Utils.updateSlider()
 		updateActiveChapterTitle()
 	})
 
@@ -728,7 +691,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		playerOverlayEnd.style.display = 'flex'
 		playerCtaButtonDefault.classList.add('hidden')
 		toggleSiblingElement(playOrPauseBtn, 'svg', true)
-		activeChapter = 1
+		JSPlayer.Chapters.activeChapter = 1
 	})
 
 	playerOverlayBtnEnd.addEventListener('click', () => {
@@ -815,13 +778,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 			if (e.code === 'ArrowLeft') {
 				player.currentTime -= skipAmount
-				chooseActiveChapter()
-				updateSlider()
+				JSPlayer.Chapters.chooseActiveChapter()
+				JSPlayer.Utils.updateSlider()
 			}
 			if (e.code === 'ArrowRight') {
 				player.currentTime += skipAmount
-				chooseActiveChapter()
-				updateSlider()
+				JSPlayer.Chapters.chooseActiveChapter()
+				JSPlayer.Utils.updateSlider()
 			}
 			if (e.code === 'KeyK') {
 				toggleFullScreen()
@@ -891,167 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	})
 
-	function loadChapters(dataChapters) {
-		if (!dataChapters?.chapters?.length) return
-
-		const chaptersMenu = document.querySelector('.video_chapters')
-		const chapterSliderItems = document.querySelector('.chapter-slider-items')
-
-		const createChapterButton = (chapter, chapterStart, chapterEnd) => {
-			return `<li>
-				<a href="javascript:;" 
-				   data-chapterstamp="${chapterStart}"
-				   data-chapterstampend="${chapterEnd}"
-				>${formatTime(chapterStart)}</a
-				>${chapter.M.name.S}
-			</li>`
-		}
-
-		const createSliderItem = (chapter, chapterStart, chapterEnd) => {
-			const width = ((chapterEnd - chapterStart) / player.duration) * 100
-			const item = document.createElement('span')
-			item.classList.add('chapter-slider-item')
-			item.dataset.dataSliderStartTime = chapterStart
-			item.dataset.dataSliderEndTime = chapterEnd
-			item.style.width = `${width}%`
-
-			const elements = [
-				['chapter-slider-title', chapter.M.name.S],
-				['chapter-slider-loading', ''],
-				['chapter-slider-progress', ''],
-				['chapter-slider-bg', ''],
-			].map(([className, text]) => {
-				const el = document.createElement('span')
-				el.classList.add(className)
-				if (className === 'chapter-slider-progress') {
-					el.style.backgroundColor = playerSettings.themeColor.primary
-				}
-				if (className === 'chapter-slider-bg') {
-					el.style.backgroundColor = playerSettings.themeColor.secondary
-				}
-				if (text) el.textContent = text
-				return el
-			})
-
-			elements.forEach(el => item.appendChild(el))
-			return { item, titleElement: elements[0] }
-		}
-
-		chaptersMenu.addEventListener('click', e => {
-			if (e.target.tagName === 'A') {
-				player.currentTime = Number(e.target.dataset.chapterstamp)
-				chooseActiveChapter()
-			}
-		})
-
-		dataChapters.chapters.forEach((chapter, i) => {
-			const chapterStart = chapter.M.line.S
-			const chapterEnd =
-				dataChapters.chapters[i + 1]?.M.line.S ?? player.duration
-
-			chaptersMenu.innerHTML += createChapterButton(
-				chapter,
-				chapterStart,
-				chapterEnd
-			)
-
-			const { item, titleElement } = createSliderItem(
-				chapter,
-				chapterStart,
-				chapterEnd
-			)
-			chapterSliderItems.appendChild(item)
-
-			requestAnimationFrame(() => {
-				const rect = titleElement.getBoundingClientRect()
-				const playerPos = player.getBoundingClientRect()
-				const relativePosition = {
-					top: rect.top - playerPos.top,
-					left: rect.left - playerPos.left,
-				}
-
-				if (rect.width + relativePosition.left > playerPos.width) {
-					titleElement.style.left = 'auto'
-					titleElement.style.right =
-						i === dataChapters.chapters.length - 1 ? '10px' : '0'
-				}
-			})
-		})
-	}
-
 	// Comments
-	function loadComments(dataComments) {
-		if (!dataComments?.comments?.length) return
-
-		dataComments.comments.forEach(comment => {
-			commentsContainer.innerHTML += createComment(comment)
-		})
-
-		commentsContainer.addEventListener('click', e => {
-			const commentItem = e.target.closest('.controls-comments-item')
-			if (commentItem) {
-				player.pause()
-				player.currentTime = Number(commentItem.dataset.timestamp)
-				playerSettings.annotation.show_current_annotation_with_time(
-					commentItem.dataset.id
-				)
-				chooseActiveChapter()
-				updateSlider()
-			}
-		})
-	}
-
-	const createComment = comment => {
-		const left = (comment.media_timestamp / player.duration) * 100
-
-		return `<div class="controls-comments-item" style="left: ${left}%" data-timestamp="${comment.media_timestamp}" data-id="${comment.id}">
-						<div class='controls-comments-avatar'>
-							<span>${comment.user.first_name.charAt(0)}</span>
-							<div class='controls-comments-avatar-image'>
-							<!-- <img src="" /> -->
-							</div>
-							${comment.annotation_json && comment.annotation_json !== null ? "<span class='annotation-comment-indicator'></span>" : ''}
-						</div>
-						<div class='controls-comments-info'>
-							<div class='controls-comments-info-text'>
-								<h5>
-									${comment.user.first_name + ' ' + comment.user.last_name}
-									<span>${comment.comment_time}</span>
-								</h5>
-								<p>${comment.comment}</p>
-								${comment.replies_count > 0 ? `<span class='controls-comments-info-reply'>${comment.replies_count}+ other comment</span>` : ''}
-							</div>
-							<svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M1 13L7 7L1 1" stroke="#f1f1f1" stroke-width="1.5" stroke-linejoin="round"></path>
-							</svg>
-						</div>
-					</div>`
-	}
-
-	function addComment(data, dataComments) {
-		const { seconds, comment, shapes = null, id = '' } = data
-		console.log('shapes', shapes)
-		const dataComment = {
-			id: id != '' ? id : Number(new Date().getTime() * Math.random()),
-			user: {
-				first_name: dataComments.comments[0].user.first_name,
-				last_name: dataComments.comments[0].user.last_name,
-			},
-			media_timestamp: seconds,
-			comment_time: getCurrentDateFormatted(new Date()),
-			comment: comment,
-			annotation_json: shapes,
-			replies_count: 0,
-		}
-		commentsContainer.innerHTML += createComment(dataComment)
-	}
-
-	function deleteComment(commentId) {
-		const commentItem = document.querySelector(
-			`.controls-comments-item[data-id="${commentId}"]`
-		)
-		commentItem.remove()
-	}
 
 	function checkIsCommentActive(currentTime) {
 		const commentsItems = document.querySelectorAll('.controls-comments-item')
@@ -1072,23 +875,17 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (currentTime < commentTimestamp) {
 				item.classList.remove('active')
 				if (item.dataset.id === commentsItems[0].dataset.id) {
-					playerSettings.annotation.hide_current_annotation_with_time(
-						item.dataset.id
-					)
+					JSPlayer.Annotation.hide_current_annotation_with_time(item.dataset.id)
 				}
 			} else if (currentTime >= commentTimestamp) {
 				if (
 					currentTime < nextCommentTimestamp &&
 					currentTime <= commentEndTime
 				) {
-					playerSettings.annotation.show_current_annotation_with_time(
-						item.dataset.id
-					)
+					JSPlayer.Annotation.show_current_annotation_with_time(item.dataset.id)
 					item.classList.add('active')
 				} else {
-					playerSettings.annotation.hide_current_annotation_with_time(
-						item.dataset.id
-					)
+					JSPlayer.Annotation.hide_current_annotation_with_time(item.dataset.id)
 					item.classList.remove('active')
 				}
 			}
@@ -1113,11 +910,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function applyPlayerColorTheme({
-		primary = playerSettings.themeColor.primary,
-		secondary = playerSettings.themeColor.secondary,
+		primary = JSPlayer.Settings.themeColor.primary,
+		secondary = JSPlayer.Settings.themeColor.secondary,
 	}) {
-		playerSettings.themeColor.primary = primary
-		playerSettings.themeColor.secondary = secondary
+		JSPlayer.Settings.themeColor.primary = primary
+		JSPlayer.Settings.themeColor.secondary = secondary
 		sliderThumb.style.backgroundColor = primary
 		document.querySelector('.player-overlay-button svg path').style.fill =
 			primary
@@ -1136,43 +933,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	fullScreenBtn.setAttribute('aria-label', 'Fullscreen')
 
 	// Helper functions
-	function getCurrentDateFormatted(date) {
-		const monthNames = [
-			'Jan',
-			'Feb',
-			'Mar',
-			'Apr',
-			'May',
-			'Jun',
-			'Jul',
-			'Aug',
-			'Sep',
-			'Oct',
-			'Nov',
-			'Dec',
-		]
-		const day = date.getDate()
-		const month = monthNames[date.getMonth()]
-		return `${month} ${day}`
-	}
-
-	function formatTime(seconds, named = false) {
-		const minutes = Math.floor(seconds / 60)
-		const sec = Math.floor(seconds % 60)
-		if (!named) {
-			return (
-				(minutes < 10 ? '0' : '') + minutes + ':' + (sec < 10 ? '0' : '') + sec
-			)
-		} else {
-			return (
-				(minutes < 10 && minutes > 0 ? '0' : '') +
-				(minutes > 0 ? minutes : '') +
-				(minutes > 0 ? ' min ' : '') +
-				(sec < 10 ? '0' : '') +
-				(sec + ' sec')
-			)
-		}
-	}
 
 	function toggleSiblingElement(parentElement, element, showFirst = false) {
 		if (showFirst) {
@@ -1186,20 +946,5 @@ document.addEventListener('DOMContentLoaded', () => {
 			parentElement.querySelector(`${element}:last-child`).style.display =
 				'block'
 		}
-	}
-
-	function parseToSeconds(time) {
-		const timeParts = time.split(':')
-
-		let totalSeconds = 0
-
-		if (timeParts.length === 3) {
-			const [hours, minutes, seconds] = timeParts
-			totalSeconds = +hours * 3600 + +minutes * 60 + +seconds
-		} else if (timeParts.length === 2) {
-			const [minutes, seconds] = timeParts
-			totalSeconds = +minutes * 60 + +seconds
-		}
-		return totalSeconds
 	}
 })
