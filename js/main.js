@@ -492,7 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const playerOverlayStart = document.querySelector('.player-overlay-start')
 
 		playerOverlayStart.addEventListener('click', () => {
-			commentsContainer.style.display = 'block'
+			commentsContainer.classList.remove('hide')
 			// Generate CTA button
 			generateCTAButton(dataCTA)
 			player.play()

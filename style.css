@@ -925,9 +925,7 @@ button.playback-rate {
 	line-height: 33.514603px;
 	pointer-events: none;
 }
-.controls-comments {
-	display: none;
-}
+
 .controls-comments-item {
 	position: absolute;
 	bottom: 55px;
