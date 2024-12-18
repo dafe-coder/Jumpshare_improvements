@@ -283,24 +283,33 @@ document.addEventListener('DOMContentLoaded', () => {
 		})
 	}
 
+	function showAnnotationPanel() {
+		showAnnotationBtn.classList.add('active')
+		toggleSiblingElement(showAnnotationBtn, 'svg')
+		document.querySelector('#annotation_panel').classList.add('active')
+		JSPlayer.Annotation.initializ_canvas()
+		JSPlayer.Annotation.hide_seekbar_and_timed_comments()
+	}
+
+	function hideAnnotationPanel() {
+		showAnnotationBtn.classList.remove('active')
+		toggleSiblingElement(showAnnotationBtn, 'svg', true)
+		document.querySelector('#annotation_panel').classList.remove('active')
+		JSPlayer.Annotation.reset_annotation()
+		JSPlayer.Annotation.show_seekbar_and_timed_comments()
+	}
+
 	const showAnnotationBtn = document.querySelector('#show-annotation')
 	showAnnotationBtn.addEventListener('click', () => {
-		showAnnotationBtn.classList.toggle('active')
 		if ($('#annotation_canvas').hasClass('pointer-events-none')) {
 			$('#annotation_canvas').addClass('hide')
 			$('#annotation_canvas').removeClass('pointer-events-none')
 		}
 
-		if (showAnnotationBtn.classList.contains('active')) {
-			toggleSiblingElement(showAnnotationBtn, 'svg')
-			document.querySelector('#annotation_panel').classList.add('active')
-			JSPlayer.Annotation.initializ_canvas()
-			JSPlayer.Annotation.hide_seekbar_and_timed_comments()
+		if (!showAnnotationBtn.classList.contains('active')) {
+			showAnnotationPanel()
 		} else {
-			toggleSiblingElement(showAnnotationBtn, 'svg', true)
-			document.querySelector('#annotation_panel').classList.remove('active')
-			JSPlayer.Annotation.reset_annotation()
-			JSPlayer.Annotation.show_seekbar_and_timed_comments()
+			hideAnnotationPanel()
 		}
 	})
 
@@ -514,31 +523,34 @@ document.addEventListener('DOMContentLoaded', () => {
 	commentNewTextareaWrapper.addEventListener('click', () => {
 		player.pause()
 	})
+
 	addCommentBtn.addEventListener('click', () => {
-		const id = Number(new Date().getTime() * Math.random())
-		const shapes =
-			JSPlayer.Annotation.shapes.length > 0
-				? JSON.stringify(JSPlayer.Annotation.shapes)
-				: null
-
-		const oldAnnotation = []
-
-		if (shapes) {
-			dataComments.comments.forEach(comment => {
-				if (comment.annotation_json !== null) {
-					oldAnnotation.push({
-						annotation: comment.annotation_json,
-						id: comment.id,
-					})
-				}
-			})
-			oldAnnotation.push({
-				annotation: shapes,
-				id: id,
-			})
-		}
-
 		if (commentText.value !== '') {
+			const id = Number(new Date().getTime() * Math.random())
+			const shapes =
+				JSPlayer.Annotation.shapes.length > 0
+					? JSON.stringify(JSPlayer.Annotation.shapes)
+					: null
+
+			const oldAnnotation = []
+
+			hideAnnotationPanel()
+
+			if (shapes) {
+				dataComments.comments.forEach(comment => {
+					if (comment.annotation_json !== null) {
+						oldAnnotation.push({
+							annotation: comment.annotation_json,
+							id: comment.id,
+						})
+					}
+				})
+				oldAnnotation.push({
+					annotation: shapes,
+					id: id,
+				})
+			}
+
 			JSPlayer.Comments.add(
 				{
 					id: id,
@@ -855,7 +867,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	})
 
 	// Comments
-
 	function checkIsCommentActive(currentTime) {
 		const commentsItems = document.querySelectorAll('.controls-comments-item')
 		const COMMENT_DURATION = 5
@@ -871,6 +882,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				? parseFloat(nextComment.dataset.timestamp)
 				: Infinity
 			const commentEndTime = commentTimestamp + COMMENT_DURATION
+			const commentEndTimeAnnotation = commentTimestamp + 0.01
 
 			if (currentTime < commentTimestamp) {
 				item.classList.remove('active')
@@ -885,8 +897,13 @@ document.addEventListener('DOMContentLoaded', () => {
 					JSPlayer.Annotation.show_current_annotation_with_time(item.dataset.id)
 					item.classList.add('active')
 				} else {
-					JSPlayer.Annotation.hide_current_annotation_with_time(item.dataset.id)
 					item.classList.remove('active')
+				}
+				if (
+					currentTime < nextCommentTimestamp &&
+					currentTime >= commentEndTimeAnnotation
+				) {
+					JSPlayer.Annotation.hide_current_annotation_with_time(item.dataset.id)
 				}
 			}
 		})
