@@ -250,10 +250,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	const controls = document.querySelector('.controls')
 	const commentsContainer = document.querySelector('.controls-comments')
 	const annotationCanvasElement = document.getElementById('annotation_canvas')
+	const sliderThumb = document.getElementById('slider-thumb')
+
 	let controlsShowID = null
 	// Hide native controls
 	player.controls = false
 	let playerVolumeCount = 0.5
+
+	JSPlayer.Settings.init(player, sliderThumb)
 
 	// Player wrap init height
 	function resizeVideoPlayer() {
@@ -451,17 +455,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	muteBtn.addEventListener('click', mute)
 	playbackRate.addEventListener('click', choosePlaybackRate)
 	player.addEventListener('click', playOrPause)
-	function hideTextTracks() {
-		for (let i = 0; i < player.textTracks.length; i++) {
-			player.textTracks[i].mode = 'hidden'
-		}
-	}
-	hideTextTracks()
+
+	JSPlayer.Settings.hideTextTracks()
 	player.addEventListener('loadedmetadata', () => {
 		setTimeout(() => {
-			hideTextTracks()
+			JSPlayer.Settings.hideTextTracks()
 		}, 10)
-		applyPlayerColorTheme({ primary: '#1891ED' })
+		JSPlayer.Settings.applyPlayerColorTheme({ primary: '#1891ED' })
 		duration.innerText = JSPlayer.Helper.formatTime(player.duration)
 		showPlayerOverlayTimer.style.display = 'block'
 		showPlayerOverlayTimer.querySelector('span').innerText =
@@ -472,9 +472,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		JSPlayer.Comments.init(player, commentsContainer)
 		JSPlayer.Comments.load(dataComments)
-
-		// Update active chapter title
-		updateActiveChapterTitle()
 
 		// overlay player
 		const playerOverlayStart = document.querySelector('.player-overlay-start')
@@ -561,10 +558,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Slider player (time rail)
 	const controlsTimeRail = document.getElementById('controls-time-rail')
 	const sliderRail = document.getElementById('controls-time-rail')
-	const sliderThumb = document.getElementById('slider-thumb')
-	const activeChapterTitle = document.querySelector(
-		'.controls-active-chapter-title'
-	)
+
 	let isDragging = false
 	let isDraggingType = 'time'
 
@@ -605,11 +599,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			JSPlayer.Helper.formatTime(player.currentTime)
 	}
 
-	function updateActiveChapterTitle() {
-		activeChapterTitle.querySelector('span').innerText =
-			dataChapters.chapters[JSPlayer.Chapters.activeChapter - 1].M.name.S
-	}
-
 	function moveSlider(event, elem) {
 		const rect = elem.getBoundingClientRect()
 		if (rect.width > 0) {
@@ -644,9 +633,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	player.addEventListener('timeupdate', () => {
 		currentTime.innerText = JSPlayer.Helper.formatTime(player.currentTime)
-		checkIsCommentActive(player.currentTime)
+		JSPlayer.Comments.checkIsCommentActive(player.currentTime)
 		JSPlayer.Utils.updateSlider()
-		updateActiveChapterTitle()
+		JSPlayer.Chapters.updateActiveChapterTitle(dataChapters)
 	})
 
 	// Volume slider
@@ -780,6 +769,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	let activeCuesLength = 0
 	customCaptions.style.display = 'none'
 
+	JSPlayer.Captions.init(customCaptions)
+
 	captionBtn.addEventListener('click', () => {
 		if (isShowCaptions) {
 			isShowCaptions = false
@@ -796,103 +787,22 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	})
 
-	function showCaptions(text) {
-		if (text) {
-			customCaptions.innerText = text
-		}
-		customCaptions.style.display = 'block'
-	}
-
-	function hideCaptions(text) {
-		if (text) {
-			customCaptions.innerText = text
-		}
-		customCaptions.style.display = 'none'
-	}
-
 	captionTrack.addEventListener('cuechange', () => {
 		const activeCues = player.textTracks[0].activeCues
 
 		activeCuesLength = activeCues.length
 
 		if (isShowCaptions && activeCues.length > 0) {
-			showCaptions(activeCues[0].text)
+			JSPlayer.Captions.showCaptions(activeCues[0].text)
 		} else {
-			hideCaptions(activeCues.length > 0 && activeCues[0].text)
+			JSPlayer.Captions.hideCaptions(
+				activeCues.length > 0 && activeCues[0].text
+			)
 		}
 	})
 
-	// Comments
-	function checkIsCommentActive(currentTime) {
-		const commentsItems = document.querySelectorAll('.controls-comments-item')
-		const COMMENT_DURATION = 5
-
-		const sortedComments = Array.from(commentsItems).sort((a, b) => {
-			return parseFloat(a.dataset.timestamp) - parseFloat(b.dataset.timestamp)
-		})
-
-		sortedComments.forEach((item, index) => {
-			const commentTimestamp = parseFloat(item.dataset.timestamp)
-			const nextComment = sortedComments[index + 1]
-			const nextCommentTimestamp = nextComment
-				? parseFloat(nextComment.dataset.timestamp)
-				: Infinity
-			const commentEndTime = commentTimestamp + COMMENT_DURATION
-			const commentEndTimeAnnotation = commentTimestamp + 0.01
-
-			if (currentTime < commentTimestamp) {
-				item.classList.remove('active')
-				if (item.dataset.id === commentsItems[0].dataset.id) {
-					JSPlayer.Annotation.hide_current_annotation_with_time(item.dataset.id)
-				}
-			} else if (currentTime >= commentTimestamp) {
-				if (
-					currentTime < nextCommentTimestamp &&
-					currentTime <= commentEndTime
-				) {
-					JSPlayer.Annotation.show_current_annotation_with_time(item.dataset.id)
-					item.classList.add('active')
-				} else {
-					item.classList.remove('active')
-				}
-				if (
-					currentTime < nextCommentTimestamp &&
-					currentTime >= commentEndTimeAnnotation
-				) {
-					JSPlayer.Annotation.hide_current_annotation_with_time(item.dataset.id)
-				}
-			}
-		})
-	}
-
 	// Generate СTA Button
-	const generateCTAButton = dataCTA => {
-		const ctaButton = document.createElement('a')
-		ctaButton.href = dataCTA.link
-		ctaButton.className = `player-cta-button-default player-cta-button ${dataCTA.cta_position}`
-		ctaButton.style.backgroundColor = dataCTA.btn_color
-		ctaButton.style.color = dataCTA.txt_color
-		ctaButton.textContent = dataCTA.title
-
-		playerWrap.appendChild(ctaButton)
-
-		const ctaButtonClone = ctaButton.cloneNode(true)
-		ctaButtonClone.classList.add('centered')
-		ctaButtonClone.classList.remove('player-cta-button-default')
-		playerOverlayEnd.appendChild(ctaButtonClone)
-	}
-
-	function applyPlayerColorTheme({
-		primary = JSPlayer.Settings.themeColor.primary,
-		secondary = JSPlayer.Settings.themeColor.secondary,
-	}) {
-		JSPlayer.Settings.themeColor.primary = primary
-		JSPlayer.Settings.themeColor.secondary = secondary
-		sliderThumb.style.backgroundColor = primary
-		document.querySelector('.player-overlay-button svg path').style.fill =
-			primary
-		document.documentElement.style.setProperty('--pulse-color', primary)
-	}
+	JSPlayer.CTA.init(playerWrap, playerOverlayEnd)
 
 	// Errors
 	player.addEventListener('error', () => {

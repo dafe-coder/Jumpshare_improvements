@@ -2,9 +2,13 @@ JSPlayer.Chapters = {
 	data: null,
 	player: null,
 	activeChapter: 1,
+	activeChapterTitle: null,
 
 	init: function (playerObj) {
 		this.player = playerObj
+		this.activeChapterTitle = document.querySelector(
+			'.controls-active-chapter-title'
+		)
 	},
 	load: function (dataChapters) {
 		if (!dataChapters?.chapters?.length) return
@@ -107,5 +111,11 @@ JSPlayer.Chapters = {
 				this.activeChapter = idx + 1
 			}
 		})
+	},
+
+	updateActiveChapterTitle: function (dataChapters) {
+		if (!dataChapters?.chapters?.length) return
+		this.activeChapterTitle.querySelector('span').innerText =
+			dataChapters.chapters[JSPlayer.Chapters.activeChapter - 1].M.name.S
 	},
 }

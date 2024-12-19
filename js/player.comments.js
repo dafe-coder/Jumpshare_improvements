@@ -78,4 +78,46 @@ JSPlayer.Comments = {
 						</div>
 					</div>`
 	},
+
+	checkIsCommentActive: function (currentTime) {
+		const commentsItems = document.querySelectorAll('.controls-comments-item')
+		const COMMENT_DURATION = 5
+
+		const sortedComments = Array.from(commentsItems).sort((a, b) => {
+			return parseFloat(a.dataset.timestamp) - parseFloat(b.dataset.timestamp)
+		})
+
+		sortedComments.forEach((item, index) => {
+			const commentTimestamp = parseFloat(item.dataset.timestamp)
+			const nextComment = sortedComments[index + 1]
+			const nextCommentTimestamp = nextComment
+				? parseFloat(nextComment.dataset.timestamp)
+				: Infinity
+			const commentEndTime = commentTimestamp + COMMENT_DURATION
+			const commentEndTimeAnnotation = commentTimestamp + 0.01
+
+			if (currentTime < commentTimestamp) {
+				item.classList.remove('active')
+				if (item.dataset.id === commentsItems[0].dataset.id) {
+					JSPlayer.Annotation.hide_current_annotation_with_time(item.dataset.id)
+				}
+			} else if (currentTime >= commentTimestamp) {
+				if (
+					currentTime < nextCommentTimestamp &&
+					currentTime <= commentEndTime
+				) {
+					JSPlayer.Annotation.show_current_annotation_with_time(item.dataset.id)
+					item.classList.add('active')
+				} else {
+					item.classList.remove('active')
+				}
+				if (
+					currentTime < nextCommentTimestamp &&
+					currentTime >= commentEndTimeAnnotation
+				) {
+					JSPlayer.Annotation.hide_current_annotation_with_time(item.dataset.id)
+				}
+			}
+		})
+	},
 }
