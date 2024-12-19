@@ -9,7 +9,6 @@ JSPlayer.Comments = {
 
 	add: function (data, dataComments) {
 		const { seconds, comment, shapes = null, id = '' } = data
-		console.log('shapes', shapes)
 		const dataComment = {
 			id: id != '' ? id : Number(new Date().getTime() * Math.random()),
 			user: {

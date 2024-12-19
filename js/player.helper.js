@@ -1,5 +1,5 @@
 JSPlayer.Helper = {
-    formatTime: function(seconds, named = false) {
+	formatTime: function (seconds, named = false) {
 		const minutes = Math.floor(seconds / 60)
 		const sec = Math.floor(seconds % 60)
 		if (!named) {
@@ -16,8 +16,8 @@ JSPlayer.Helper = {
 			)
 		}
 	},
-	
-	getCurrentDateFormatted: function(date) {
+
+	getCurrentDateFormatted: function (date) {
 		const monthNames = [
 			'Jan',
 			'Feb',
@@ -36,9 +36,8 @@ JSPlayer.Helper = {
 		const month = monthNames[date.getMonth()]
 		return `${month} ${day}`
 	},
-	
 
-	parseToSeconds: function(time) {
+	parseToSeconds: function (time) {
 		const timeParts = time.split(':')
 
 		let totalSeconds = 0
@@ -51,5 +50,19 @@ JSPlayer.Helper = {
 			totalSeconds = +minutes * 60 + +seconds
 		}
 		return totalSeconds
-	}
-};
+	},
+
+	toggleSiblingElement: (parentElement, element, showFirst = false) => {
+		if (showFirst) {
+			parentElement.querySelector(`${element}:first-child`).style.display =
+				'block'
+			parentElement.querySelector(`${element}:last-child`).style.display =
+				'none'
+		} else {
+			parentElement.querySelector(`${element}:first-child`).style.display =
+				'none'
+			parentElement.querySelector(`${element}:last-child`).style.display =
+				'block'
+		}
+	},
+}

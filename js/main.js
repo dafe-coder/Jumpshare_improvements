@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	function showAnnotationPanel() {
 		showAnnotationBtn.classList.add('active')
-		toggleSiblingElement(showAnnotationBtn, 'svg')
+		JSPlayer.Helper.toggleSiblingElement(showAnnotationBtn, 'svg')
 		document.querySelector('#annotation_panel').classList.add('active')
 		JSPlayer.Annotation.initializ_canvas()
 		JSPlayer.Annotation.hide_seekbar_and_timed_comments()
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	function hideAnnotationPanel() {
 		showAnnotationBtn.classList.remove('active')
-		toggleSiblingElement(showAnnotationBtn, 'svg', true)
+		JSPlayer.Helper.toggleSiblingElement(showAnnotationBtn, 'svg', true)
 		document.querySelector('#annotation_panel').classList.remove('active')
 		JSPlayer.Annotation.reset_annotation()
 		JSPlayer.Annotation.show_seekbar_and_timed_comments()
@@ -389,8 +389,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		if (player.paused) {
 			player.play()
-			toggleSiblingElement(playOrPauseBtn, 'svg')
-			toggleSiblingElement(playCircle, 'svg', true)
+			JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg')
+			JSPlayer.Helper.toggleSiblingElement(playCircle, 'svg', true)
 			playCircle.querySelector('svg').style.animation =
 				'playAnim 0.4s ease-in-out'
 			timerId = setTimeout(() => {
@@ -401,8 +401,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			player.pause()
 			clearTimeout(controlsShowID)
 			showHideControls()
-			toggleSiblingElement(playOrPauseBtn, 'svg', true)
-			toggleSiblingElement(playCircle, 'svg')
+			JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg', true)
+			JSPlayer.Helper.toggleSiblingElement(playCircle, 'svg')
 			playCircle.querySelector('svg:last-child').style.animation =
 				'playAnim 0.4s ease-in-out'
 			timerId = setTimeout(() => {
@@ -410,18 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			}, 300)
 		}
 		clearTimeout(timerId)
-	}
-
-	function mute() {
-		if (!player.muted) {
-			player.muted = true
-			toggleSiblingElement(muteBtn, 'svg')
-			updateProgressVolume(0)
-		} else {
-			player.muted = false
-			toggleSiblingElement(muteBtn, 'svg', true)
-			updateProgressVolume(playerVolumeCount)
-		}
 	}
 
 	function choosePlaybackRate() {
@@ -500,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			document
 				.querySelector('.player-wrap')
 				.classList.add('player-overlay-played')
-			toggleSiblingElement(playOrPauseBtn, 'svg')
+			JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg')
 			showHideControls()
 		})
 
@@ -637,13 +625,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 			if (isDraggingType === 'volume' && percentage >= 0 && percentage <= 1) {
 				if (percentage === 0) {
-					toggleSiblingElement(muteBtn, 'svg')
+					JSPlayer.Helper.toggleSiblingElement(muteBtn, 'svg')
 				} else {
-					toggleSiblingElement(muteBtn, 'svg', true)
+					JSPlayer.Helper.toggleSiblingElement(muteBtn, 'svg', true)
 				}
 				playerVolumeCount = percentage
 				player.volume = percentage
-				updateProgressVolume(percentage)
+				JSPlayer.Controls.updateProgressVolume(percentage)
 			}
 		}
 	}
@@ -664,12 +652,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Volume slider
 
 	const volumeSlider = document.getElementById('volume-slider')
-
-	function updateProgressVolume(percentage) {
-		const progressPercent = percentage * 100
-		volumeSlider.querySelector('.volume-slider-progress').style.width =
-			progressPercent + '%'
-	}
 
 	volumeSlider.addEventListener('mousedown', event => {
 		isDragging = true
@@ -702,7 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		commentsContainer.style.display = 'none'
 		playerOverlayEnd.style.display = 'flex'
 		playerCtaButtonDefault.classList.add('hidden')
-		toggleSiblingElement(playOrPauseBtn, 'svg', true)
+		JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg', true)
 		JSPlayer.Chapters.activeChapter = 1
 	})
 
@@ -715,60 +697,34 @@ document.addEventListener('DOMContentLoaded', () => {
 		player.play()
 		playerOverlayEnd.style.display = 'none'
 		playerCtaButtonDefault.classList.remove('hidden')
-		toggleSiblingElement(playOrPauseBtn, 'svg')
+		JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg')
 	})
+
+	// Controls
+	JSPlayer.Controls.init(playerWrap)
 
 	// Theatre mode
 	const theatreBtn = document.getElementById('theatre-mode')
-	theatreBtn.addEventListener('click', () => {
-		playerWrap.classList.toggle('theatre-mode-wrap')
-		if (playerWrap.classList.contains('theatre-mode-wrap')) {
-			toggleSiblingElement(theatreBtn, 'svg')
-		} else {
-			toggleSiblingElement(theatreBtn, 'svg', true)
-		}
-	})
-
+	theatreBtn.addEventListener('click', () => JSPlayer.Controls.theatreMode())
 	// Fullscreen
 	const fullScreenBtn = document.getElementById('fullscreen')
 
-	fullScreenBtn.addEventListener('click', toggleFullScreen)
+	fullScreenBtn.addEventListener('click', () =>
+		JSPlayer.Controls.toggleFullScreen()
+	)
 
-	function toggleFullScreen() {
-		if (!document.fullscreenElement) {
-			if (playerWrap.requestFullscreen) {
-				playerWrap.requestFullscreen()
-			} else if (playerWrap.webkitRequestFullscreen) {
-				playerWrap.webkitRequestFullscreen()
-			} else if (playerWrap.msRequestFullscreen) {
-				playerWrap.msRequestFullscreen()
-			}
-		} else {
-			if (document.exitFullscreen) {
-				document.exitFullscreen()
-			} else if (document.webkitExitFullscreen) {
-				document.webkitExitFullscreen()
-			} else if (document.msExitFullscreen) {
-			}
-		}
-	}
-
-	const toggleFullscreenStyles = e => {
-		e.preventDefault()
-
-		const isFullscreen = !!document.fullscreenElement
-		if (isFullscreen) {
-			setTimeout(() => {
-				document.querySelector('.controls').style.position = 'fixed'
-			}, 0)
-		} else {
-			document.querySelector('.controls').style.position = 'absolute'
-		}
-	}
-
-	document.addEventListener('fullscreenchange', toggleFullscreenStyles)
-	document.addEventListener('webkitfullscreenchange', toggleFullscreenStyles)
-	document.addEventListener('mozfullscreenchange', toggleFullscreenStyles)
+	document.addEventListener(
+		'fullscreenchange',
+		JSPlayer.Controls.toggleFullscreenStyles
+	)
+	document.addEventListener(
+		'webkitfullscreenchange',
+		JSPlayer.Controls.toggleFullscreenStyles
+	)
+	document.addEventListener(
+		'mozfullscreenchange',
+		JSPlayer.Controls.toggleFullscreenStyles
+	)
 
 	// Keyboard
 	document.addEventListener('keydown', e => {
@@ -782,10 +738,10 @@ document.addEventListener('DOMContentLoaded', () => {
 				e.preventDefault()
 				if (player.paused || player.ended) {
 					player.play()
-					toggleSiblingElement(playOrPauseBtn, 'svg')
+					JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg')
 				} else {
 					player.pause()
-					toggleSiblingElement(playOrPauseBtn, 'svg', true)
+					JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg', true)
 				}
 			}
 			if (e.code === 'ArrowLeft') {
@@ -828,7 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (isShowCaptions) {
 			isShowCaptions = false
 			customCaptions.style.display = 'none'
-			toggleSiblingElement(captionBtn, 'svg', true)
+			JSPlayer.Helper.toggleSiblingElement(captionBtn, 'svg', true)
 		} else {
 			if (activeCuesLength > 0) {
 				customCaptions.style.display = 'block'
@@ -836,7 +792,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				customCaptions.style.display = 'none'
 			}
 			isShowCaptions = true
-			toggleSiblingElement(captionBtn, 'svg')
+			JSPlayer.Helper.toggleSiblingElement(captionBtn, 'svg')
 		}
 	})
 
@@ -948,20 +904,4 @@ document.addEventListener('DOMContentLoaded', () => {
 	playOrPauseBtn.setAttribute('aria-label', 'Play/Pause')
 	muteBtn.setAttribute('aria-label', 'Mute')
 	fullScreenBtn.setAttribute('aria-label', 'Fullscreen')
-
-	// Helper functions
-
-	function toggleSiblingElement(parentElement, element, showFirst = false) {
-		if (showFirst) {
-			parentElement.querySelector(`${element}:first-child`).style.display =
-				'block'
-			parentElement.querySelector(`${element}:last-child`).style.display =
-				'none'
-		} else {
-			parentElement.querySelector(`${element}:first-child`).style.display =
-				'none'
-			parentElement.querySelector(`${element}:last-child`).style.display =
-				'block'
-		}
-	}
 })
