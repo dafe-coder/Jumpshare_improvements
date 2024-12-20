@@ -1258,6 +1258,41 @@ canvas#annotation_canvas.darwingMode {
 .pointer-events-none {
 	pointer-events: none;
 }
+
+.test-url-container {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	margin-bottom: 20px;
+}
+.test-url-container input {
+	flex-grow: 1;
+	height: 30px;
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: 3px;
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+	padding: 0 10px;
+}
+.test-url-container button {
+	flex-shrink: 0;
+	height: 30px;
+}
+.btn-primary {
+	background: #1891ed;
+	color: #fff;
+	border-radius: 3px;
+	border: none;
+	padding: 3px 12px;
+	cursor: pointer;
+}
+.btn-primary:hover {
+	background: #1281d6;
+}
+
+/* Hidden */
 .hidden,
 .hide {
 	display: none !important;

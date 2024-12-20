@@ -252,8 +252,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	const annotationCanvasElement = document.getElementById('annotation_canvas')
 	const sliderThumb = document.getElementById('slider-thumb')
 	const sliderRail = document.getElementById('controls-time-rail')
+	const playerOverlayStart = document.querySelector('.player-overlay-start')
 
 	let controlsShowID = null
+	let isCTAButtonGenerated = false
 	// Hide native controls
 	player.controls = false
 	let playerVolumeCount = 0.5
@@ -387,6 +389,22 @@ document.addEventListener('DOMContentLoaded', () => {
 	)
 	player.addEventListener('click', e => JSPlayer.Utils.playOrPause(e))
 
+	function preparePlayerWhenStartPlaying() {
+		commentsContainer.classList.remove('hide')
+		// Generate CTA button
+		if (!isCTAButtonGenerated) {
+			JSPlayer.CTA.generateCTAButton(dataCTA)
+			isCTAButtonGenerated = true
+		}
+		playerOverlayStart.style.display = 'none'
+		document
+			.querySelector('.player-wrap')
+			.classList.add('player-overlay-played')
+		JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg')
+		JSPlayer.Utils.showHideControls()
+		player.play()
+	}
+
 	JSPlayer.Settings.hideTextTracks()
 	player.addEventListener('loadedmetadata', () => {
 		setTimeout(() => {
@@ -404,21 +422,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		JSPlayer.Comments.init(player, commentsContainer, dataChapters)
 		JSPlayer.Comments.load(dataComments)
 
-		// overlay player
-		const playerOverlayStart = document.querySelector('.player-overlay-start')
+		// overlay player start
 
-		playerOverlayStart.addEventListener('click', () => {
-			commentsContainer.classList.remove('hide')
-			// Generate CTA button
-			JSPlayer.CTA.generateCTAButton(dataCTA)
-			player.play()
-			playerOverlayStart.style.display = 'none'
-			document
-				.querySelector('.player-wrap')
-				.classList.add('player-overlay-played')
-			JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg')
-			JSPlayer.Utils.showHideControls()
-		})
+		playerOverlayStart.addEventListener('click', preparePlayerWhenStartPlaying)
 
 		JSPlayer.Chapters.init(player)
 		JSPlayer.Chapters.load(dataChapters)
@@ -536,7 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const playerCtaButtonDefault = document.querySelector(
 			'.player-cta-button-default'
 		)
-		showHideControls(true)
+		JSPlayer.Utils.showHideControls(true)
 		commentsContainer.style.display = 'none'
 		playerOverlayEnd.style.display = 'flex'
 		playerCtaButtonDefault.classList.add('hidden')
@@ -593,6 +599,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (e.code === 'Space') {
 				e.preventDefault()
 				if (player.paused || player.ended) {
+					preparePlayerWhenStartPlaying()
 					player.play()
 					JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg')
 				} else {

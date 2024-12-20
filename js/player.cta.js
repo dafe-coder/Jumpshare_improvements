@@ -20,6 +20,7 @@ JSPlayer.CTA = {
 		const ctaButtonClone = ctaButton.cloneNode(true)
 		ctaButtonClone.classList.add('centered')
 		ctaButtonClone.classList.remove('player-cta-button-default')
+		console.log(this.playerOverlayEnd)
 		this.playerOverlayEnd.appendChild(ctaButtonClone)
 	},
 }
