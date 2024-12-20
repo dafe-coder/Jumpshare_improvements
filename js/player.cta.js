@@ -15,11 +15,11 @@ JSPlayer.CTA = {
 		ctaButton.style.color = dataCTA.txt_color
 		ctaButton.textContent = dataCTA.title
 
-		playerWrap.appendChild(ctaButton)
+		this.playerWrap.appendChild(ctaButton)
 
 		const ctaButtonClone = ctaButton.cloneNode(true)
 		ctaButtonClone.classList.add('centered')
 		ctaButtonClone.classList.remove('player-cta-button-default')
-		playerOverlayEnd.appendChild(ctaButtonClone)
+		this.playerOverlayEnd.appendChild(ctaButtonClone)
 	},
 }

@@ -1,10 +1,12 @@
 JSPlayer.Comments = {
 	commentsContainer: null,
 	player: null,
+	dataChapters: null,
 
-	init: function (playerObj, container) {
+	init: function (playerObj, container, dataChapters) {
 		this.commentsContainer = container
 		this.player = playerObj
+		this.dataChapters = dataChapters
 	},
 
 	add: function (data, dataComments) {
@@ -41,19 +43,19 @@ JSPlayer.Comments = {
 		this.commentsContainer.addEventListener('click', e => {
 			const commentItem = e.target.closest('.controls-comments-item')
 			if (commentItem) {
-				player.pause()
-				player.currentTime = Number(commentItem.dataset.timestamp)
+				this.player.pause()
+				this.player.currentTime = Number(commentItem.dataset.timestamp)
 				JSPlayer.Annotation.show_current_annotation_with_time(
 					commentItem.dataset.id
 				)
 				JSPlayer.Chapters.chooseActiveChapter()
-				JSPlayer.Utils.updateSlider()
+				JSPlayer.Utils.updateSlider(this.dataChapters)
 			}
 		})
 	},
 
 	create: function (comment) {
-		const left = (comment.media_timestamp / player.duration) * 100
+		const left = (comment.media_timestamp / this.player.duration) * 100
 
 		return `<div class="controls-comments-item" style="left: ${left}%" data-timestamp="${comment.media_timestamp}" data-id="${comment.id}">
 						<div class='controls-comments-avatar'>

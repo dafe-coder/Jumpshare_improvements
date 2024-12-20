@@ -1,9 +1,18 @@
 JSPlayer.Controls = {
 	playerWrap: null,
+	player: null,
+	playerVolumeCount: 0.5,
+	volumeSlider: null,
+	muteBtn: null,
+	theatreBtn: null,
 
-	init: function (playerWrap) {
+	init: function (player, playerWrap, playerVolumeCount) {
+		this.playerVolumeCount = playerVolumeCount
+		this.player = player
 		this.playerWrap = playerWrap
 		this.theatreBtn = document.getElementById('theatre-mode')
+		this.muteBtn = document.getElementById('mute-btn')
+		this.volumeSlider = document.getElementById('volume-slider')
 	},
 
 	// Fullscreen
@@ -40,19 +49,19 @@ JSPlayer.Controls = {
 
 	// Volume
 	mute: function () {
-		if (!player.muted) {
-			player.muted = true
-			JSPlayer.Helper.toggleSiblingElement(muteBtn, 'svg')
+		if (!this.player.muted) {
+			this.player.muted = true
+			JSPlayer.Helper.toggleSiblingElement(this.muteBtn, 'svg')
 			this.updateProgressVolume(0)
 		} else {
-			player.muted = false
-			JSPlayer.Helper.toggleSiblingElement(muteBtn, 'svg', true)
-			this.updateProgressVolume(playerVolumeCount)
+			this.player.muted = false
+			JSPlayer.Helper.toggleSiblingElement(this.muteBtn, 'svg', true)
+			this.updateProgressVolume(this.playerVolumeCount)
 		}
 	},
 	updateProgressVolume: percentage => {
 		const progressPercent = percentage * 100
-		volumeSlider.querySelector('.volume-slider-progress').style.width =
+		this.volumeSlider.querySelector('.volume-slider-progress').style.width =
 			progressPercent + '%'
 	},
 

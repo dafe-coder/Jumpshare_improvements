@@ -251,25 +251,33 @@ document.addEventListener('DOMContentLoaded', () => {
 	const commentsContainer = document.querySelector('.controls-comments')
 	const annotationCanvasElement = document.getElementById('annotation_canvas')
 	const sliderThumb = document.getElementById('slider-thumb')
+	const sliderRail = document.getElementById('controls-time-rail')
 
 	let controlsShowID = null
 	// Hide native controls
 	player.controls = false
 	let playerVolumeCount = 0.5
 
-	JSPlayer.Settings.init(player, sliderThumb)
+	JSPlayer.Settings.init(player, sliderThumb, playerWrap)
+	JSPlayer.Utils.init({
+		player,
+		playerWrap,
+		sliderThumb,
+		sliderRail,
+		controlsShowID,
+		currentTime,
+		controls,
+		playOrPauseBtn,
+		playerVolumeCount,
+		dataChapters,
+		muteBtn,
+	})
 
 	// Player wrap init height
-	function resizeVideoPlayer() {
-		const playerHeight = JSPlayer.Settings.videoSize.split('x')[1]
-		const playerWidth = JSPlayer.Settings.videoSize.split('x')[0]
-		playerWrap.style.height =
-			(playerHeight / playerWidth) * playerWrap.getBoundingClientRect().width +
-			'px'
-	}
+	JSPlayer.Settings.resizeVideoPlayer()
 
 	document.addEventListener('resize', () => {
-		resizeVideoPlayer()
+		JSPlayer.Settings.resizeVideoPlayer()
 	})
 
 	// Initialize rough.js
@@ -359,102 +367,25 @@ document.addEventListener('DOMContentLoaded', () => {
 	player.addEventListener('progress', handleProgress)
 	player.addEventListener('loadeddata', handleProgress)
 
-	function showHideControls(hide = false) {
-		if (!hide) {
-			controls.classList.add('active')
-		} else {
-			controls.classList.remove('active')
-		}
-	}
-
-	function hideShowControlsOnHover(e) {
-		if (!player.paused && e && e.target && e.target !== controls) {
-			showHideControls()
-			clearTimeout(controlsShowID)
-			controlsShowID = setTimeout(() => {
-				showHideControls(true)
-			}, 4000)
-		}
-	}
 	controls.addEventListener('mousemove', () => {
-		showHideControls()
+		JSPlayer.Utils.showHideControls()
 		clearTimeout(controlsShowID)
 	})
-	player.addEventListener('mousemove', hideShowControlsOnHover)
+	player.addEventListener('mousemove', e =>
+		JSPlayer.Utils.hideShowControlsOnHover(e)
+	)
 	playerWrap.addEventListener('mouseleave', () => {
 		if (!player.paused) {
-			showHideControls(true)
+			JSPlayer.Utils.showHideControls(true)
 		}
 	})
 
-	function playOrPause() {
-		const playCircle = document.querySelector('.play-circle')
-		let timerId = null
-
-		if (player.paused) {
-			player.play()
-			JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg')
-			JSPlayer.Helper.toggleSiblingElement(playCircle, 'svg', true)
-			playCircle.querySelector('svg').style.animation =
-				'playAnim 0.4s ease-in-out'
-			timerId = setTimeout(() => {
-				playCircle.querySelector('svg').style.animation = ''
-			}, 300)
-			hideShowControlsOnHover()
-		} else {
-			player.pause()
-			clearTimeout(controlsShowID)
-			showHideControls()
-			JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg', true)
-			JSPlayer.Helper.toggleSiblingElement(playCircle, 'svg')
-			playCircle.querySelector('svg:last-child').style.animation =
-				'playAnim 0.4s ease-in-out'
-			timerId = setTimeout(() => {
-				playCircle.querySelector('svg:last-child').style.animation = ''
-			}, 300)
-		}
-		clearTimeout(timerId)
-	}
-
-	function choosePlaybackRate() {
-		const playbackRateCount = playbackRate.querySelector('.playback-rate-count')
-
-		switch (playbackRateCount.innerText) {
-			case '1':
-				playbackRateCount.innerText = 1.25
-				player.playbackRate = 1.25
-				break
-			case '1.25':
-				playbackRateCount.innerText = 1.5
-				player.playbackRate = 1.25
-				break
-			case '1.5':
-				playbackRateCount.innerText = 1.75
-				player.playbackRate = 1.75
-				break
-			case '1.75':
-				playbackRateCount.innerText = 2
-				player.playbackRate = 2
-				break
-			case '2':
-				playbackRateCount.innerText = 2.5
-				player.playbackRate = 2.5
-				break
-			case '2.5':
-				playbackRateCount.innerText = 0.5
-				player.playbackRate = 0.5
-				break
-			default:
-				playbackRateCount.innerText = 1
-				player.playbackRate = 1
-				break
-		}
-	}
-
-	playOrPauseBtn.addEventListener('click', playOrPause)
-	muteBtn.addEventListener('click', mute)
-	playbackRate.addEventListener('click', choosePlaybackRate)
-	player.addEventListener('click', playOrPause)
+	playOrPauseBtn.addEventListener('click', e => JSPlayer.Utils.playOrPause(e))
+	muteBtn.addEventListener('click', () => JSPlayer.Controls.mute())
+	playbackRate.addEventListener('click', () =>
+		JSPlayer.Settings.choosePlaybackRate()
+	)
+	player.addEventListener('click', e => JSPlayer.Utils.playOrPause(e))
 
 	JSPlayer.Settings.hideTextTracks()
 	player.addEventListener('loadedmetadata', () => {
@@ -470,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		// Load comments
 
-		JSPlayer.Comments.init(player, commentsContainer)
+		JSPlayer.Comments.init(player, commentsContainer, dataChapters)
 		JSPlayer.Comments.load(dataComments)
 
 		// overlay player
@@ -479,14 +410,14 @@ document.addEventListener('DOMContentLoaded', () => {
 		playerOverlayStart.addEventListener('click', () => {
 			commentsContainer.classList.remove('hide')
 			// Generate CTA button
-			generateCTAButton(dataCTA)
+			JSPlayer.CTA.generateCTAButton(dataCTA)
 			player.play()
 			playerOverlayStart.style.display = 'none'
 			document
 				.querySelector('.player-wrap')
 				.classList.add('player-overlay-played')
 			JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg')
-			showHideControls()
+			JSPlayer.Utils.showHideControls()
 		})
 
 		JSPlayer.Chapters.init(player)
@@ -557,84 +488,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// Slider player (time rail)
 	const controlsTimeRail = document.getElementById('controls-time-rail')
-	const sliderRail = document.getElementById('controls-time-rail')
 
 	let isDragging = false
 	let isDraggingType = 'time'
 
-	JSPlayer.Utils.updateSlider = function () {
-		const startValue =
-			dataChapters.chapters[JSPlayer.Chapters.activeChapter - 1].M.line.S
-		const endValue = dataChapters.chapters[JSPlayer.Chapters.activeChapter]
-			? dataChapters.chapters[JSPlayer.Chapters.activeChapter].M.line.S
-			: player.duration
-		const progressRailPercent =
-			((player.currentTime - startValue) / (endValue - startValue)) * 100
-		const progressThumbPercent = (player.currentTime / player.duration) * 100
-
-		const sliderRailItemsProgress = sliderRail.querySelectorAll(
-			'.chapter-slider-progress'
-		)
-
-		sliderRailItemsProgress.forEach((item, idx) => {
-			if (idx < JSPlayer.Chapters.activeChapter - 1) {
-				item.style.width = '100%'
-			} else {
-				item.style.width = 0
-			}
-		})
-
-		sliderThumb.style.left = progressThumbPercent + '%'
-
-		if (progressRailPercent <= 99.99) {
-			sliderRailItemsProgress[JSPlayer.Chapters.activeChapter - 1].style.width =
-				progressRailPercent + '%'
-		} else {
-			sliderRailItemsProgress[JSPlayer.Chapters.activeChapter - 1].style.width =
-				'100%'
-			++JSPlayer.Chapters.activeChapter
-		}
-		currentTime.innerHTML = JSPlayer.Helper.formatTime(player.currentTime)
-		document.querySelector('.comment-new-timestamp').innerText =
-			JSPlayer.Helper.formatTime(player.currentTime)
-	}
-
-	function moveSlider(event, elem) {
-		const rect = elem.getBoundingClientRect()
-		if (rect.width > 0) {
-			const offsetX = event.clientX - rect.left
-			const width = rect.width
-			const percentage = offsetX / width
-
-			if (isDraggingType === 'time' && percentage >= 0 && percentage <= 0.99) {
-				const newTime = player.duration * percentage
-				player.currentTime = newTime
-				JSPlayer.Chapters.chooseActiveChapter()
-				JSPlayer.Utils.updateSlider()
-			}
-			if (isDraggingType === 'volume' && percentage >= 0 && percentage <= 1) {
-				if (percentage === 0) {
-					JSPlayer.Helper.toggleSiblingElement(muteBtn, 'svg')
-				} else {
-					JSPlayer.Helper.toggleSiblingElement(muteBtn, 'svg', true)
-				}
-				playerVolumeCount = percentage
-				player.volume = percentage
-				JSPlayer.Controls.updateProgressVolume(percentage)
-			}
-		}
-	}
-
 	controlsTimeRail.addEventListener('mousedown', event => {
 		isDragging = true
 		isDraggingType = 'time'
-		moveSlider(event, controlsTimeRail, isDraggingType)
+		JSPlayer.Utils.moveSlider(event, controlsTimeRail, isDraggingType)
 	})
 
 	player.addEventListener('timeupdate', () => {
 		currentTime.innerText = JSPlayer.Helper.formatTime(player.currentTime)
 		JSPlayer.Comments.checkIsCommentActive(player.currentTime)
-		JSPlayer.Utils.updateSlider()
+		JSPlayer.Utils.updateSlider(dataChapters)
 		JSPlayer.Chapters.updateActiveChapterTitle(dataChapters)
 	})
 
@@ -645,14 +512,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	volumeSlider.addEventListener('mousedown', event => {
 		isDragging = true
 		isDraggingType = 'volume'
-		moveSlider(event, volumeSlider, isDraggingType)
+		JSPlayer.Utils.moveSlider(event, volumeSlider, isDraggingType)
 	})
 
 	window.addEventListener('mousemove', event => {
 		if (isDragging && isDraggingType === 'time') {
-			moveSlider(event, controlsTimeRail)
+			JSPlayer.Utils.moveSlider(event, controlsTimeRail, isDraggingType)
 		} else if (isDragging && isDraggingType === 'volume') {
-			moveSlider(event, volumeSlider)
+			JSPlayer.Utils.moveSlider(event, volumeSlider, isDraggingType)
 		}
 	})
 	window.addEventListener('mouseup', () => {
@@ -690,7 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	})
 
 	// Controls
-	JSPlayer.Controls.init(playerWrap)
+	JSPlayer.Controls.init(player, playerWrap, playerVolumeCount)
 
 	// Theatre mode
 	const theatreBtn = document.getElementById('theatre-mode')
@@ -736,12 +603,12 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (e.code === 'ArrowLeft') {
 				player.currentTime -= skipAmount
 				JSPlayer.Chapters.chooseActiveChapter()
-				JSPlayer.Utils.updateSlider()
+				JSPlayer.Utils.updateSlider(dataChapters)
 			}
 			if (e.code === 'ArrowRight') {
 				player.currentTime += skipAmount
 				JSPlayer.Chapters.chooseActiveChapter()
-				JSPlayer.Utils.updateSlider()
+				JSPlayer.Utils.updateSlider(dataChapters)
 			}
 			if (e.code === 'KeyK') {
 				toggleFullScreen()
