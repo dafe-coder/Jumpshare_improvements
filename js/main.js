@@ -331,9 +331,29 @@ document.addEventListener('DOMContentLoaded', () => {
 	const playerSrc = [
 		'./20fd0242e93e4fdda762a05a8107cf73/4K-Nature-Film_-_Flow-Of-Life_-30-Minutes-of-Beautiful-Scenery-Relaxing-Music-for-Meditation.m3u8',
 		'https://d1ffb1nfch3ckq.cloudfront.net/s095q2%2Ffile%2Fb9b3b32c193e7156d15bdaa2d1929778_f839b6774122ccba2d2b82a1bdc13a48.mp4?response-content-disposition=inline%3Bfilename%3D%22b9b3b32c193e7156d15bdaa2d1929778_f839b6774122ccba2d2b82a1bdc13a48.mp4%22%3B&response-content-type=video%2Fmp4&Expires=1733943645&Signature=EVqiq~KETO974nd288O6-l-soTTJE13EQZ42-mfCpPbJEjxuxdvXoxiBQSc7utUuNCjyXME0E9vx1EzpFyvT2Y78o8xVS46gbo608GAC4NAfUXIJs2jVhnE-N1e~1GhznOlibVO~HNT7poTmIFJilhE7TPrwokhBa9SMv-PRo4SRW9RTbzqK~nLFQaPtffaw8drvwrFeJAM61d52Qf-opuVOKKX5iP4vo9aFF7MXAvpy2J-cbiml658BXZ~LC8KsJ6SYGCdRD-l8cC-9dtnOunkF0tyM7TudLbS4m-B8U1hX4ou2zWQp9-FEofqxy1KAcaPV9YWcS-kIXwli4X-hnA__&Key-Pair-Id=APKAJT5WQLLEOADKLHBQ',
+		'../dual_audio_stream/Merged-Track.mp4',
+		'../dual_audio_stream/Seperate-Tracks.mp4',
+		'https://ocean.mirzabilal.com/iptv/video/prog_index.m3u8',
 	]
-	let activePlayerSrc = 0
 
+	let activePlayerSrc = 3
+	player.addEventListener('loadedmetadata', () => {
+		setTimeout(() => {
+			const audioTracks = player.audioTracks
+			console.log('Audio tracks after delay:', audioTracks)
+
+			for (let i = 0; i < audioTracks.length; i++) {
+				const track = audioTracks[i]
+				console.log(`Audio track ${i}:`, track)
+				track.enabled = true
+			}
+		}, 100)
+	})
+
+	const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+
+	// const source1 = audioContext.createMediaElementSource(audios)
+	// const source2 = audioContext.createMediaElementSource(audios)
 	if (
 		player.canPlayType('application/vnd.apple.mpegurl') ||
 		playerSrc[activePlayerSrc].includes('.mp4')
@@ -679,7 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	JSPlayer.CTA.init(playerWrap, playerOverlayEnd)
 
 	// Errors
-	player.addEventListener('error', () => {
+	player.addEventListener('error', e => {
 		console.error('Video Error:', e)
 		// loadingBgSpinner.style.display = 'none'
 	})
