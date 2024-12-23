@@ -363,6 +363,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		var hls = new Hls()
 		hls.loadSource(playerSrc[activePlayerSrc])
 		hls.attachMedia(player)
+	} else {
+		console.warn('HLS not supported')
 	}
 
 	function handleProgress() {
@@ -700,8 +702,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// Errors
 	player.addEventListener('error', e => {
-		console.error('Video Error:', e)
-		// loadingBgSpinner.style.display = 'none'
+		const error = e.error
+		switch (error.code) {
+			case 1: // MEDIA_ERR_ABORTED
+				console.log('Download interrupted')
+				break
+			case 2: // MEDIA_ERR_NETWORK
+				console.log('Network error')
+				break
+			case 3: // MEDIA_ERR_DECODE
+				console.log('Decoding error')
+				break
+			case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
+				console.log('Format not supported')
+				break
+			default:
+				console.log('Unknown error')
+		}
+		console.log('Error details:', error.message)
 	})
 
 	// ARIA attributes for control buttons
