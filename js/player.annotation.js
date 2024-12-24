@@ -21,6 +21,12 @@ JSPlayer.Annotation = {
 	editMode: false,
 	event_added: false,
 	in_annotation_mode: false,
+	shadowOptions: {
+		shadowColor: 'rgba(0,0,0,0.3)',
+		shadowOffsetX: 1.5,
+		shadowOffsetY: 1.5,
+		shadowBlur: 1,
+	},
 
 	initialize: function () {
 		this.bootstrap()
@@ -71,10 +77,7 @@ JSPlayer.Annotation = {
 				this.currentTool = 'rectangle'
 				// $('#annotation_panel').remove()
 				this.shapes = []
-				this.shapes.splice(
-					0,
-					this.shapes.length
-				)
+				this.shapes.splice(0, this.shapes.length)
 			} else {
 				this.handle_annotation.addClass('ann_active')
 				$('#annotation_canvas').removeClass('hide')
@@ -156,15 +159,9 @@ JSPlayer.Annotation = {
 	create_new_element: function (id, x1, y1, x2, y2, type, color) {
 		let roughElement
 
-		let _x1 = this.percentage_to_px_horizontal(
-			x1,
-			$('#video_wrapper').width()
-		)
+		let _x1 = this.percentage_to_px_horizontal(x1, $('#video_wrapper').width())
 		let _y1 = this.percentage_to_px_vertical(y1, $('#video_wrapper').height())
-		let _x2 = this.percentage_to_px_horizontal(
-			x2,
-			$('#video_wrapper').width()
-		)
+		let _x2 = this.percentage_to_px_horizontal(x2, $('#video_wrapper').width())
 		let _y2 = this.percentage_to_px_vertical(y2, $('#video_wrapper').height())
 		let arrowDawan = false
 		if (this.annotation_canvas[0]) {
@@ -186,11 +183,38 @@ JSPlayer.Annotation = {
 				return { id, x1, y1, x2, y2, type, roughElement, color }
 			} else if (type === 'arrow') {
 				const angle = Math.atan2(_y2 - _y1, _x2 - _x1)
-				const headLength = 10
-				roughElement = `M ${_x1} ${_y1} L ${_x2} ${_y2}`
+				const headLength = 20
+				const headWidth = 20
+				const insetDepth = headWidth * 0.3
 
-				roughElement += `M ${_x2} ${_y2} L ${_x2 - headLength * Math.cos(angle - Math.PI / 6)} ${_y2 - headLength * Math.sin(angle - Math.PI / 6)}`
-				roughElement += `M ${_x2} ${_y2} L ${_x2 - headLength * Math.cos(angle + Math.PI / 6)} ${_y2 - headLength * Math.sin(angle + Math.PI / 6)}`
+				const offset = -5
+				const baseX = _x2 - offset * Math.cos(angle)
+				const baseY = _y2 - offset * Math.sin(angle)
+
+				const tipX = baseX + headLength * 0.2 * Math.cos(angle)
+				const tipY = baseY + headLength * 0.2 * Math.sin(angle)
+
+				const shoulderX = baseX - headLength * 0.8 * Math.cos(angle)
+				const shoulderY = baseY - headLength * 0.8 * Math.sin(angle)
+
+				const perpAngle = angle + Math.PI / 2
+				const leftX = shoulderX + (headWidth / 2) * Math.cos(perpAngle)
+				const leftY = shoulderY + (headWidth / 2) * Math.sin(perpAngle)
+				const rightX = shoulderX - (headWidth / 2) * Math.cos(perpAngle)
+				const rightY = shoulderY - (headWidth / 2) * Math.sin(perpAngle)
+
+				const insetX = shoulderX + insetDepth * Math.cos(angle)
+				const insetY = shoulderY + insetDepth * Math.sin(angle)
+
+				roughElement = {
+					path: `M ${_x1} ${_y1} L ${_x2} ${_y2}`,
+					cursor: `M ${leftX} ${leftY} 
+							L ${tipX} ${tipY} 
+							L ${rightX} ${rightY}
+							L ${insetX} ${insetY}
+							L ${leftX} ${leftY}`,
+					fill: color,
+				}
 
 				return { id, x1, y1, x2, y2, type, roughElement, color }
 			} else if (type === 'freehand') {
@@ -214,8 +238,7 @@ JSPlayer.Annotation = {
 		const c = { x, y }
 		const offset =
 			this.get_distance(a, b) -
-			(this.get_distance(a, c) +
-				this.get_distance(b, c))
+			(this.get_distance(a, c) + this.get_distance(b, c))
 		return Math.abs(offset) < maxDistance ? 'inside' : null
 	},
 
@@ -233,8 +256,7 @@ JSPlayer.Annotation = {
 			const c = { x, y }
 			const offset =
 				this.get_distance(a, b) -
-				(this.get_distance(a, c) +
-					this.get_distance(b, c))
+				(this.get_distance(a, c) + this.get_distance(b, c))
 			return Math.abs(offset) < 1
 		} else if (type === 'arrow') {
 			const a = { x: x1, y: y1 }
@@ -242,8 +264,7 @@ JSPlayer.Annotation = {
 			const c = { x, y }
 			const offset =
 				this.get_distance(a, b) -
-				(this.get_distance(a, c) +
-					this.get_distance(b, c))
+				(this.get_distance(a, c) + this.get_distance(b, c))
 			return Math.abs(offset) < 1
 		} else if (type === 'freehand') {
 			const betweenAnyPoint = element.points.some((point, index) => {
@@ -300,6 +321,12 @@ JSPlayer.Annotation = {
 			this.ctx.strokeStyle = this.currentColor
 			this.ctx.lineJoin = 'round'
 			this.ctx.lineCap = 'round'
+			if (this.ctx) {
+				this.ctx.shadowColor = this.shadowOptions.shadowColor
+				this.ctx.shadowBlur = this.shadowOptions.shadowBlur
+				this.ctx.shadowOffsetX = this.shadowOptions.shadowOffsetX
+				this.ctx.shadowOffsetY = this.shadowOptions.shadowOffsetY
+			}
 		}
 	},
 
@@ -333,11 +360,7 @@ JSPlayer.Annotation = {
 						$('#video_wrapper').height()
 					)
 
-					const element = getElementAtPosition(
-						_offsetX,
-						_offsetY,
-						this.shapes
-					)
+					const element = getElementAtPosition(_offsetX, _offsetY, this.shapes)
 					if (element) {
 						this.shapes = this.shapes.filter(item => item.id !== element.id)
 						this.render()
@@ -396,11 +419,7 @@ JSPlayer.Annotation = {
 					// let _offsetX = this.px_to_percentage_horizontal(offsetX, $("#video_wrapper").width());
 					// let _offsetY = this.px_to_percentage_vertical(offsetY, $("#video_wrapper").height());
 
-					const element = getElementAtPosition(
-						_offsetX,
-						_offsetY,
-						this.shapes
-					)
+					const element = getElementAtPosition(_offsetX, _offsetY, this.shapes)
 					if (element) {
 						$('#annotation_canvas').addClass('delete_mode')
 					} else {
@@ -538,11 +557,30 @@ JSPlayer.Annotation = {
 		this.shapes.forEach(
 			({ type, roughElement, points, color, x1, y1, x2, y2, index }) => {
 				if (type === 'arrow') {
-					this.roughCanvas.path(roughElement, {
-						roughness: 0,
-						stroke: color,
-						strokeWidth: 4,
-					})
+					this.ctx.shadowColor = 'rgba(0,0,0,0.3)'
+					this.ctx.shadowBlur = 1
+					this.ctx.shadowOffsetX = 1.5
+					this.ctx.shadowOffsetY = 1.5
+
+					this.ctx.beginPath()
+					this.ctx.lineCap = 'round'
+					this.ctx.fillStyle = color
+					this.ctx.strokeStyle = color
+					this.ctx.lineWidth = 4
+
+					const completePath = new Path2D(roughElement.path)
+					this.ctx.lineJoin = 'round'
+					const cursorPath = new Path2D(roughElement.cursor)
+					completePath.addPath(cursorPath)
+
+					this.ctx.stroke(completePath)
+
+					this.ctx.shadowColor = 'transparent'
+					this.ctx.shadowBlur = 0
+					this.ctx.shadowOffsetX = 0
+					this.ctx.shadowOffsetY = 0
+
+					this.ctx.fill(cursorPath)
 				} else if (type === 'freehand') {
 					this.ctx.beginPath()
 					this.ctx.lineWidth = 4
@@ -694,5 +732,5 @@ JSPlayer.Annotation = {
 				}
 			})
 			.resize()
-	}
-};
+	},
+}

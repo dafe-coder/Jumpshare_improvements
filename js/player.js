@@ -219,6 +219,7 @@ const JSPlayer = {
 			}
 			clearTimeout(timerId)
 		},
+
 		hideShowControlsOnHover: function (e) {
 			if (!this.player.paused && e && e.target && e.target !== this.controls) {
 				this.showHideControls()
@@ -228,6 +229,7 @@ const JSPlayer = {
 				}, 4000)
 			}
 		},
+
 		showHideControls: function (hide = false) {
 			if (!hide) {
 				this.controls.classList.add('active')

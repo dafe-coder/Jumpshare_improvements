@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		'https://ocean.mirzabilal.com/iptv/video/prog_index.m3u8',
 	]
 
-	let activePlayerSrc = 1
+	let activePlayerSrc = 0
 	player.addEventListener('loadedmetadata', () => {
 		setTimeout(() => {
 			const audioTracks = player.audioTracks
@@ -702,24 +702,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// Errors
 	player.addEventListener('error', e => {
-		const error = e.error
-		switch (error.code) {
-			case 1: // MEDIA_ERR_ABORTED
-				console.log('Download interrupted')
-				break
-			case 2: // MEDIA_ERR_NETWORK
-				console.log('Network error')
-				break
-			case 3: // MEDIA_ERR_DECODE
-				console.log('Decoding error')
-				break
-			case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
-				console.log('Format not supported')
-				break
-			default:
-				console.log('Unknown error')
+		console.log('Video Error Event:', e)
+
+		const error = e.target.error || player.error
+		if (error) {
+			switch (error.code) {
+				case 1: // MEDIA_ERR_ABORTED
+					console.log('Загрузка прервана')
+					break
+				case 2: // MEDIA_ERR_NETWORK
+					console.log('Сетевая ошибка')
+					break
+				case 3: // MEDIA_ERR_DECODE
+					console.log('Ошибка декодирования')
+					break
+				case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
+					console.log('Формат не поддерживается')
+					break
+				default:
+					console.log('Неизвестная ошибка')
+			}
+			console.log('Детали ошибки:', error.message)
+		} else {
+			console.log('Error object is not available')
+			console.log('Event target:', e.target)
+			console.log('Player source:', player.currentSrc)
 		}
-		console.log('Error details:', error.message)
 	})
 
 	// ARIA attributes for control buttons
