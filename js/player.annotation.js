@@ -169,7 +169,7 @@ JSPlayer.Annotation = {
 				roughElement = this.generator.line(_x1, _y1, _x2, _y2, {
 					roughness: 0,
 					stroke: color,
-					strokeWidth: 4,
+					strokeWidth: 6,
 				})
 				return { id, x1, y1, x2, y2, type, roughElement, color }
 			} else if (type === 'rectangle') {
@@ -178,7 +178,7 @@ JSPlayer.Annotation = {
 					_y1,
 					_x2 - _x1,
 					_y2 - _y1,
-					{ roughness: 0, stroke: color, strokeWidth: 4 }
+					{ roughness: 0, stroke: color, strokeWidth: 6 }
 				)
 				return { id, x1, y1, x2, y2, type, roughElement, color }
 			} else if (type === 'arrow') {
@@ -566,7 +566,7 @@ JSPlayer.Annotation = {
 					this.ctx.lineCap = 'round'
 					this.ctx.fillStyle = color
 					this.ctx.strokeStyle = color
-					this.ctx.lineWidth = 4
+					this.ctx.lineWidth = 6
 
 					const completePath = new Path2D(roughElement.path)
 					this.ctx.lineJoin = 'round'
@@ -581,9 +581,14 @@ JSPlayer.Annotation = {
 					this.ctx.shadowOffsetY = 0
 
 					this.ctx.fill(cursorPath)
+
+					this.ctx.shadowColor = 'rgba(0,0,0,0.3)'
+					this.ctx.shadowBlur = 1
+					this.ctx.shadowOffsetX = 1.5
+					this.ctx.shadowOffsetY = 1.5
 				} else if (type === 'freehand') {
 					this.ctx.beginPath()
-					this.ctx.lineWidth = 4
+					this.ctx.lineWidth = 6
 					this.ctx.strokeStyle = color
 					this.ctx.lineJoin = 'round'
 					this.ctx.lineCap = 'round'
