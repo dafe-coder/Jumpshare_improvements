@@ -93,6 +93,7 @@ const JSPlayer = {
 		sliderRail: null,
 		controlsShowID: null,
 		controls: null,
+		muteBtn: null,
 
 		init: function ({
 			player,

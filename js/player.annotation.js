@@ -731,6 +731,7 @@ JSPlayer.Annotation = {
 	append_controls_to_triangle: function () {},
 
 	show_current_annotation_with_time: function (id) {
+		console.log('show_current_annotation_with_time', id)
 		// setTimeout(() => {
 		this.reset_annotation()
 		this.annotation_panel.removeClass('hide')

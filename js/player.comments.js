@@ -96,7 +96,7 @@ JSPlayer.Comments = {
 				? parseFloat(nextComment.dataset.timestamp)
 				: Infinity
 			const commentEndTime = commentTimestamp + COMMENT_DURATION
-			const commentEndTimeAnnotation = commentTimestamp + 0.01
+			const commentEndTimeAnnotation = commentTimestamp + 0.1
 
 			if (currentTime < commentTimestamp) {
 				item.classList.remove('active')

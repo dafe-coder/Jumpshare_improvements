@@ -1258,6 +1258,7 @@ canvas#annotation_canvas.darwingMode {
 }
 .pointer-events-none {
 	pointer-events: none;
+	z-index: 1 !important;
 }
 
 .test-url-container {

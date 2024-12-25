@@ -11,7 +11,7 @@ JSPlayer.Controls = {
 		this.player = player
 		this.playerWrap = playerWrap
 		this.theatreBtn = document.getElementById('theatre-mode')
-		this.muteBtn = document.getElementById('mute-btn')
+		this.muteBtn = document.getElementById('mute')
 		this.volumeSlider = document.getElementById('volume-slider')
 	},
 
@@ -34,7 +34,7 @@ JSPlayer.Controls = {
 			}
 		}
 	},
-	toggleFullscreenStyles: e => {
+	toggleFullscreenStyles: function (e) {
 		e.preventDefault()
 
 		const isFullscreen = !!document.fullscreenElement
@@ -59,7 +59,7 @@ JSPlayer.Controls = {
 			this.updateProgressVolume(this.playerVolumeCount)
 		}
 	},
-	updateProgressVolume: percentage => {
+	updateProgressVolume: function (percentage) {
 		const progressPercent = percentage * 100
 		this.volumeSlider.querySelector('.volume-slider-progress').style.width =
 			progressPercent + '%'
