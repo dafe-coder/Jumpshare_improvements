@@ -270,7 +270,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		currentTime,
 		controls,
 		playOrPauseBtn,
-		playerVolumeCount,
 		dataChapters,
 		muteBtn,
 	})

@@ -15,6 +15,12 @@ JSPlayer.Controls = {
 		this.volumeSlider = document.getElementById('volume-slider')
 	},
 
+	updateVolumeCount: function (percentage) {
+		this.playerVolumeCount = percentage
+		this.player.volume = percentage
+		this.updateProgressVolume(percentage)
+	},
+
 	// Fullscreen
 	toggleFullScreen: function () {
 		if (!document.fullscreenElement) {

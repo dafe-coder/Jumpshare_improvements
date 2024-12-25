@@ -104,7 +104,6 @@ const JSPlayer = {
 			currentTime,
 			controls,
 			playOrPauseBtn,
-			playerVolumeCount,
 			dataChapters,
 			muteBtn,
 		} = data) {
@@ -116,7 +115,6 @@ const JSPlayer = {
 			this.controls = controls
 			this.currentTime = currentTime
 			this.playOrPauseBtn = playOrPauseBtn
-			this.playerVolumeCount = playerVolumeCount
 			this.dataChapters = dataChapters
 			this.muteBtn = muteBtn
 		},
@@ -144,7 +142,7 @@ const JSPlayer = {
 					} else {
 						JSPlayer.Helper.toggleSiblingElement(this.muteBtn, 'svg', true)
 					}
-					this.playerVolumeCount = percentage
+					JSPlayer.Controls.updateVolumeCount(percentage)
 					this.player.volume = percentage
 					JSPlayer.Controls.updateProgressVolume(percentage)
 				}
