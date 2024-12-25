@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		'https://ocean.mirzabilal.com/iptv/video/prog_index.m3u8',
 	]
 
-	let activePlayerSrc = 3
+	let activePlayerSrc = 0
 	player.addEventListener('loadedmetadata', () => {
 		setTimeout(() => {
 			const audioTracks = player.audioTracks
