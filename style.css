@@ -1104,6 +1104,7 @@ canvas#annotation_canvas.darwingMode {
 	position: relative;
 }
 .annotation_panel .active svg rect,
+.annotation_panel .active svg circle,
 .annotation_panel .active#line_shape svg path {
 	stroke: #2f76ff;
 }

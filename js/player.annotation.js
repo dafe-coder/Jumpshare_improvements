@@ -172,6 +172,16 @@ JSPlayer.Annotation = {
 					strokeWidth: 6,
 				})
 				return { id, x1, y1, x2, y2, type, roughElement, color }
+			} else if (type === 'circle') {
+				const width = Math.abs(_x2 - _x1)
+				const height = Math.abs(_y2 - _y1)
+				const diameter = Math.max(width, height)
+				roughElement = this.generator.circle(_x1, _y1, diameter, {
+					roughness: 0,
+					stroke: color,
+					strokeWidth: 6,
+				})
+				return { id, x1, y1, x2, y2, type, roughElement, color }
 			} else if (type === 'rectangle') {
 				roughElement = this.generator.rectangle(
 					_x1,
@@ -250,6 +260,34 @@ JSPlayer.Annotation = {
 			const minY = Math.min(y1, y2)
 			const maxY = Math.max(y1, y2)
 			return x >= minX && x <= maxX && y >= minY && y <= maxY
+		} else if (type === 'circle') {
+			const centerX = this.percentage_to_px_horizontal(
+				x1,
+				$('#video_wrapper').width()
+			)
+			const centerY = this.percentage_to_px_vertical(
+				y1,
+				$('#video_wrapper').height()
+			)
+			const clickX = this.percentage_to_px_horizontal(
+				x,
+				$('#video_wrapper').width()
+			)
+			const clickY = this.percentage_to_px_vertical(
+				y,
+				$('#video_wrapper').height()
+			)
+
+			const radius = Math.abs(
+				this.percentage_to_px_horizontal(x2, $('#video_wrapper').width()) -
+					this.percentage_to_px_horizontal(x1, $('#video_wrapper').width())
+			)
+
+			const distance = Math.sqrt(
+				Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2)
+			)
+
+			return distance <= radius
 		} else if (type === 'line') {
 			const a = { x: x1, y: y1 }
 			const b = { x: x2, y: y2 }
@@ -466,6 +504,17 @@ JSPlayer.Annotation = {
 				this.action = 'drawing'
 			})
 
+		$('#circle_shape')
+			.unbind()
+			.bind('click', () => {
+				console.log('circle_shape')
+
+				$('#darwing_shapes_wrapper span').removeClass('active')
+				$('#circle_shape').addClass('active')
+				this.currentTool = 'circle'
+				this.action = 'drawing'
+			})
+
 		$('#arrow_shape')
 			.unbind()
 			.bind('click', () => {
@@ -586,6 +635,30 @@ JSPlayer.Annotation = {
 					this.ctx.shadowBlur = 1
 					this.ctx.shadowOffsetX = 1.5
 					this.ctx.shadowOffsetY = 1.5
+				} else if (type === 'circle') {
+					const centerX = this.percentage_to_px_horizontal(
+						x1,
+						$('#video_wrapper').width()
+					)
+					const centerY = this.percentage_to_px_vertical(
+						y1,
+						$('#video_wrapper').height()
+					)
+					const radius = Math.abs(
+						this.percentage_to_px_horizontal(x2, $('#video_wrapper').width()) -
+							this.percentage_to_px_horizontal(x1, $('#video_wrapper').width())
+					)
+
+					this.ctx.beginPath()
+					this.ctx.strokeStyle = color
+					this.ctx.lineWidth = 6
+					this.ctx.shadowColor = this.shadowOptions.shadowColor
+					this.ctx.shadowBlur = this.shadowOptions.shadowBlur
+					this.ctx.shadowOffsetX = this.shadowOptions.shadowOffsetX
+					this.ctx.shadowOffsetY = this.shadowOptions.shadowOffsetY
+
+					this.ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
+					this.ctx.stroke()
 				} else if (type === 'freehand') {
 					this.ctx.beginPath()
 					this.ctx.lineWidth = 6
