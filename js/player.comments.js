@@ -120,6 +120,21 @@ JSPlayer.Comments = {
 					JSPlayer.Annotation.hide_current_annotation_with_time(item.dataset.id)
 				}
 			}
+
+			requestAnimationFrame(() => {
+				const rect = item
+					.querySelector('.controls-comments-info')
+					.getBoundingClientRect()
+				const rectInfo = item.querySelector('.controls-comments-info')
+				const playerPos = this.player.getBoundingClientRect()
+
+				const overflowRight =
+					rect.left + rect.width - (playerPos.left + playerPos.width)
+
+				if (overflowRight > 0) {
+					rectInfo.style.left = `-${overflowRight + 10}px`
+				}
+			})
 		})
 	},
 }
