@@ -278,7 +278,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Player wrap init height
 	JSPlayer.Settings.resizeVideoPlayer()
 
-	document.addEventListener('resize', () => {
+	window.addEventListener('resize', () => {
+		console.log('resize')
 		JSPlayer.Settings.resizeVideoPlayer()
 	})
 
@@ -331,12 +332,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	const playerSrc = [
 		'./20fd0242e93e4fdda762a05a8107cf73/4K-Nature-Film_-_Flow-Of-Life_-30-Minutes-of-Beautiful-Scenery-Relaxing-Music-for-Meditation.m3u8',
 		'https://d1ffb1nfch3ckq.cloudfront.net/s095q2%2Ffile%2Fb9b3b32c193e7156d15bdaa2d1929778_f839b6774122ccba2d2b82a1bdc13a48.mp4?response-content-disposition=inline%3Bfilename%3D%22b9b3b32c193e7156d15bdaa2d1929778_f839b6774122ccba2d2b82a1bdc13a48.mp4%22%3B&response-content-type=video%2Fmp4&Expires=1733943645&Signature=EVqiq~KETO974nd288O6-l-soTTJE13EQZ42-mfCpPbJEjxuxdvXoxiBQSc7utUuNCjyXME0E9vx1EzpFyvT2Y78o8xVS46gbo608GAC4NAfUXIJs2jVhnE-N1e~1GhznOlibVO~HNT7poTmIFJilhE7TPrwokhBa9SMv-PRo4SRW9RTbzqK~nLFQaPtffaw8drvwrFeJAM61d52Qf-opuVOKKX5iP4vo9aFF7MXAvpy2J-cbiml658BXZ~LC8KsJ6SYGCdRD-l8cC-9dtnOunkF0tyM7TudLbS4m-B8U1hX4ou2zWQp9-FEofqxy1KAcaPV9YWcS-kIXwli4X-hnA__&Key-Pair-Id=APKAJT5WQLLEOADKLHBQ',
-		'../dual_audio_stream/Merged-Track.mp4',
-		'../dual_audio_stream/Seperate-Tracks.mp4',
+		'https://pouch.jumpshare.com/preview/Qjt3ugFQGgm4Y8JpRA0rfm__JCrhCMl5d7kMvbKsOo0jEPVHdMDF5jYX0vdGb5Xd3dWUsh08EM5cj_JG5VvR68HgJa121kzIBah3WDzasLDBS4kZvaALozU96IoQAgGxngEC3xGSYmw8_u7TW2cE9G6yjbN-I2pg_cnoHs_AmgI.mp4',
+		' https://d2o0is6348o2o4.cloudfront.net/k0r9n1%2Ffile%2F47e467f1b79fabf59ca8894184ddb80c_87e7b8003dbfff7dda72a252c6b2e5dc.mp4?response-content-disposition=inline%3Bfilename%3D%2247e467f1b79fabf59ca8894184ddb80c_87e7b8003dbfff7dda72a252c6b2e5dc.mp4%22%3B&response-content-type=video%2Fmp4&Expires=1735141842&Signature=dgCY0jr9CoaynRzwaLNd1Crlb0cE~TBflrWRDYcQrMni10PzEXsQXnpCIJKJxbBhl8YDoeX~ifBYWKj1rSZjtc91TmHDsL6WW8ED19DHHkK~qJuBAWlmJhKTwLfOliJdO7TbQ9EglBu7PUDTZqGNX~WdMLENZb3dhgzWPjnPfvBApRryQnbUUHSdd~xxTBc-woZwsUIWxm8LhbxUnMAV1S1q74yRyw8vEMIb2l-G2m8vcfoDrS5Yja8X~0Qeq9X92Le0t4B0kk409e9e3~dGEvyV-0N3BFEromMIcJ8ZD0YF0DnJyZwUjpPxiunm0hlAYtKeyRhOVupJy9eY0FWeuQ__&Key-Pair-Id=APKAJT5WQLLEOADKLHBQ',
 		'https://ocean.mirzabilal.com/iptv/video/prog_index.m3u8',
 	]
 
-	let activePlayerSrc = 0
+	let activePlayerSrc = 3
 	player.addEventListener('loadedmetadata', () => {
 		setTimeout(() => {
 			const audioTracks = player.audioTracks
@@ -367,30 +368,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		console.warn('HLS not supported')
 	}
 
-	function handleProgress() {
-		const buffered = player.buffered
-		const chapterSliderItems = document.querySelectorAll('.chapter-slider-item')
-		if (buffered.length > 0 && chapterSliderItems) {
-			const loaded = buffered.end(buffered.length - 1)
+	// Handle progress Video
+	player.addEventListener('progress', JSPlayer.Utils.handleProgress)
+	player.addEventListener('loadeddata', JSPlayer.Utils.handleProgress)
 
-			chapterSliderItems.forEach(item => {
-				const progressItem = item.querySelector('.chapter-slider-loading')
-				if (
-					item.dataset.dataSliderEndTime >= loaded &&
-					item.dataset.dataSliderStartTime <= loaded
-				) {
-					const total = item.dataset.dataSliderEndTime
-					const progress = (loaded / total) * 100
-					progressItem.style.width = `${progress}%`
-				} else if (item.dataset.dataSliderEndTime <= loaded) {
-					progressItem.style.width = '100%'
-				}
-			})
-		}
-	}
-	player.addEventListener('progress', handleProgress)
-	player.addEventListener('loadeddata', handleProgress)
-
+	// Handle controls
 	controls.addEventListener('mousemove', () => {
 		JSPlayer.Utils.showHideControls()
 		clearTimeout(controlsShowID)
@@ -404,6 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	})
 
+	// Handle play or pause
 	playOrPauseBtn.addEventListener('click', e => JSPlayer.Utils.playOrPause(e))
 	muteBtn.addEventListener('click', () => JSPlayer.Controls.mute())
 	playbackRate.addEventListener('click', () =>

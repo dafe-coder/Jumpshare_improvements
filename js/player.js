@@ -42,6 +42,7 @@ const JSPlayer = {
 		resizeVideoPlayer: function () {
 			const playerHeight = JSPlayer.Settings.videoSize.split('x')[1]
 			const playerWidth = JSPlayer.Settings.videoSize.split('x')[0]
+			console.log(playerHeight, playerWidth)
 			this.playerWrap.style.height =
 				(playerHeight / playerWidth) *
 					this.playerWrap.getBoundingClientRect().width +
@@ -235,6 +236,30 @@ const JSPlayer = {
 				this.controls.classList.add('active')
 			} else {
 				this.controls.classList.remove('active')
+			}
+		},
+
+		handleProgress: function () {
+			const buffered = player.buffered
+			const chapterSliderItems = document.querySelectorAll(
+				'.chapter-slider-item'
+			)
+			if (buffered.length > 0 && chapterSliderItems) {
+				const loaded = buffered.end(buffered.length - 1)
+
+				chapterSliderItems.forEach(item => {
+					const progressItem = item.querySelector('.chapter-slider-loading')
+					if (
+						item.dataset.dataSliderEndTime >= loaded &&
+						item.dataset.dataSliderStartTime <= loaded
+					) {
+						const total = item.dataset.dataSliderEndTime
+						const progress = (loaded / total) * 100
+						progressItem.style.width = `${progress}%`
+					} else if (item.dataset.dataSliderEndTime <= loaded) {
+						progressItem.style.width = '100%'
+					}
+				})
 			}
 		},
 	},
