@@ -332,29 +332,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	const playerSrc = [
 		'./20fd0242e93e4fdda762a05a8107cf73/4K-Nature-Film_-_Flow-Of-Life_-30-Minutes-of-Beautiful-Scenery-Relaxing-Music-for-Meditation.m3u8',
 		'https://d1ffb1nfch3ckq.cloudfront.net/s095q2%2Ffile%2Fb9b3b32c193e7156d15bdaa2d1929778_f839b6774122ccba2d2b82a1bdc13a48.mp4?response-content-disposition=inline%3Bfilename%3D%22b9b3b32c193e7156d15bdaa2d1929778_f839b6774122ccba2d2b82a1bdc13a48.mp4%22%3B&response-content-type=video%2Fmp4&Expires=1733943645&Signature=EVqiq~KETO974nd288O6-l-soTTJE13EQZ42-mfCpPbJEjxuxdvXoxiBQSc7utUuNCjyXME0E9vx1EzpFyvT2Y78o8xVS46gbo608GAC4NAfUXIJs2jVhnE-N1e~1GhznOlibVO~HNT7poTmIFJilhE7TPrwokhBa9SMv-PRo4SRW9RTbzqK~nLFQaPtffaw8drvwrFeJAM61d52Qf-opuVOKKX5iP4vo9aFF7MXAvpy2J-cbiml658BXZ~LC8KsJ6SYGCdRD-l8cC-9dtnOunkF0tyM7TudLbS4m-B8U1hX4ou2zWQp9-FEofqxy1KAcaPV9YWcS-kIXwli4X-hnA__&Key-Pair-Id=APKAJT5WQLLEOADKLHBQ',
+		'https://ocean.mirzabilal.com/iptv/hls/master.m3u8',
+		'https://ocean.mirzabilal.com/iptv/video/prog_index.m3u8',
 		'https://pouch.jumpshare.com/preview/Qjt3ugFQGgm4Y8JpRA0rfm__JCrhCMl5d7kMvbKsOo0jEPVHdMDF5jYX0vdGb5Xd3dWUsh08EM5cj_JG5VvR68HgJa121kzIBah3WDzasLDBS4kZvaALozU96IoQAgGxngEC3xGSYmw8_u7TW2cE9G6yjbN-I2pg_cnoHs_AmgI.mp4',
 		' https://d2o0is6348o2o4.cloudfront.net/k0r9n1%2Ffile%2F47e467f1b79fabf59ca8894184ddb80c_87e7b8003dbfff7dda72a252c6b2e5dc.mp4?response-content-disposition=inline%3Bfilename%3D%2247e467f1b79fabf59ca8894184ddb80c_87e7b8003dbfff7dda72a252c6b2e5dc.mp4%22%3B&response-content-type=video%2Fmp4&Expires=1735141842&Signature=dgCY0jr9CoaynRzwaLNd1Crlb0cE~TBflrWRDYcQrMni10PzEXsQXnpCIJKJxbBhl8YDoeX~ifBYWKj1rSZjtc91TmHDsL6WW8ED19DHHkK~qJuBAWlmJhKTwLfOliJdO7TbQ9EglBu7PUDTZqGNX~WdMLENZb3dhgzWPjnPfvBApRryQnbUUHSdd~xxTBc-woZwsUIWxm8LhbxUnMAV1S1q74yRyw8vEMIb2l-G2m8vcfoDrS5Yja8X~0Qeq9X92Le0t4B0kk409e9e3~dGEvyV-0N3BFEromMIcJ8ZD0YF0DnJyZwUjpPxiunm0hlAYtKeyRhOVupJy9eY0FWeuQ__&Key-Pair-Id=APKAJT5WQLLEOADKLHBQ',
 		'https://ocean.mirzabilal.com/iptv/video/prog_index.m3u8',
 	]
 
 	let activePlayerSrc = 0
-	player.addEventListener('loadedmetadata', () => {
-		setTimeout(() => {
-			const audioTracks = player.audioTracks
-			console.log('Audio tracks after delay:', audioTracks)
 
-			for (let i = 0; i < audioTracks.length; i++) {
-				const track = audioTracks[i]
-				console.log(`Audio track ${i}:`, track)
-				track.enabled = true
-			}
-		}, 100)
-	})
-
-	const audioContext = new (window.AudioContext || window.webkitAudioContext)()
-
-	// const source1 = audioContext.createMediaElementSource(audios)
-	// const source2 = audioContext.createMediaElementSource(audios)
 	if (
 		player.canPlayType('application/vnd.apple.mpegurl') ||
 		playerSrc[activePlayerSrc].includes('.mp4')
@@ -371,6 +357,66 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Handle progress Video
 	player.addEventListener('progress', JSPlayer.Utils.handleProgress)
 	player.addEventListener('loadeddata', JSPlayer.Utils.handleProgress)
+
+	// player.addEventListener('loadedmetadata', () => {
+	// 	setTimeout(() => {
+	// 		try {
+	// 			const audioContext = new (window.AudioContext ||
+	// 				window.webkitAudioContext)()
+
+	// 			const audioSource = audioContext.createMediaElementSource(player)
+
+	// 			const splitter = audioContext.createChannelSplitter(2)
+
+	// 			const merger = audioContext.createChannelMerger(2)
+
+	// 			const leftGain = audioContext.createGain()
+	// 			const rightGain = audioContext.createGain()
+
+	// 			audioSource.connect(splitter)
+
+	// 			splitter.connect(leftGain, 0)
+	// 			leftGain.connect(merger, 0, 0)
+
+	// 			splitter.connect(rightGain, 1)
+	// 			rightGain.connect(merger, 0, 1)
+
+	// 			merger.connect(audioContext.destination)
+
+	// 			player.audioNodes = {
+	// 				context: audioContext,
+	// 				leftGain,
+	// 				rightGain,
+	// 				merger,
+	// 			}
+
+	// 			player.setLeftVolume = value => {
+	// 				leftGain.gain.value = value
+	// 				console.log('Left channel volume:', value)
+	// 			}
+
+	// 			player.setRightVolume = value => {
+	// 				rightGain.gain.value = value
+	// 				console.log('Right channel volume:', value)
+	// 			}
+
+	// 			player.setLeftVolume(1)
+	// 			player.setRightVolume(0)
+	// 			controlAudioTracks(0, 0)
+	// 		} catch (error) {
+	// 			console.error('Error setting up audio routing:', error)
+	// 		}
+	// 	}, 100)
+	// })
+
+	// function controlAudioTracks(leftVolume, rightVolume) {
+	// 	if (player.setLeftVolume && player.setRightVolume) {
+	// 		player.setLeftVolume(leftVolume)
+	// 		player.setRightVolume(rightVolume)
+	// 	} else {
+	// 		console.error('Audio controls not initialized')
+	// 	}
+	// }
 
 	// Handle controls
 	controls.addEventListener('mousemove', () => {
@@ -395,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	player.addEventListener('click', e => JSPlayer.Utils.playOrPause(e))
 
 	function preparePlayerWhenStartPlaying() {
-		commentsContainer.classList.remove('hide')
+		commentsContainer.style.visibility = 'visible'
 		// Generate CTA button
 		if (!isCTAButtonGenerated) {
 			JSPlayer.CTA.generateCTAButton(dataCTA)
@@ -548,7 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			'.player-cta-button-default'
 		)
 		JSPlayer.Utils.showHideControls(true)
-		commentsContainer.style.display = 'none'
+		commentsContainer.style.visibility = 'hidden'
 		playerOverlayEnd.style.display = 'flex'
 		playerCtaButtonDefault.classList.add('hidden')
 		JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg', true)
@@ -559,7 +605,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const playerCtaButtonDefault = document.querySelector(
 			'.player-cta-button-default'
 		)
-		commentsContainer.style.display = 'block'
+		commentsContainer.style.visibility = 'visible'
 		player.currentTime = 0
 		player.play()
 		playerOverlayEnd.style.display = 'none'

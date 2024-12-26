@@ -2,6 +2,7 @@ JSPlayer.Comments = {
 	commentsContainer: null,
 	player: null,
 	dataChapters: null,
+	commentPosId: null,
 
 	init: function (playerObj, container, dataChapters) {
 		this.commentsContainer = container
@@ -23,7 +24,9 @@ JSPlayer.Comments = {
 			annotation_json: shapes,
 			replies_count: 0,
 		}
+
 		this.commentsContainer.innerHTML += this.create(dataComment)
+		this.getOverflowRight()
 	},
 
 	delete: function (commentId) {
@@ -39,7 +42,7 @@ JSPlayer.Comments = {
 		dataComments.comments.forEach(comment => {
 			this.commentsContainer.innerHTML += this.create(comment)
 		})
-
+		this.getOverflowRight()
 		this.commentsContainer.addEventListener('click', e => {
 			const commentItem = e.target.closest('.controls-comments-item')
 			if (commentItem) {
@@ -120,21 +123,33 @@ JSPlayer.Comments = {
 					JSPlayer.Annotation.hide_current_annotation_with_time(item.dataset.id)
 				}
 			}
-
-			requestAnimationFrame(() => {
-				const rect = item
-					.querySelector('.controls-comments-info')
-					.getBoundingClientRect()
-				const rectInfo = item.querySelector('.controls-comments-info')
-				const playerPos = this.player.getBoundingClientRect()
-
-				const overflowRight =
-					rect.left + rect.width - (playerPos.left + playerPos.width)
-
-				if (overflowRight > 0) {
-					rectInfo.style.left = `-${overflowRight + 10}px`
-				}
-			})
 		})
+	},
+	getOverflowRight: function () {
+		this.commentPosId = setTimeout(() => {
+			this.commentsContainer
+				.querySelectorAll('.controls-comments-item')
+				.forEach(commentItem => {
+					requestAnimationFrame(() => {
+						const rectInfo = commentItem.querySelector(
+							'.controls-comments-info'
+						)
+						const rect = commentItem
+							.querySelector('.controls-comments-info')
+							.getBoundingClientRect()
+
+						const playerPos = this.player.getBoundingClientRect()
+
+						const overflowRight =
+							rect.left + rect.width - (playerPos.left + playerPos.width)
+
+						if (overflowRight > 0) {
+							rectInfo.classList.add('ml-18')
+							rectInfo.style.left = `-${overflowRight + 10}px`
+						}
+					})
+				})
+			clearTimeout(this.commentPosId)
+		}, 10)
 	},
 }

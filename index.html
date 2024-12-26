@@ -106,7 +106,7 @@
 				<div class="custom-captions"></div>
 				<span class="loading-bg-img"></span>
 				<div class="controls">
-					<div class="controls-comments hide"></div>
+					<div class="controls-comments"></div>
 					<div id="controls-time-rail" class="controls-time-rail">
 						<div id="slider-thumb" class="slider-thumb"></div>
 						<div class="chapter-slider-items"></div>
@@ -296,8 +296,9 @@
 						</div>
 					</div>
 				</div>
-				<!-- poster="./cover.png" -->
-				<video crossorigin="anonymous" preload="auto" id="player" class="video">
+				<!-- poster="./cover.png"
+				 crossorigin="anonymous" -->
+				<video preload="auto" id="player" class="video">
 					<track
 						id="captions-track"
 						src="./ui_fixing.vtt"
@@ -554,7 +555,7 @@
 		</div>
 	</body>
 	<script src="./lib/jQyery1.8.3.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/rough.js/2.1.1/rough.js"></script>
+	<script src="./lib/rough.js"></script>
 	<script src="./lib/hls.min.js"></script>
 	<script src="./js/player.js"></script>
 	<script src="./js/player.helper.js"></script>

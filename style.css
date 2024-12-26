@@ -925,7 +925,9 @@ button.playback-rate {
 	line-height: 33.514603px;
 	pointer-events: none;
 }
-
+.controls-comments {
+	visibility: hidden;
+}
 .controls-comments-item {
 	position: absolute;
 	bottom: 55px;
@@ -1011,6 +1013,7 @@ button.playback-rate {
 	pointer-events: none;
 	white-space: nowrap;
 	margin-bottom: 3px;
+	visibility: hidden;
 	display: none;
 }
 .controls-comments-info-text h5 span {
@@ -1024,6 +1027,7 @@ button.playback-rate {
 	font-size: 11px;
 	color: #ccc;
 	margin-top: 3px;
+	visibility: hidden;
 	display: none;
 }
 .controls-comments-info-text p {
@@ -1044,14 +1048,15 @@ button.playback-rate {
 	flex-shrink: 0;
 }
 .controls-comments-info {
-	display: none;
+	visibility: hidden;
 }
 .controls-comments-item:hover .controls-comments-info-text p {
 	white-space: normal;
 }
 .controls-comments-item.active .controls-comments-info {
-	display: flex;
 	min-width: max-content;
+	visibility: visible;
+	display: flex;
 }
 .controls-comments-item:hover {
 	z-index: 100;
@@ -1063,7 +1068,21 @@ button.playback-rate {
 	span.controls-comments-info-reply,
 .controls-comments-item:hover svg,
 .controls-comments-item:hover .controls-comments-info {
+	visibility: visible;
 	display: flex;
+}
+.controls-comments-item:hover .controls-comments-info-text h5,
+.controls-comments-item:hover .controls-comments-info-text p,
+.controls-comments-item:hover
+	.controls-comments-info-text
+	span.controls-comments-info-reply,
+.controls-comments-item:hover svg {
+	visibility: visible;
+	display: flex;
+}
+
+.controls-comments-item:hover .controls-comments-info.ml-18 {
+	margin-left: -18px;
 }
 #annotation_canvas {
 	position: absolute;
