@@ -2,6 +2,7 @@ const JSPlayer = {
 	Settings: {
 		player: null,
 		playerWrap: null,
+		theatreModeID: null,
 
 		init: function (player, sliderThumb, playerWrap) {
 			this.sliderThumb = sliderThumb
@@ -42,11 +43,32 @@ const JSPlayer = {
 		resizeVideoPlayer: function () {
 			const playerHeight = JSPlayer.Settings.videoSize.split('x')[1]
 			const playerWidth = JSPlayer.Settings.videoSize.split('x')[0]
-			console.log(playerHeight, playerWidth)
 			this.playerWrap.style.height =
 				(playerHeight / playerWidth) *
 					this.playerWrap.getBoundingClientRect().width +
 				'px'
+		},
+
+		resizeVideoPlayerTheatreMode: function () {
+			theatreModeID = setTimeout(() => {
+				const playerHeight = JSPlayer.Settings.videoSize.split('x')[1]
+				const playerWidth = JSPlayer.Settings.videoSize.split('x')[0]
+				const aspectRatio = playerWidth / playerHeight
+
+				const wrapHeight = this.playerWrap.getBoundingClientRect().height
+				const calculatedWidth = wrapHeight * aspectRatio
+
+				this.player.style.height = wrapHeight + 'px'
+				this.player.style.width = calculatedWidth + 'px'
+
+				this.player.style.margin = '0 auto'
+
+				document.querySelector('#annotation_canvas').style.height =
+					wrapHeight + 'px'
+				document.querySelector('#annotation_canvas').style.width =
+					calculatedWidth + 'px'
+				document.querySelector('#annotation_canvas').style.margin = '0 auto'
+			}, 10)
 		},
 
 		choosePlaybackRate: function () {
@@ -106,7 +128,7 @@ const JSPlayer = {
 			playOrPauseBtn,
 			dataChapters,
 			muteBtn,
-		} = data) {
+		}) {
 			this.sliderThumb = sliderThumb
 			this.player = player
 			this.playerWrap = playerWrap
@@ -185,10 +207,10 @@ const JSPlayer = {
 				++JSPlayer.Chapters.activeChapter
 			}
 			this.currentTime.innerHTML = JSPlayer.Helper.formatTime(
-				player.currentTime
+				this.player.currentTime
 			)
 			document.querySelector('.comment-new-timestamp').innerText =
-				JSPlayer.Helper.formatTime(player.currentTime)
+				JSPlayer.Helper.formatTime(this.player.currentTime)
 		},
 
 		playOrPause: function (e) {
@@ -239,7 +261,7 @@ const JSPlayer = {
 		},
 
 		handleProgress: function () {
-			const buffered = player.buffered
+			const buffered = this.player.buffered
 			const chapterSliderItems = document.querySelectorAll(
 				'.chapter-slider-item'
 			)

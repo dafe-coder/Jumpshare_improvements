@@ -355,8 +355,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	// Handle progress Video
-	player.addEventListener('progress', JSPlayer.Utils.handleProgress)
-	player.addEventListener('loadeddata', JSPlayer.Utils.handleProgress)
+	player.addEventListener('progress', () => JSPlayer.Utils.handleProgress())
+	player.addEventListener('loadeddata', () => JSPlayer.Utils.handleProgress())
 
 	// player.addEventListener('loadedmetadata', () => {
 	// 	setTimeout(() => {
@@ -618,13 +618,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// Theatre mode
 	const theatreBtn = document.getElementById('theatre-mode')
-	theatreBtn.addEventListener('click', () => JSPlayer.Controls.theatreMode())
+	theatreBtn.addEventListener('click', () => {
+		JSPlayer.Controls.theatreMode()
+		JSPlayer.Settings.resizeVideoPlayerTheatreMode()
+		JSPlayer.Annotation.resizeAnnotationCanvas()
+	})
 	// Fullscreen
 	const fullScreenBtn = document.getElementById('fullscreen')
 
-	fullScreenBtn.addEventListener('click', () =>
+	fullScreenBtn.addEventListener('click', () => {
 		JSPlayer.Controls.toggleFullScreen()
-	)
+	})
 
 	document.addEventListener(
 		'fullscreenchange',
