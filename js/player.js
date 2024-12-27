@@ -49,26 +49,35 @@ const JSPlayer = {
 				'px'
 		},
 
-		resizeVideoPlayerTheatreMode: function () {
+		resizeVideoPlayerTheatreMode: function (time = 10) {
 			theatreModeID = setTimeout(() => {
 				const playerHeight = JSPlayer.Settings.videoSize.split('x')[1]
 				const playerWidth = JSPlayer.Settings.videoSize.split('x')[0]
 				const aspectRatio = playerWidth / playerHeight
 
 				const wrapHeight = this.playerWrap.getBoundingClientRect().height
-				const calculatedWidth = wrapHeight * aspectRatio
+				const wrapWidth = this.playerWrap.getBoundingClientRect().width
 
-				this.player.style.height = wrapHeight + 'px'
+				// Вычисляем размеры, сохраняя пропорции
+				let calculatedWidth = wrapHeight * aspectRatio
+				let calculatedHeight = wrapHeight
+
+				// Если расчетная ширина больше доступной ширины контейнера
+				if (calculatedWidth > wrapWidth) {
+					calculatedWidth = wrapWidth
+					calculatedHeight = wrapWidth / aspectRatio
+				}
+
+				this.player.style.height = calculatedHeight + 'px'
 				this.player.style.width = calculatedWidth + 'px'
+				this.player.style.margin = 'auto'
 
-				this.player.style.margin = '0 auto'
-
+				// Применяем те же размеры к холсту аннотаций
 				document.querySelector('#annotation_canvas').style.height =
-					wrapHeight + 'px'
+					calculatedHeight + 'px'
 				document.querySelector('#annotation_canvas').style.width =
 					calculatedWidth + 'px'
-				document.querySelector('#annotation_canvas').style.margin = '0 auto'
-			}, 10)
+			}, time)
 		},
 
 		choosePlaybackRate: function () {

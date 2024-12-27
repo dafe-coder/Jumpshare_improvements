@@ -298,14 +298,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		})
 	}
 
-	function showAnnotationPanel() {
-		showAnnotationBtn.classList.add('active')
-		JSPlayer.Helper.toggleSiblingElement(showAnnotationBtn, 'svg')
-		document.querySelector('#annotation_panel').classList.add('active')
-		JSPlayer.Annotation.initializ_canvas()
-		JSPlayer.Annotation.hide_seekbar_and_timed_comments()
-	}
-
 	function hideAnnotationPanel() {
 		showAnnotationBtn.classList.remove('active')
 		JSPlayer.Helper.toggleSiblingElement(showAnnotationBtn, 'svg', true)
@@ -315,18 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	const showAnnotationBtn = document.querySelector('#show-annotation')
-	showAnnotationBtn.addEventListener('click', () => {
-		if ($('#annotation_canvas').hasClass('pointer-events-none')) {
-			$('#annotation_canvas').addClass('hide')
-			$('#annotation_canvas').removeClass('pointer-events-none')
-		}
-
-		if (!showAnnotationBtn.classList.contains('active')) {
-			showAnnotationPanel()
-		} else {
-			hideAnnotationPanel()
-		}
-	})
 
 	// HLS init
 	const playerSrc = [
@@ -438,7 +418,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	playbackRate.addEventListener('click', () =>
 		JSPlayer.Settings.choosePlaybackRate()
 	)
-	player.addEventListener('click', e => JSPlayer.Utils.playOrPause(e))
+	playerWrap.addEventListener('click', e => {
+		if (
+			!e.target.closest('.controls') &&
+			e.target.tagName !== 'A' &&
+			!e.target.closest('.darwingMode')
+		) {
+			JSPlayer.Utils.playOrPause(e)
+		}
+	})
 
 	function preparePlayerWhenStartPlaying() {
 		commentsContainer.style.visibility = 'visible'
@@ -621,27 +609,30 @@ document.addEventListener('DOMContentLoaded', () => {
 	theatreBtn.addEventListener('click', () => {
 		JSPlayer.Controls.theatreMode()
 		JSPlayer.Settings.resizeVideoPlayerTheatreMode()
-		JSPlayer.Annotation.resizeAnnotationCanvas()
+		JSPlayer.Settings.resizeVideoPlayer()
 	})
+
 	// Fullscreen
 	const fullScreenBtn = document.getElementById('fullscreen')
 
-	fullScreenBtn.addEventListener('click', () => {
-		JSPlayer.Controls.toggleFullScreen()
+	fullScreenBtn.addEventListener('click', e => {
+		JSPlayer.Controls.toggleFullScreen(e)
 	})
 
-	document.addEventListener(
-		'fullscreenchange',
-		JSPlayer.Controls.toggleFullscreenStyles
-	)
-	document.addEventListener(
-		'webkitfullscreenchange',
-		JSPlayer.Controls.toggleFullscreenStyles
-	)
-	document.addEventListener(
-		'mozfullscreenchange',
-		JSPlayer.Controls.toggleFullscreenStyles
-	)
+	document.addEventListener('fullscreenchange', e => {
+		JSPlayer.Controls.toggleFullscreenStyles(e)
+		JSPlayer.Settings.resizeVideoPlayerTheatreMode()
+	})
+
+	document.addEventListener('webkitfullscreenchange', e => {
+		JSPlayer.Controls.toggleFullscreenStyles(e)
+		JSPlayer.Settings.resizeVideoPlayerTheatreMode()
+	})
+
+	document.addEventListener('mozfullscreenchange', e => {
+		JSPlayer.Controls.toggleFullscreenStyles(e)
+		JSPlayer.Settings.resizeVideoPlayerTheatreMode()
+	})
 
 	// Keyboard
 	document.addEventListener('keydown', e => {

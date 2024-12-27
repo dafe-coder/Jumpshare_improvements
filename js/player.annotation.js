@@ -62,10 +62,20 @@ JSPlayer.Annotation = {
 
 	add_annotation_panel: function () {
 		this.handle_annotation.unbind().bind('click', () => {
+			const showAnnotationBtn = document.querySelector('#show-annotation')
+
 			this.first_time_clicked = true
-			if (!$('#annotation_canvas').hasClass('hide')) {
-				this.handle_annotation.removeClass('ann_active')
+			if ($('#annotation_canvas').hasClass('pointer-events-none')) {
 				$('#annotation_canvas').addClass('hide')
+				$('#annotation_canvas').removeClass('pointer-events-none')
+			}
+			if (!$('#annotation_canvas').hasClass('hide')) {
+				showAnnotationBtn.classList.remove('active')
+				JSPlayer.Helper.toggleSiblingElement(showAnnotationBtn, 'svg', true)
+				document.querySelector('#annotation_panel').classList.remove('active')
+				$('#annotation_canvas').addClass('hide')
+				this.reset_annotation()
+				this.show_seekbar_and_timed_comments()
 				this.ctx &&
 					this.ctx.clearRect(
 						0,
@@ -75,17 +85,16 @@ JSPlayer.Annotation = {
 					)
 				this.currentColor = '#F73D72'
 				this.currentTool = 'rectangle'
-				// $('#annotation_panel').remove()
 				this.shapes = []
 				this.shapes.splice(0, this.shapes.length)
 			} else {
-				this.handle_annotation.addClass('ann_active')
+				showAnnotationBtn.classList.add('active')
+				JSPlayer.Helper.toggleSiblingElement(showAnnotationBtn, 'svg')
+				document.querySelector('#annotation_panel').classList.add('active')
 				$('#annotation_canvas').removeClass('hide')
+				this.initializ_canvas()
+				this.hide_seekbar_and_timed_comments()
 				this.attach_annotation_panel()
-				// $('#comments_activity').slideDown(100)
-				// $('#show-annotation').css('bottom', '7px')
-				// $('#comment_person_icon').css('bottom', '14px')
-
 				setTimeout(function () {
 					player.pause()
 				}, 10)
@@ -101,8 +110,9 @@ JSPlayer.Annotation = {
 		player.pause()
 		$('.controls').removeClass('active')
 		$('.player-cta-button').addClass('hide')
-		$('#custom_captions_wrapper').addClass('hide')
+		$('.controls-comments').css('visibility', 'hidden')
 		$('.controls-comments').addClass('hide')
+		// $('#custom_captions_wrapper').addClass('hide')
 		// $('#time_stmp_coments_wrpr').addClass('stick_to_bottom')
 	},
 
@@ -110,8 +120,9 @@ JSPlayer.Annotation = {
 		player.pause()
 		$('.controls').addClass('active')
 		$('.player-cta-button').removeClass('hide')
-		$('#custom_captions_wrapper').removeClass('hide')
+		$('.controls-comments').css('visibility', 'visible')
 		$('.controls-comments').removeClass('hide')
+		// $('#custom_captions_wrapper').removeClass('hide')
 		// $('#time_stmp_coments_wrpr').addClass('stick_to_bottom')
 	},
 
@@ -355,7 +366,7 @@ JSPlayer.Annotation = {
 			this.annotation_canvas[0].width = $('#video_wrapper').width()
 			this.annotation_canvas[0].height = $('#video_wrapper').height()
 
-			this.ctx.lineWidth = 2
+			this.ctx.lineWidth = 6
 			this.ctx.strokeStyle = this.currentColor
 			this.ctx.lineJoin = 'round'
 			this.ctx.lineCap = 'round'
@@ -785,7 +796,7 @@ JSPlayer.Annotation = {
 			)
 		this.shapes = []
 		$('#annotation_canvas').addClass('hide')
-		this.handle_annotation.removeClass('ann_active')
+		this.handle_annotation.removeClass('active')
 		this.currentColor = '#F73D72'
 		this.currentTool = 'rectangle'
 		if (hide_below_bar && this.annotation_has_started) {
