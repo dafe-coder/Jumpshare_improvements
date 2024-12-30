@@ -1,15 +1,14 @@
 JSPlayer.Comments = {
 	dataComments: null,
-	dataChapters: null,
 	commentPosId: null,
 
 	init: function () {
 		//
 	},
 
-	add: function (data) {
-		const { seconds, comment, shapes = null, id = '' } = data
-		const dataComment = {
+	add: function (comment) {
+		const { seconds, text, shapes = null, id = '' } = comment
+		const data = {
 			id: id != '' ? id : Number(new Date().getTime() * Math.random()),
 			user: {
 				first_name: this.dataComments.comments[0].user.first_name,
@@ -17,12 +16,12 @@ JSPlayer.Comments = {
 			},
 			media_timestamp: seconds,
 			comment_time: JSPlayer.Helper.getCurrentDateFormatted(new Date()),
-			comment: comment,
+			comment: text,
 			annotation_json: shapes,
 			replies_count: 0,
 		}
 
-		JSPlayer.Controls.commentsContainer.innerHTML += this.create(dataComment)
+		JSPlayer.Controls.commentsContainer.innerHTML += this.create(data)
 		this.getOverflowRight()
 	},
 
