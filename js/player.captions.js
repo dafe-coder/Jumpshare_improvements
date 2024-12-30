@@ -22,7 +22,7 @@ JSPlayer.Captions = {
 			if (JSPlayer.Captions.showCaptions) {
 				JSPlayer.Captions.showCaptions = false
 				JSPlayer.Captions.customCaptions.style.display = 'none'
-				JSPlayer.Helper.toggleSiblingElement(captionBtn, 'svg', true)
+				JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.captionBtn, 'svg', true)
 			} else {
 				if (JSPlayer.Captions.activeCuesLength > 0) {
 					JSPlayer.Captions.customCaptions.style.display = 'block'
@@ -30,7 +30,7 @@ JSPlayer.Captions = {
 					JSPlayer.Captions.customCaptions.style.display = 'none'
 				}
 				JSPlayer.Captions.showCaptions = true
-				JSPlayer.Helper.toggleSiblingElement(captionBtn, 'svg')
+				JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.captionBtn, 'svg')
 			}
 		})
 	

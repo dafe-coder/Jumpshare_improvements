@@ -1,22 +1,19 @@
 JSPlayer.Comments = {
-	commentsContainer: null,
-	player: null,
+	dataComments: null,
 	dataChapters: null,
 	commentPosId: null,
 
-	init: function (playerObj, container, dataChapters) {
-		this.commentsContainer = container
-		this.player = playerObj
-		this.dataChapters = dataChapters
+	init: function () {
+		//
 	},
 
-	add: function (data, dataComments) {
+	add: function (data) {
 		const { seconds, comment, shapes = null, id = '' } = data
 		const dataComment = {
 			id: id != '' ? id : Number(new Date().getTime() * Math.random()),
 			user: {
-				first_name: dataComments.comments[0].user.first_name,
-				last_name: dataComments.comments[0].user.last_name,
+				first_name: this.dataComments.comments[0].user.first_name,
+				last_name: this.dataComments.comments[0].user.last_name,
 			},
 			media_timestamp: seconds,
 			comment_time: JSPlayer.Helper.getCurrentDateFormatted(new Date()),
@@ -25,7 +22,7 @@ JSPlayer.Comments = {
 			replies_count: 0,
 		}
 
-		this.commentsContainer.innerHTML += this.create(dataComment)
+		JSPlayer.Controls.commentsContainer.innerHTML += this.create(dataComment)
 		this.getOverflowRight()
 	},
 
@@ -36,29 +33,31 @@ JSPlayer.Comments = {
 		commentItem.remove()
 	},
 
-	load: function (dataComments) {
-		if (!dataComments?.comments?.length) return
+	load: function (data) {
+		if (!data?.comments?.length) return
 
-		dataComments.comments.forEach(comment => {
-			this.commentsContainer.innerHTML += this.create(comment)
+		this.dataComments = data
+
+		this.dataComments.comments.forEach(comment => {
+			JSPlayer.Controls.commentsContainer.innerHTML += this.create(comment)
 		})
 		this.getOverflowRight()
-		this.commentsContainer.addEventListener('click', e => {
+		JSPlayer.Controls.commentsContainer.addEventListener('click', e => {
 			const commentItem = e.target.closest('.controls-comments-item')
 			if (commentItem) {
-				this.player.pause()
-				this.player.currentTime = Number(commentItem.dataset.timestamp)
+				JSPlayer.player.pause()
+				JSPlayer.player.currentTime = Number(commentItem.dataset.timestamp)
 				JSPlayer.Annotation.show_current_annotation_with_time(
 					commentItem.dataset.id
 				)
 				JSPlayer.Chapters.chooseActiveChapter()
-				JSPlayer.updateSlider(this.dataChapters)
+				JSPlayer.updateSlider()
 			}
 		})
 	},
 
 	create: function (comment) {
-		const left = (comment.media_timestamp / this.player.duration) * 100
+		const left = (comment.media_timestamp / JSPlayer.player.duration) * 100
 
 		return `<div class="controls-comments-item" style="left: ${left}%" data-timestamp="${comment.media_timestamp}" data-id="${comment.id}">
 						<div class='controls-comments-avatar'>
@@ -127,7 +126,7 @@ JSPlayer.Comments = {
 	},
 	getOverflowRight: function () {
 		this.commentPosId = setTimeout(() => {
-			this.commentsContainer
+			JSPlayer.Controls.commentsContainer
 				.querySelectorAll('.controls-comments-item')
 				.forEach(commentItem => {
 					requestAnimationFrame(() => {
@@ -138,7 +137,7 @@ JSPlayer.Comments = {
 							.querySelector('.controls-comments-info')
 							.getBoundingClientRect()
 
-						const playerPos = this.player.getBoundingClientRect()
+						const playerPos = JSPlayer.player.getBoundingClientRect()
 
 						const overflowRight =
 							rect.left + rect.width - (playerPos.left + playerPos.width)

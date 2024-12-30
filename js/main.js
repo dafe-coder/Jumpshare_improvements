@@ -239,27 +239,13 @@ const dataCTA = {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	// Player elements
-	const player = document.getElementById('player')
-
-	JSPlayer.init(player)
-	JSPlayer.bootstrap();
-
-	// Controls
-	JSPlayer.Controls.init()
-
-	// Player wrap init height
-	JSPlayer.Events.resizeVideoPlayer()
-
-	window.addEventListener('resize', () => {
-		console.log('resize')
-		JSPlayer.Events.resizeVideoPlayer()
-	})
+	
+	JSPlayer.bootstrap('player')
 
 	// Initialize rough.js
 
 	if (JSPlayer.Controls.annotationCanvasElement) {
-		JSPlayer.Annotation.initialize()
+		JSPlayer.Annotation.init()
 		JSPlayer.Annotation.attach_controls()
 		dataComments.comments.forEach(comment => {
 			if (comment.annotation_json !== null) {
@@ -314,27 +300,20 @@ document.addEventListener('DOMContentLoaded', () => {
 	let activePlayerSrc = 0
 
 	if (
-		player.canPlayType('application/vnd.apple.mpegurl') ||
+		JSPlayer.player.canPlayType('application/vnd.apple.mpegurl') ||
 		playerSrc[activePlayerSrc].includes('.mp4')
 	) {
-		player.src = playerSrc[activePlayerSrc]
+		JSPlayer.player.src = playerSrc[activePlayerSrc]
 	} else if (Hls.isSupported()) {
 		var hls = new Hls()
 		hls.loadSource(playerSrc[activePlayerSrc])
-		hls.attachMedia(player)
+		hls.attachMedia(JSPlayer.player)
 	} else {
 		console.warn('HLS not supported')
 	}
 
 	// Handle play or pause
-	playOrPauseBtn.addEventListener('click', e => JSPlayer.playOrPause(e))
-	muteBtn.addEventListener('click', () => JSPlayer.Controls.mute())
-	playbackRate.addEventListener('click', () =>
-		JSPlayer.Settings.choosePlaybackRate()
-	)
-
-	JSPlayer.Actions.hideTextTracks()
-	
+	JSPlayer.hideTextTracks()
 
 	const commentNewTextareaWrapper = document.querySelector(
 		'.comment-new-textarea-wrapper'
@@ -342,11 +321,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	const addCommentBtn = document.querySelector('#add-comment')
 	const commentText = document.querySelector('#comment-text')
 	commentNewTextareaWrapper.addEventListener('click', () => {
-		player.pause()
+		JSPlayer.player.pause()
 	})
 
-	addCommentBtn.addEventListener('click', () => 
-	{
+	addCommentBtn.addEventListener('click', () => {
 		if (commentText.value !== '') {
 			const id = Number(new Date().getTime() * Math.random())
 			const shapes =
@@ -376,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			JSPlayer.Comments.add(
 				{
 					id: id,
-					seconds: player.currentTime,
+					seconds: JSPlayer.player.currentTime,
 					comment: commentText.value,
 					shapes,
 				},
@@ -391,65 +369,5 @@ document.addEventListener('DOMContentLoaded', () => {
 			commentText.value = ''
 		}
 	})
-
-	// Slider player (time rail)
-	const controlsTimeRail = document.getElementById('controls-time-rail')
-
-	let isDragging = false
-	let isDraggingType = 'time'
-
-	controlsTimeRail.addEventListener('mousedown', event => {
-		isDragging = true
-		isDraggingType = 'time'
-		JSPlayer.moveSlider(event, controlsTimeRail, isDraggingType)
-	})
-
-	player.addEventListener('timeupdate', () => {
-		currentTime.innerText = JSPlayer.Helper.formatTime(player.currentTime)
-		JSPlayer.Comments.checkIsCommentActive(player.currentTime)
-		JSPlayer.updateSlider(dataChapters)
-		JSPlayer.Chapters.updateActiveChapterTitle(dataChapters)
-	})
-
-	// Volume slider
-
-	JSPlayer.Controls.volumeSlider.addEventListener('mousedown', event => {
-		isDragging = true
-		isDraggingType = 'volume'
-		JSPlayer.moveSlider(event, JSPlayer.Controls.volumeSlider, isDraggingType)
-	})
-
-	window.addEventListener('mousemove', event => {
-		if (isDragging && isDraggingType === 'time') {
-			JSPlayer.moveSlider(event, controlsTimeRail, isDraggingType)
-		} else if (isDragging && isDraggingType === 'volume') {
-			JSPlayer.moveSlider(event, JSPlayer.Controls.volumeSlider, isDraggingType)
-		}
-	})
-	window.addEventListener('mouseup', () => {
-		isDragging = false
-	})
-	
-
-	document.addEventListener(
-		'fullscreenchange',
-		JSPlayer.Controls.toggleFullscreenStyles
-	)
-	document.addEventListener(
-		'webkitfullscreenchange',
-		JSPlayer.Controls.toggleFullscreenStyles
-	)
-	document.addEventListener(
-		'mozfullscreenchange',
-		JSPlayer.Controls.toggleFullscreenStyles
-	)
-
-	// Captions
-	JSPlayer.Captions.init()
-	JSPlayer.Captions.bootstrap();
-	
-
-	// Generate СTA Button
-	JSPlayer.CTA.init()
 	
 })

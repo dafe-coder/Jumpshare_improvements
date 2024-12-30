@@ -1,11 +1,9 @@
 JSPlayer.Chapters = {
 	data: null,
-	player: null,
 	activeChapter: 1,
 	activeChapterTitle: null,
 
-	init: function (playerObj) {
-		this.player = playerObj
+	init: function () {
 		this.activeChapterTitle = document.querySelector(
 			'.controls-active-chapter-title'
 		)
@@ -20,7 +18,7 @@ JSPlayer.Chapters = {
 
 		chaptersMenu.addEventListener('click', e => {
 			if (e.target.tagName === 'A') {
-				this.player.currentTime = Number(e.target.dataset.chapterstamp)
+				JSPlayer.player.currentTime = Number(e.target.dataset.chapterstamp)
 				this.chooseActiveChapter()
 			}
 		})
@@ -28,7 +26,7 @@ JSPlayer.Chapters = {
 		this.data.chapters.forEach((chapter, i) => {
 			const chapterStart = chapter.M.line.S
 			const chapterEnd =
-				this.data.chapters[i + 1]?.M.line.S ?? this.player.duration
+				this.data.chapters[i + 1]?.M.line.S ?? JSPlayer.player.duration
 
 			chaptersMenu.innerHTML += this.createButton(
 				chapter,
@@ -45,7 +43,7 @@ JSPlayer.Chapters = {
 
 			requestAnimationFrame(() => {
 				const rect = titleElement.getBoundingClientRect()
-				const playerPos = this.player.getBoundingClientRect()
+				const playerPos = JSPlayer.player.getBoundingClientRect()
 				const relativePosition = {
 					top: rect.top - playerPos.top,
 					left: rect.left - playerPos.left,
@@ -72,7 +70,7 @@ JSPlayer.Chapters = {
 
 	createSliderItem: function (chapter, chapterStart, chapterEnd) {
 		const width =
-			((chapterEnd - chapterStart) / JSPlayer.Chapters.player.duration) * 100
+			((chapterEnd - chapterStart) / JSPlayer.player.duration) * 100
 		const item = document.createElement('span')
 		item.classList.add('chapter-slider-item')
 		item.dataset.dataSliderStartTime = chapterStart
@@ -88,10 +86,10 @@ JSPlayer.Chapters = {
 			const el = document.createElement('span')
 			el.classList.add(className)
 			if (className === 'chapter-slider-progress') {
-				el.style.backgroundColor = JSPlayer.Settings.themeColor.primary
+				el.style.backgroundColor = JSPlayer.themeColor.primary
 			}
 			if (className === 'chapter-slider-bg') {
-				el.style.backgroundColor = JSPlayer.Settings.themeColor.secondary
+				el.style.backgroundColor = JSPlayer.themeColor.secondary
 			}
 			if (text) el.textContent = text
 			return el
@@ -106,16 +104,16 @@ JSPlayer.Chapters = {
 			const start = item.M.line.S
 			const end = this.data.chapters[idx + 1]
 				? this.data.chapters[idx + 1].M.line.S
-				: this.player.duration
-			if (this.player.currentTime >= start && this.player.currentTime <= end) {
+				: JSPlayer.player.duration
+			if (JSPlayer.player.currentTime >= start && JSPlayer.player.currentTime <= end) {
 				this.activeChapter = idx + 1
 			}
 		})
 	},
 
-	updateActiveChapterTitle: function (dataChapters) {
-		if (!dataChapters?.chapters?.length) return
+	updateActiveChapterTitle: function () {
+		if (!JSPlayer.Chapters.data?.chapters?.length) return
 		this.activeChapterTitle.querySelector('span').innerText =
-			dataChapters.chapters[JSPlayer.Chapters.activeChapter - 1].M.name.S
+		JSPlayer.Chapters.data.chapters[JSPlayer.Chapters.activeChapter - 1].M.name.S
 	},
 }

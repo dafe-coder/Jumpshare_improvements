@@ -1,44 +1,75 @@
 JSPlayer.Events = {
+
+	isDragging: null,
+	isDraggingType: null,
+
+	init : function() {
+
+		this.isDragging = false
+		this.isDraggingType = 'time'
+
+	},
+
+	bootstrap: function() {
+		this.init()
+
+		window.addEventListener('mousemove', event => {
+			if (JSPlayer.Events.isDragging && JSPlayer.Events.isDraggingType === 'time') {
+				JSPlayer.moveSlider(event, JSPlayer.Controls.controlsTimeRail, JSPlayer.Events.isDraggingType)
+			} else if (JSPlayer.Events.isDragging && JSPlayer.Events.isDraggingType === 'volume') {
+				JSPlayer.moveSlider(event, JSPlayer.Controls.volumeSlider, JSPlayer.Events.isDraggingType)
+			}
+		})
+
+		window.addEventListener('mouseup', () => {
+			JSPlayer.Events.isDragging = false
+		})
+
+		window.addEventListener('resize', () => {
+			console.log('resize')
+			JSPlayer.Events.resizeVideoPlayer()
+		})
+	},
+
 	loadedMetaData: function() {
 		setTimeout(() => {
-			JSPlayer.Settings.hideTextTracks()
+			JSPlayer.hideTextTracks()
 		}, 10)
-		JSPlayer.Actions.applyTheme({ primary: '#1891ED' })
-		duration.innerText = JSPlayer.Helper.formatTime(player.duration)
-		showPlayerOverlayTimer.style.display = 'block'
-		showPlayerOverlayTimer.querySelector('span').innerText =
-			JSPlayer.Helper.formatTime(player.duration, true)
-		player.volume = playerVolumeCount
+		JSPlayer.applyTheme({ primary: '#1891ED' })
+		JSPlayer.Controls.duration.innerText = JSPlayer.Helper.formatTime(player.duration)
+		JSPlayer.Controls.showPlayerOverlayTimer.style.display = 'block'
+		JSPlayer.Controls.showPlayerOverlayTimer.querySelector('span').innerText = JSPlayer.Helper.formatTime(player.duration, true)
+		JSPlayer.player.volume = JSPlayer.Controls.playerVolumeCount
 
 		// Load comments
-
-		JSPlayer.Comments.init(player, commentsContainer, dataChapters)
+		JSPlayer.Comments.init()
 		JSPlayer.Comments.load(dataComments)
-
-		// overlay player start
-
-		playerOverlayStart.addEventListener('click', preparePlayerWhenStartPlaying)
-
-		JSPlayer.Chapters.init(player)
+		
+		JSPlayer.Chapters.init()
 		JSPlayer.Chapters.load(dataChapters)
+		
+		JSPlayer.Comments.init()
 		JSPlayer.Comments.add(
 			{
 				seconds: JSPlayer.Helper.parseToSeconds('17:26'),
 				comment: ' Added a comment using the "addComment" method',
-			},
-			dataComments
+			}
 		)
+
+		// Captions
+		JSPlayer.Captions.init()
+		JSPlayer.Captions.bootstrap();
+
+		// Generate СTA Button
+		JSPlayer.CTA.init()
 	},
 
 	ended: function() {
-		const playerCtaButtonDefault = document.querySelector(
-			'.player-cta-button-default'
-		)
 		JSPlayer.showHideControls(true)
 		JSPlayer.Controls.commentsContainer.style.visibility = 'hidden'
 		JSPlayer.Controls.playerOverlayEnd.style.display = 'flex'
 		JSPlayer.Controls.playerCtaButtonDefault.classList.add('hidden')
-		JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg', true)
+		JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.playOrPauseBtn, 'svg', true)
 		JSPlayer.Chapters.activeChapter = 1
 	},
 
@@ -77,24 +108,4 @@ JSPlayer.Events = {
 			console.log('Player source:', player.currentSrc)
 		}
 	}
-}
-
-JSPlayer.Actions = {
-	applyTheme: function ({
-		primary = JSPlayer.themeColor.primary,
-		secondary = JSPlayer.themeColor.secondary,
-	}) {
-		JSPlayer.themeColor.primary = primary
-		JSPlayer.themeColor.secondary = secondary
-		this.sliderThumb.style.backgroundColor = primary
-		document.querySelector('.player-overlay-button svg path').style.fill =
-			primary
-		document.documentElement.style.setProperty('--pulse-color', primary)
-	},
-	
-	hideTextTracks: function () {
-		for (let i = 0; i < player.textTracks.length; i++) {
-			player.textTracks[i].mode = 'hidden'
-		}
-	},
 }

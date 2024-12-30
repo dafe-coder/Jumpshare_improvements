@@ -11,13 +11,13 @@ const JSPlayer = {
 		annotation_json:
 			'[{"color":"#F73D72","id":"0","type":"rectangle","x1":"49.19","y1":"20.98","x2":"82.96","y2":"77.73"}]',
 	},
-		
-	init: function (player) {
-		this.player = player;
-	},
 
-	bootstrap: function () {
+	bootstrap: function (id) {
+		this.player = document.getElementById(id)
 		this.addEventListeners();
+		
+		JSPlayer.Controls.bootstrap()
+		JSPlayer.Events.bootstrap();
 	},
 
 	addEventListeners: function () {
@@ -37,26 +37,17 @@ const JSPlayer = {
 		this.player.addEventListener('loadeddata', () => JSPlayer.handleProgress())
 
 		// Handle controls
-		controls.addEventListener('mousemove', () => {
-			JSPlayer.showHideControls()
-			clearTimeout(JSPlayer.Controls.playerControlsTimeout)
-		})
-		this.player.addEventListener('mousemove', e =>
-			JSPlayer.hideShowControlsOnHover(e)
-		)
-		JSPlayer.Controls.playerWrap.addEventListener('mouseleave', () => {
-			if (!JSPlayer.player.paused) {
-				JSPlayer.showHideControls(true)
-			}
-		})
-
-		
+		this.player.addEventListener('mousemove', e => JSPlayer.hideShowControlsOnHover(e))
 		this.player.addEventListener('click', e => JSPlayer.playOrPause(e))
-
 		this.player.addEventListener('loadedmetadata', JSPlayer.Events.loadedMetaData )
-
-
 		this.player.addEventListener('ended', JSPlayer.Events.ended)
+
+		this.player.addEventListener('timeupdate', () => {
+			JSPlayer.Controls.innerText = JSPlayer.Helper.formatTime(JSPlayer.player.currentTime)
+			JSPlayer.Comments.checkIsCommentActive(JSPlayer.player.currentTime)
+			JSPlayer.updateSlider()
+			JSPlayer.Chapters.updateActiveChapterTitle()
+		})
 
 		// Errors
 		this.player.addEventListener('error', e => {
@@ -71,7 +62,7 @@ const JSPlayer = {
 			const playerWidth = JSPlayer.videoSize.split('x')[0]
 			const aspectRatio = playerWidth / playerHeight
 
-			const wrapHeight = JSPlayer.playerWrap.getBoundingClientRect().height
+			const wrapHeight = JSPlayer.Controls.playerWrap.getBoundingClientRect().height
 			const calculatedWidth = wrapHeight * aspectRatio
 
 			JSPlayer.player.style.height = wrapHeight + 'px'
@@ -88,7 +79,7 @@ const JSPlayer = {
 	},
 
 	choosePlaybackRate: function () {
-		const playbackRateCount = JSPlayer.playbackRate.querySelector(
+		const playbackRateCount = JSPlayer.Controls.playbackRate.querySelector(
 			'.playback-rate-count'
 		)
 
@@ -139,7 +130,7 @@ const JSPlayer = {
 				const newTime = JSPlayer.player.duration * percentage
 				JSPlayer.player.currentTime = newTime
 				JSPlayer.Chapters.chooseActiveChapter()
-				this.updateSlider(this.dataChapters)
+				this.updateSlider(dataChapters)
 			}
 			if (isDraggingType === 'volume' && percentage >= 0 && percentage <= 1) {
 				if (percentage === 0) {
@@ -154,10 +145,9 @@ const JSPlayer = {
 		}
 	},
 
-	updateSlider: function (dataChapters) {
-		const startValue =
-			dataChapters.chapters[JSPlayer.Chapters.activeChapter - 1].M.line.S
-		const endValue = dataChapters.chapters[JSPlayer.Chapters.activeChapter]
+	updateSlider: function () {
+		const startValue = JSPlayer.Chapters.data.chapters[JSPlayer.Chapters.activeChapter - 1].M.line.S
+		const endValue = JSPlayer.Chapters.data.chapters[JSPlayer.Chapters.activeChapter]
 			? dataChapters.chapters[JSPlayer.Chapters.activeChapter].M.line.S
 			: this.player.duration
 		const progressRailPercent =
@@ -165,7 +155,7 @@ const JSPlayer = {
 		const progressThumbPercent =
 			(this.player.currentTime / this.player.duration) * 100
 
-		const sliderRailItemsProgress = this.sliderRail.querySelectorAll(
+		const sliderRailItemsProgress = JSPlayer.Controls.sliderRail.querySelectorAll(
 			'.chapter-slider-progress'
 		)
 
@@ -177,7 +167,7 @@ const JSPlayer = {
 			}
 		})
 
-		this.sliderThumb.style.left = progressThumbPercent + '%'
+		JSPlayer.Controls.sliderThumb.style.left = progressThumbPercent + '%'
 
 		if (progressRailPercent <= 99.99) {
 			sliderRailItemsProgress[
@@ -189,7 +179,7 @@ const JSPlayer = {
 			].style.width = '100%'
 			++JSPlayer.Chapters.activeChapter
 		}
-		this.currentTime.innerHTML = JSPlayer.Helper.formatTime(
+		JSPlayer.Controls.currentTime.innerHTML = JSPlayer.Helper.formatTime(
 			this.player.currentTime
 		)
 		document.querySelector('.comment-new-timestamp').innerText =
@@ -202,7 +192,7 @@ const JSPlayer = {
 
 		if (this.player.paused) {
 			this.player.play()
-			JSPlayer.Helper.toggleSiblingElement(this.playOrPauseBtn, 'svg')
+			JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.playOrPauseBtn, 'svg')
 			JSPlayer.Helper.toggleSiblingElement(playCircle, 'svg', true)
 			playCircle.querySelector('svg').style.animation =
 				'playAnim 0.4s ease-in-out'
@@ -214,7 +204,7 @@ const JSPlayer = {
 			this.player.pause()
 			clearTimeout(JSPlayer.Controls.playerControlsTimeout)
 			this.showHideControls()
-			JSPlayer.Helper.toggleSiblingElement(this.playOrPauseBtn, 'svg', true)
+			JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.playOrPauseBtn, 'svg', true)
 			JSPlayer.Helper.toggleSiblingElement(playCircle, 'svg')
 			playCircle.querySelector('svg:last-child').style.animation =
 				'playAnim 0.4s ease-in-out'
@@ -237,9 +227,9 @@ const JSPlayer = {
 
 	showHideControls: function (hide = false) {
 		if (!hide) {
-			this.controls.classList.add('active')
+			JSPlayer.Controls.controls.classList.add('active')
 		} else {
-			this.controls.classList.remove('active')
+			JSPlayer.Controls.controls.classList.remove('active')
 		}
 	},
 
@@ -265,6 +255,24 @@ const JSPlayer = {
 				}
 			})
 		}
-	}
+	},
+
+	applyTheme: function ({
+		primary = JSPlayer.themeColor.primary,
+		secondary = JSPlayer.themeColor.secondary,
+	}) {
+		JSPlayer.themeColor.primary = primary
+		JSPlayer.themeColor.secondary = secondary
+		JSPlayer.Controls.sliderThumb.style.backgroundColor = primary
+		document.querySelector('.player-overlay-button svg path').style.fill =
+			primary
+		document.documentElement.style.setProperty('--pulse-color', primary)
+	},
+	
+	hideTextTracks: function () {
+		for (let i = 0; i < player.textTracks.length; i++) {
+			player.textTracks[i].mode = 'hidden'
+		}
+	},
 	
 }
