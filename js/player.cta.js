@@ -1,10 +1,8 @@
 JSPlayer.CTA = {
-	playerWrap: null,
-	playerOverlayEnd: null,
-
-	init: function (playerWrap, playerOverlayEnd) {
-		this.playerWrap = playerWrap
-		this.playerOverlayEnd = playerOverlayEnd
+	isCTAButtonGenerated: false,
+	
+	init: function () {
+		this.isCTAButtonGenerated = false
 	},
 
 	generateCTAButton: function (dataCTA) {
@@ -15,12 +13,12 @@ JSPlayer.CTA = {
 		ctaButton.style.color = dataCTA.txt_color
 		ctaButton.textContent = dataCTA.title
 
-		this.playerWrap.appendChild(ctaButton)
+		JSPlayer.Controls.playerWrap.appendChild(ctaButton)
 
 		const ctaButtonClone = ctaButton.cloneNode(true)
 		ctaButtonClone.classList.add('centered')
 		ctaButtonClone.classList.remove('player-cta-button-default')
-		console.log(this.playerOverlayEnd)
-		this.playerOverlayEnd.appendChild(ctaButtonClone)
+		console.log(JSPlayer.Controls.playerOverlayEnd)
+		JSPlayer.Controls.playerOverlayEnd.appendChild(ctaButtonClone)
 	},
 }

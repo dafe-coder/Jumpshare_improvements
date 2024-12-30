@@ -52,7 +52,7 @@ JSPlayer.Comments = {
 					commentItem.dataset.id
 				)
 				JSPlayer.Chapters.chooseActiveChapter()
-				JSPlayer.Utils.updateSlider(this.dataChapters)
+				JSPlayer.updateSlider(this.dataChapters)
 			}
 		})
 	},

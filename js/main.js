@@ -241,51 +241,24 @@ const dataCTA = {
 document.addEventListener('DOMContentLoaded', () => {
 	// Player elements
 	const player = document.getElementById('player')
-	const playerWrap = document.querySelector('.player-wrap')
-	const playOrPauseBtn = document.getElementById('play-or-pause')
-	const muteBtn = document.getElementById('mute')
-	const currentTime = document.getElementById('controls-current-time')
-	const duration = document.getElementById('controls-duration')
-	const playbackRate = document.getElementById('playback-rate')
-	const showPlayerOverlayTimer = document.querySelector('.show-player-timer')
-	const controls = document.querySelector('.controls')
-	const commentsContainer = document.querySelector('.controls-comments')
-	const annotationCanvasElement = document.getElementById('annotation_canvas')
-	const sliderThumb = document.getElementById('slider-thumb')
-	const sliderRail = document.getElementById('controls-time-rail')
-	const playerOverlayStart = document.querySelector('.player-overlay-start')
 
-	let controlsShowID = null
-	let isCTAButtonGenerated = false
-	// Hide native controls
-	player.controls = false
-	let playerVolumeCount = 0.5
+	JSPlayer.init(player)
+	JSPlayer.bootstrap();
 
-	JSPlayer.Settings.init(player, sliderThumb, playerWrap)
-	JSPlayer.Utils.init({
-		player,
-		playerWrap,
-		sliderThumb,
-		sliderRail,
-		controlsShowID,
-		currentTime,
-		controls,
-		playOrPauseBtn,
-		dataChapters,
-		muteBtn,
-	})
+	// Controls
+	JSPlayer.Controls.init()
 
 	// Player wrap init height
-	JSPlayer.Settings.resizeVideoPlayer()
+	JSPlayer.Events.resizeVideoPlayer()
 
 	window.addEventListener('resize', () => {
 		console.log('resize')
-		JSPlayer.Settings.resizeVideoPlayer()
+		JSPlayer.Events.resizeVideoPlayer()
 	})
 
 	// Initialize rough.js
 
-	if (annotationCanvasElement) {
+	if (JSPlayer.Controls.annotationCanvasElement) {
 		JSPlayer.Annotation.initialize()
 		JSPlayer.Annotation.attach_controls()
 		dataComments.comments.forEach(comment => {
@@ -299,29 +272,28 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function showAnnotationPanel() {
-		showAnnotationBtn.classList.add('active')
-		JSPlayer.Helper.toggleSiblingElement(showAnnotationBtn, 'svg')
+		JSPlayer.Controls.showAnnotationBtn.classList.add('active')
+		JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.showAnnotationBtn, 'svg')
 		document.querySelector('#annotation_panel').classList.add('active')
 		JSPlayer.Annotation.initializ_canvas()
 		JSPlayer.Annotation.hide_seekbar_and_timed_comments()
 	}
 
 	function hideAnnotationPanel() {
-		showAnnotationBtn.classList.remove('active')
-		JSPlayer.Helper.toggleSiblingElement(showAnnotationBtn, 'svg', true)
+		JSPlayer.Controls.showAnnotationBtn.classList.remove('active')
+		JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.showAnnotationBtn, 'svg', true)
 		document.querySelector('#annotation_panel').classList.remove('active')
 		JSPlayer.Annotation.reset_annotation()
 		JSPlayer.Annotation.show_seekbar_and_timed_comments()
 	}
 
-	const showAnnotationBtn = document.querySelector('#show-annotation')
-	showAnnotationBtn.addEventListener('click', () => {
+	JSPlayer.Controls.showAnnotationBtn.addEventListener('click', () => {
 		if ($('#annotation_canvas').hasClass('pointer-events-none')) {
 			$('#annotation_canvas').addClass('hide')
 			$('#annotation_canvas').removeClass('pointer-events-none')
 		}
 
-		if (!showAnnotationBtn.classList.contains('active')) {
+		if (!JSPlayer.Controls.showAnnotationBtn.classList.contains('active')) {
 			showAnnotationPanel()
 		} else {
 			hideAnnotationPanel()
@@ -354,139 +326,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		console.warn('HLS not supported')
 	}
 
-	// Handle progress Video
-	player.addEventListener('progress', () => JSPlayer.Utils.handleProgress())
-	player.addEventListener('loadeddata', () => JSPlayer.Utils.handleProgress())
-
-	// player.addEventListener('loadedmetadata', () => {
-	// 	setTimeout(() => {
-	// 		try {
-	// 			const audioContext = new (window.AudioContext ||
-	// 				window.webkitAudioContext)()
-
-	// 			const audioSource = audioContext.createMediaElementSource(player)
-
-	// 			const splitter = audioContext.createChannelSplitter(2)
-
-	// 			const merger = audioContext.createChannelMerger(2)
-
-	// 			const leftGain = audioContext.createGain()
-	// 			const rightGain = audioContext.createGain()
-
-	// 			audioSource.connect(splitter)
-
-	// 			splitter.connect(leftGain, 0)
-	// 			leftGain.connect(merger, 0, 0)
-
-	// 			splitter.connect(rightGain, 1)
-	// 			rightGain.connect(merger, 0, 1)
-
-	// 			merger.connect(audioContext.destination)
-
-	// 			player.audioNodes = {
-	// 				context: audioContext,
-	// 				leftGain,
-	// 				rightGain,
-	// 				merger,
-	// 			}
-
-	// 			player.setLeftVolume = value => {
-	// 				leftGain.gain.value = value
-	// 				console.log('Left channel volume:', value)
-	// 			}
-
-	// 			player.setRightVolume = value => {
-	// 				rightGain.gain.value = value
-	// 				console.log('Right channel volume:', value)
-	// 			}
-
-	// 			player.setLeftVolume(1)
-	// 			player.setRightVolume(0)
-	// 			controlAudioTracks(0, 0)
-	// 		} catch (error) {
-	// 			console.error('Error setting up audio routing:', error)
-	// 		}
-	// 	}, 100)
-	// })
-
-	// function controlAudioTracks(leftVolume, rightVolume) {
-	// 	if (player.setLeftVolume && player.setRightVolume) {
-	// 		player.setLeftVolume(leftVolume)
-	// 		player.setRightVolume(rightVolume)
-	// 	} else {
-	// 		console.error('Audio controls not initialized')
-	// 	}
-	// }
-
-	// Handle controls
-	controls.addEventListener('mousemove', () => {
-		JSPlayer.Utils.showHideControls()
-		clearTimeout(controlsShowID)
-	})
-	player.addEventListener('mousemove', e =>
-		JSPlayer.Utils.hideShowControlsOnHover(e)
-	)
-	playerWrap.addEventListener('mouseleave', () => {
-		if (!player.paused) {
-			JSPlayer.Utils.showHideControls(true)
-		}
-	})
-
 	// Handle play or pause
-	playOrPauseBtn.addEventListener('click', e => JSPlayer.Utils.playOrPause(e))
+	playOrPauseBtn.addEventListener('click', e => JSPlayer.playOrPause(e))
 	muteBtn.addEventListener('click', () => JSPlayer.Controls.mute())
 	playbackRate.addEventListener('click', () =>
 		JSPlayer.Settings.choosePlaybackRate()
 	)
-	player.addEventListener('click', e => JSPlayer.Utils.playOrPause(e))
 
-	function preparePlayerWhenStartPlaying() {
-		commentsContainer.style.visibility = 'visible'
-		// Generate CTA button
-		if (!isCTAButtonGenerated) {
-			JSPlayer.CTA.generateCTAButton(dataCTA)
-			isCTAButtonGenerated = true
-		}
-		playerOverlayStart.style.display = 'none'
-		document
-			.querySelector('.player-wrap')
-			.classList.add('player-overlay-played')
-		JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg')
-		JSPlayer.Utils.showHideControls()
-		player.play()
-	}
-
-	JSPlayer.Settings.hideTextTracks()
-	player.addEventListener('loadedmetadata', () => {
-		setTimeout(() => {
-			JSPlayer.Settings.hideTextTracks()
-		}, 10)
-		JSPlayer.Settings.applyPlayerColorTheme({ primary: '#1891ED' })
-		duration.innerText = JSPlayer.Helper.formatTime(player.duration)
-		showPlayerOverlayTimer.style.display = 'block'
-		showPlayerOverlayTimer.querySelector('span').innerText =
-			JSPlayer.Helper.formatTime(player.duration, true)
-		player.volume = playerVolumeCount
-
-		// Load comments
-
-		JSPlayer.Comments.init(player, commentsContainer, dataChapters)
-		JSPlayer.Comments.load(dataComments)
-
-		// overlay player start
-
-		playerOverlayStart.addEventListener('click', preparePlayerWhenStartPlaying)
-
-		JSPlayer.Chapters.init(player)
-		JSPlayer.Chapters.load(dataChapters)
-		JSPlayer.Comments.add(
-			{
-				seconds: JSPlayer.Helper.parseToSeconds('17:26'),
-				comment: ' Added a comment using the "addComment" method',
-			},
-			dataComments
-		)
-	})
+	JSPlayer.Actions.hideTextTracks()
+	
 
 	const commentNewTextareaWrapper = document.querySelector(
 		'.comment-new-textarea-wrapper'
@@ -497,7 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		player.pause()
 	})
 
-	addCommentBtn.addEventListener('click', () => {
+	addCommentBtn.addEventListener('click', () => 
+	{
 		if (commentText.value !== '') {
 			const id = Number(new Date().getTime() * Math.random())
 			const shapes =
@@ -552,83 +401,35 @@ document.addEventListener('DOMContentLoaded', () => {
 	controlsTimeRail.addEventListener('mousedown', event => {
 		isDragging = true
 		isDraggingType = 'time'
-		JSPlayer.Utils.moveSlider(event, controlsTimeRail, isDraggingType)
+		JSPlayer.moveSlider(event, controlsTimeRail, isDraggingType)
 	})
 
 	player.addEventListener('timeupdate', () => {
 		currentTime.innerText = JSPlayer.Helper.formatTime(player.currentTime)
 		JSPlayer.Comments.checkIsCommentActive(player.currentTime)
-		JSPlayer.Utils.updateSlider(dataChapters)
+		JSPlayer.updateSlider(dataChapters)
 		JSPlayer.Chapters.updateActiveChapterTitle(dataChapters)
 	})
 
 	// Volume slider
 
-	const volumeSlider = document.getElementById('volume-slider')
-
-	volumeSlider.addEventListener('mousedown', event => {
+	JSPlayer.Controls.volumeSlider.addEventListener('mousedown', event => {
 		isDragging = true
 		isDraggingType = 'volume'
-		JSPlayer.Utils.moveSlider(event, volumeSlider, isDraggingType)
+		JSPlayer.moveSlider(event, JSPlayer.Controls.volumeSlider, isDraggingType)
 	})
 
 	window.addEventListener('mousemove', event => {
 		if (isDragging && isDraggingType === 'time') {
-			JSPlayer.Utils.moveSlider(event, controlsTimeRail, isDraggingType)
+			JSPlayer.moveSlider(event, controlsTimeRail, isDraggingType)
 		} else if (isDragging && isDraggingType === 'volume') {
-			JSPlayer.Utils.moveSlider(event, volumeSlider, isDraggingType)
+			JSPlayer.moveSlider(event, JSPlayer.Controls.volumeSlider, isDraggingType)
 		}
 	})
 	window.addEventListener('mouseup', () => {
 		isDragging = false
 	})
-
-	// When the video ends
-	const playerOverlayEnd = document.querySelector('.player-overlay-end')
-	const playerOverlayBtnEnd = document.querySelector(
-		'.player-overlay-button-end'
-	)
-
-	player.addEventListener('ended', () => {
-		const playerCtaButtonDefault = document.querySelector(
-			'.player-cta-button-default'
-		)
-		JSPlayer.Utils.showHideControls(true)
-		commentsContainer.style.visibility = 'hidden'
-		playerOverlayEnd.style.display = 'flex'
-		playerCtaButtonDefault.classList.add('hidden')
-		JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg', true)
-		JSPlayer.Chapters.activeChapter = 1
-	})
-
-	playerOverlayBtnEnd.addEventListener('click', () => {
-		const playerCtaButtonDefault = document.querySelector(
-			'.player-cta-button-default'
-		)
-		commentsContainer.style.visibility = 'visible'
-		player.currentTime = 0
-		player.play()
-		playerOverlayEnd.style.display = 'none'
-		playerCtaButtonDefault.classList.remove('hidden')
-		JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg')
-	})
-
-	// Controls
-	JSPlayer.Controls.init(player, playerWrap, playerVolumeCount)
-
-	// Theatre mode
-	const theatreBtn = document.getElementById('theatre-mode')
-	theatreBtn.addEventListener('click', () => {
-		JSPlayer.Controls.theatreMode()
-		JSPlayer.Settings.resizeVideoPlayerTheatreMode()
-		JSPlayer.Annotation.resizeAnnotationCanvas()
-	})
-	// Fullscreen
-	const fullScreenBtn = document.getElementById('fullscreen')
-
-	fullScreenBtn.addEventListener('click', () => {
-		JSPlayer.Controls.toggleFullScreen()
-	})
+	
 
 	document.addEventListener(
 		'fullscreenchange',
@@ -643,128 +444,12 @@ document.addEventListener('DOMContentLoaded', () => {
 		JSPlayer.Controls.toggleFullscreenStyles
 	)
 
-	// Keyboard
-	document.addEventListener('keydown', e => {
-		const skipAmount = 10
-		const isTyping = ['INPUT', 'TEXTAREA'].includes(
-			document.activeElement.tagName
-		)
-
-		if (player.currentTime > 0 && !isTyping) {
-			if (e.code === 'Space') {
-				e.preventDefault()
-				if (player.paused || player.ended) {
-					preparePlayerWhenStartPlaying()
-					player.play()
-					JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg')
-				} else {
-					player.pause()
-					JSPlayer.Helper.toggleSiblingElement(playOrPauseBtn, 'svg', true)
-				}
-			}
-			if (e.code === 'ArrowLeft') {
-				player.currentTime -= skipAmount
-				JSPlayer.Chapters.chooseActiveChapter()
-				JSPlayer.Utils.updateSlider(dataChapters)
-			}
-			if (e.code === 'ArrowRight') {
-				player.currentTime += skipAmount
-				JSPlayer.Chapters.chooseActiveChapter()
-				JSPlayer.Utils.updateSlider(dataChapters)
-			}
-			if (e.code === 'KeyK') {
-				toggleFullScreen()
-			}
-		}
-	})
-
-	//  On loading
-	const loadingBgSpinner = document.querySelector('.loading-bg-img')
-	player.addEventListener('waiting', () => {
-		loadingBgSpinner.style.display = 'block'
-	})
-	player.addEventListener('canplay', () => {
-		loadingBgSpinner.style.display = 'none'
-	})
-	player.addEventListener('playing', () => {
-		loadingBgSpinner.style.display = 'none'
-	})
-
 	// Captions
-	const captionTrack = document.getElementById('captions-track')
-	const captionBtn = document.getElementById('captions-btn')
-	const customCaptions = document.querySelector('.custom-captions')
-	let isShowCaptions = false
-	let activeCuesLength = 0
-	customCaptions.style.display = 'none'
-
-	JSPlayer.Captions.init(customCaptions)
-
-	captionBtn.addEventListener('click', () => {
-		if (isShowCaptions) {
-			isShowCaptions = false
-			customCaptions.style.display = 'none'
-			JSPlayer.Helper.toggleSiblingElement(captionBtn, 'svg', true)
-		} else {
-			if (activeCuesLength > 0) {
-				customCaptions.style.display = 'block'
-			} else {
-				customCaptions.style.display = 'none'
-			}
-			isShowCaptions = true
-			JSPlayer.Helper.toggleSiblingElement(captionBtn, 'svg')
-		}
-	})
-
-	captionTrack.addEventListener('cuechange', () => {
-		const activeCues = player.textTracks[0].activeCues
-
-		activeCuesLength = activeCues.length
-
-		if (isShowCaptions && activeCues.length > 0) {
-			JSPlayer.Captions.showCaptions(activeCues[0].text)
-		} else {
-			JSPlayer.Captions.hideCaptions(
-				activeCues.length > 0 && activeCues[0].text
-			)
-		}
-	})
+	JSPlayer.Captions.init()
+	JSPlayer.Captions.bootstrap();
+	
 
 	// Generate СTA Button
-	JSPlayer.CTA.init(playerWrap, playerOverlayEnd)
-
-	// Errors
-	player.addEventListener('error', e => {
-		console.log('Video Error Event:', e)
-
-		const error = e.target.error || player.error
-		if (error) {
-			switch (error.code) {
-				case 1: // MEDIA_ERR_ABORTED
-					console.log('Загрузка прервана')
-					break
-				case 2: // MEDIA_ERR_NETWORK
-					console.log('Сетевая ошибка')
-					break
-				case 3: // MEDIA_ERR_DECODE
-					console.log('Ошибка декодирования')
-					break
-				case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
-					console.log('Формат не поддерживается')
-					break
-				default:
-					console.log('Неизвестная ошибка')
-			}
-			console.log('Детали ошибки:', error.message)
-		} else {
-			console.log('Error object is not available')
-			console.log('Event target:', e.target)
-			console.log('Player source:', player.currentSrc)
-		}
-	})
-
-	// ARIA attributes for control buttons
-	playOrPauseBtn.setAttribute('aria-label', 'Play/Pause')
-	muteBtn.setAttribute('aria-label', 'Mute')
-	fullScreenBtn.setAttribute('aria-label', 'Fullscreen')
+	JSPlayer.CTA.init()
+	
 })
