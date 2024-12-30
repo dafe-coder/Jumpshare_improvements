@@ -3,104 +3,44 @@
 const dataChapters = {
 	chapters: [
 		{
-			M: {
-				name: {
-					S: 'Foundations of Video Editing',
-				},
-				line: {
-					S: '0',
-				},
-			},
+			name: 'Foundations of Video Editing',
+			line:  '0'
 		},
 		{
-			M: {
-				name: {
-					S: 'Organizing Your Workflow',
-				},
-				line: {
-					S: '100',
-				},
-			},
+			name: 'Organizing Your Workflow',
+			line: '100',
 		},
 		{
-			M: {
-				name: {
-					S: 'Utilizing External Drives for Storage',
-				},
-				line: {
-					S: '240',
-				},
-			},
+			name: 'Utilizing External Drives for Storage',
+			line: '240',
 		},
 		{
-			M: {
-				name: {
-					S: 'Choosing the Right Editing Software',
-				},
-				line: {
-					S: '289',
-				},
-			},
+			name: 'Choosing the Right Editing Software',
+			line: '289',
 		},
 		{
-			M: {
-				name: {
-					S: 'Trimming and Editing Process',
-				},
-				line: {
-					S: '400',
-				},
-			},
+			name: 'Trimming and Editing Process',
+			line: '400',
 		},
 		{
-			M: {
-				name: {
-					S: 'Incorporating B-roll and Stock Footage',
-				},
-				line: {
-					S: '450',
-				},
-			},
+			name: 'Incorporating B-roll and Stock Footage',
+			line: '450',
 		},
 		{
-			M: {
-				name: {
-					S: 'Adding Text and Templates',
-				},
-				line: {
-					S: '600',
-				},
-			},
+			name: 'Adding Text and Templates',
+			line: '600',
 		},
 		{
-			M: {
-				name: {
-					S: 'Reviewing and Finalizing the Edit',
-				},
-				line: {
-					S: '700',
-				},
-			},
+			name: 'Reviewing and Finalizing the Edit',
+			line: '700',
 		},
 		{
-			M: {
-				name: {
-					S: 'Rendering and Uploading with Camtasia',
-				},
-				line: {
-					S: '800',
-				},
-			},
+			name: 'Rendering and Uploading with Camtasia',
+			line: '800',
 		},
 		{
-			M: {
-				name: {
-					S: 'Continuous Improvement in Editing',
-				},
-				line: {
-					S: '1000',
-				},
-			},
+			name: 'Continuous Improvement in Editing',
+			line: '1000',
 		},
 	],
 }
@@ -311,9 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	} else {
 		console.warn('HLS not supported')
 	}
-
-	// Handle play or pause
-	JSPlayer.hideTextTracks()
 
 	const commentNewTextareaWrapper = document.querySelector(
 		'.comment-new-textarea-wrapper'

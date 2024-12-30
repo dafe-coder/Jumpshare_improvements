@@ -115,8 +115,8 @@ JSPlayer.Controls = {
 
 		this.controlsTimeRail.addEventListener('mousedown', event => {
 			JSPlayer.Events.isDragging = true
-			JSPlayer.Events.isDraggingType = 'time'
-			JSPlayer.moveSlider(event, JSPlayer.Controls.controlsTimeRail, JSPlayer.Events.isDraggingType)
+			JSPlayer.Events.dragType = 'time'
+			JSPlayer.moveSlider(event, JSPlayer.Controls.controlsTimeRail, JSPlayer.Events.dragType)
 		})
 
 		this.playOrPauseBtn.addEventListener('click', e => JSPlayer.playOrPause(e))
@@ -172,14 +172,14 @@ JSPlayer.Controls = {
 		this.theatreBtn.addEventListener('click', () => {
 			JSPlayer.Controls.theatreMode()
 			JSPlayer.resizeVideoPlayerTheatreMode()
-			JSPlayer.Annotation.resizeAnnotationCanvas()
+			//JSPlayer.Annotation.resizeAnnotationCanvas()
 		})
 
 		// Volume slider
 		this.volumeSlider.addEventListener('mousedown', event => {
-			isDragging = true
-			isDraggingType = 'volume'
-			JSPlayer.moveSlider(event, JSPlayer.Controls.volumeSlider, isDraggingType)
+			JSPlayer.Events.isDragging = true
+			JSPlayer.Events.dragType = 'volume'
+			JSPlayer.moveSlider(event, JSPlayer.Controls.volumeSlider, dragType)
 		})
 
 	},

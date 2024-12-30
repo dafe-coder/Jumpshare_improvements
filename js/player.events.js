@@ -1,12 +1,12 @@
 JSPlayer.Events = {
 
 	isDragging: null,
-	isDraggingType: null,
+	dragType: null,
 
 	init : function() {
 
 		this.isDragging = false
-		this.isDraggingType = 'time'
+		this.dragType = 'time'
 
 	},
 
@@ -14,10 +14,10 @@ JSPlayer.Events = {
 		this.init()
 
 		window.addEventListener('mousemove', event => {
-			if (JSPlayer.Events.isDragging && JSPlayer.Events.isDraggingType === 'time') {
-				JSPlayer.moveSlider(event, JSPlayer.Controls.controlsTimeRail, JSPlayer.Events.isDraggingType)
-			} else if (JSPlayer.Events.isDragging && JSPlayer.Events.isDraggingType === 'volume') {
-				JSPlayer.moveSlider(event, JSPlayer.Controls.volumeSlider, JSPlayer.Events.isDraggingType)
+			if (JSPlayer.Events.isDragging && JSPlayer.Events.dragType === 'time') {
+				JSPlayer.moveSlider(event, JSPlayer.Controls.controlsTimeRail, JSPlayer.Events.dragType)
+			} else if (JSPlayer.Events.isDragging && JSPlayer.Events.dragType === 'volume') {
+				JSPlayer.moveSlider(event, JSPlayer.Controls.volumeSlider, JSPlayer.Events.dragType)
 			}
 		})
 

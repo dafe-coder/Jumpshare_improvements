@@ -18,6 +18,9 @@ const JSPlayer = {
 		
 		JSPlayer.Controls.bootstrap()
 		JSPlayer.Events.bootstrap();
+
+		// Handle play or pause
+		this.hideTextTracks()
 	},
 
 	addEventListeners: function () {
@@ -115,7 +118,7 @@ const JSPlayer = {
 		}
 	},
 	
-	moveSlider: function (event, elem, isDraggingType) {
+	moveSlider: function (event, elem, dragType) {
 		const rect = elem.getBoundingClientRect()
 		if (rect.width > 0) {
 			const offsetX = event.clientX - rect.left
@@ -123,7 +126,7 @@ const JSPlayer = {
 			const percentage = offsetX / width
 
 			if (
-				isDraggingType === 'time' &&
+				dragType === 'time' &&
 				percentage >= 0 &&
 				percentage <= 0.99
 			) {
@@ -132,7 +135,7 @@ const JSPlayer = {
 				JSPlayer.Chapters.chooseActiveChapter()
 				this.updateSlider(dataChapters)
 			}
-			if (isDraggingType === 'volume' && percentage >= 0 && percentage <= 1) {
+			if (dragType === 'volume' && percentage >= 0 && percentage <= 1) {
 				if (percentage === 0) {
 					JSPlayer.Helper.toggleSiblingElement(this.muteBtn, 'svg')
 				} else {
@@ -146,9 +149,9 @@ const JSPlayer = {
 	},
 
 	updateSlider: function () {
-		const startValue = JSPlayer.Chapters.data.chapters[JSPlayer.Chapters.activeChapter - 1].M.line.S
+		const startValue = JSPlayer.Chapters.data.chapters[JSPlayer.Chapters.activeChapter - 1].line
 		const endValue = JSPlayer.Chapters.data.chapters[JSPlayer.Chapters.activeChapter]
-			? dataChapters.chapters[JSPlayer.Chapters.activeChapter].M.line.S
+			? dataChapters.chapters[JSPlayer.Chapters.activeChapter].line
 			: this.player.duration
 		const progressRailPercent =
 			((this.player.currentTime - startValue) / (endValue - startValue)) * 100

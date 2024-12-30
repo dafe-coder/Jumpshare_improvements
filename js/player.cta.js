@@ -8,6 +8,7 @@ JSPlayer.CTA = {
 	generateCTAButton: function (dataCTA) {
 		const ctaButton = document.createElement('a')
 		ctaButton.href = dataCTA.link
+		ctaButton.target = '_blank'
 		ctaButton.className = `player-cta-button-default player-cta-button ${dataCTA.cta_position}`
 		ctaButton.style.backgroundColor = dataCTA.btn_color
 		ctaButton.style.color = dataCTA.txt_color
