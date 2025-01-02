@@ -1,23 +1,31 @@
 JSPlayer.Events = {
-
 	isDragging: null,
 	dragType: null,
 
-	init : function() {
-
+	init: function () {
 		this.isDragging = false
 		this.dragType = 'time'
-
 	},
 
-	bootstrap: function() {
+	bootstrap: function () {
 		this.init()
 
 		window.addEventListener('mousemove', event => {
 			if (JSPlayer.Events.isDragging && JSPlayer.Events.dragType === 'time') {
-				JSPlayer.moveSlider(event, JSPlayer.Controls.controlsTimeRail, JSPlayer.Events.dragType)
-			} else if (JSPlayer.Events.isDragging && JSPlayer.Events.dragType === 'volume') {
-				JSPlayer.moveSlider(event, JSPlayer.Controls.volumeSlider, JSPlayer.Events.dragType)
+				JSPlayer.moveSlider(
+					event,
+					JSPlayer.Controls.controlsTimeRail,
+					JSPlayer.Events.dragType
+				)
+			} else if (
+				JSPlayer.Events.isDragging &&
+				JSPlayer.Events.dragType === 'volume'
+			) {
+				JSPlayer.moveSlider(
+					event,
+					JSPlayer.Controls.volumeSlider,
+					JSPlayer.Events.dragType
+				)
 			}
 		})
 
@@ -31,45 +39,52 @@ JSPlayer.Events = {
 		})
 	},
 
-	loadedMetaData: function() {
+	loadedMetaData: function () {
 		setTimeout(() => {
 			JSPlayer.hideTextTracks()
 		}, 10)
 		JSPlayer.applyTheme({ primary: '#1891ED' })
-		JSPlayer.Controls.duration.innerText = JSPlayer.Helper.formatTime(player.duration)
+		JSPlayer.Controls.duration.innerText = JSPlayer.Helper.formatTime(
+			player.duration
+		)
 		JSPlayer.Controls.showPlayerOverlayTimer.style.display = 'block'
-		JSPlayer.Controls.showPlayerOverlayTimer.querySelector('span').innerText = JSPlayer.Helper.formatTime(player.duration, true)
+		JSPlayer.Controls.showPlayerOverlayTimer.querySelector('span').innerText =
+			JSPlayer.Helper.formatTime(player.duration, true)
 		JSPlayer.player.volume = JSPlayer.Controls.playerVolumeCount
 
 		// Load comments
 		JSPlayer.Comments.init()
 		JSPlayer.Comments.load(dataComments)
-		
+
 		JSPlayer.Chapters.init()
 		JSPlayer.Chapters.load(dataChapters)
-		
+
 		JSPlayer.Comments.init()
-		JSPlayer.Comments.add(
-			{
-				seconds: JSPlayer.Helper.parseToSeconds('17:26'),
-				comment: ' Added a comment using the "addComment" method',
-			}
-		)
+		JSPlayer.Comments.add({
+			seconds: JSPlayer.Helper.parseToSeconds('17:26'),
+			comment: ' Added a comment using the "addComment" method',
+		})
 
 		// Captions
 		JSPlayer.Captions.init()
-		JSPlayer.Captions.bootstrap();
+		JSPlayer.Captions.bootstrap()
 
 		// Generate СTA Button
 		JSPlayer.CTA.init()
 	},
 
-	ended: function() {
+	ended: function () {
 		JSPlayer.showHideControls(true)
 		JSPlayer.Controls.commentsContainer.style.visibility = 'hidden'
 		JSPlayer.Controls.playerOverlayEnd.style.display = 'flex'
-		JSPlayer.Controls.playerCtaButtonDefault.classList.add('hidden')
-		JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.playOrPauseBtn, 'svg', true)
+		if (JSPlayer.Controls.playerCtaButtonDefault) {
+			JSPlayer.Controls.playerCtaButtonDefault.classList.add('hidden')
+		}
+		JSPlayer.Helper.toggleSiblingElement(
+			JSPlayer.Controls.playOrPauseBtn,
+			'svg',
+			true
+		)
 		JSPlayer.Chapters.activeChapter = 1
 	},
 
@@ -78,11 +93,11 @@ JSPlayer.Events = {
 		const playerWidth = JSPlayer.videoSize.split('x')[0]
 		JSPlayer.Controls.playerWrap.style.height =
 			(playerHeight / playerWidth) *
-			JSPlayer.Controls.playerWrap.getBoundingClientRect().width +
+				JSPlayer.Controls.playerWrap.getBoundingClientRect().width +
 			'px'
 	},
 
-	error: function(e) {
+	error: function (e) {
 		const error = e.target.error || player.error
 		if (error) {
 			switch (error.code) {
@@ -107,5 +122,5 @@ JSPlayer.Events = {
 			console.log('Event target:', e.target)
 			console.log('Player source:', player.currentSrc)
 		}
-	}
+	},
 }

@@ -1,10 +1,10 @@
 JSPlayer.Captions = {
 	customCaptions: null,
 	captionBtn: null,
-	showCaptions: false,
+	isShowCaptions: false,
 	activeCuesLength: 0,
 
-	init: function() {
+	init: function () {
 		this.captionTrack = document.getElementById('captions-track')
 		this.captionBtn = document.getElementById('captions-btn')
 		this.customCaptions = document.querySelector('.custom-captions')
@@ -12,34 +12,40 @@ JSPlayer.Captions = {
 		this.customCaptions.style.display = 'none'
 	},
 
-	bootstrap : function()
-	{
+	bootstrap: function () {
 		this.addEventListeners()
 	},
 
 	addEventListeners: function () {
 		this.captionBtn.addEventListener('click', () => {
-			if (JSPlayer.Captions.showCaptions) {
-				JSPlayer.Captions.showCaptions = false
+			if (JSPlayer.Captions.isShowCaptions) {
+				JSPlayer.Captions.isShowCaptions = false
 				JSPlayer.Captions.customCaptions.style.display = 'none'
-				JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.captionBtn, 'svg', true)
+				JSPlayer.Helper.toggleSiblingElement(
+					JSPlayer.Captions.captionBtn,
+					'svg',
+					true
+				)
 			} else {
 				if (JSPlayer.Captions.activeCuesLength > 0) {
 					JSPlayer.Captions.customCaptions.style.display = 'block'
 				} else {
 					JSPlayer.Captions.customCaptions.style.display = 'none'
 				}
-				JSPlayer.Captions.showCaptions = true
-				JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.captionBtn, 'svg')
+				JSPlayer.Captions.isShowCaptions = true
+				JSPlayer.Helper.toggleSiblingElement(
+					JSPlayer.Captions.captionBtn,
+					'svg'
+				)
 			}
 		})
-	
+
 		this.captionTrack.addEventListener('cuechange', () => {
 			const activeCues = JSPlayer.player.textTracks[0].activeCues
-	
+
 			JSPlayer.Captions.activeCuesLength = activeCues.length
-	
-			if (JSPlayer.Captions.showCaptions && activeCues.length > 0) {
+
+			if (JSPlayer.Captions.isShowCaptions && activeCues.length > 0) {
 				JSPlayer.Captions.showCaptions(activeCues[0].text)
 			} else {
 				JSPlayer.Captions.hideCaptions(

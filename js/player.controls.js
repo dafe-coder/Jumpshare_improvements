@@ -25,6 +25,8 @@ JSPlayer.Controls = {
 	loadingBgSpinner: null,
 	controlsTimeRail: null,
 	playerCtaButtonDefault: null,
+	isPreviewPlaying: true,
+	PREVIEW_DURATION: 5,
 
 	bootstrap: function () {
 		this.init()
@@ -95,9 +97,8 @@ JSPlayer.Controls = {
 		})
 
 		// overlay player start
-		this.playerOverlayStart.addEventListener(
-			'click',
-			this.preparePlayerWhenStartPlaying
+		this.playerOverlayStart.addEventListener('click', () =>
+			this.preparePlayerWhenStartPlaying()
 		)
 
 		this.controls.addEventListener('mousemove', () => {
@@ -138,7 +139,13 @@ JSPlayer.Controls = {
 			JSPlayer.player.currentTime = 0
 			JSPlayer.player.play()
 			JSPlayer.Controls.playerOverlayEnd.style.display = 'none'
-			JSPlayer.Controls.playerCtaButtonDefault.classList.remove('hidden')
+			if (JSPlayer.Controls.playerCtaButtonDefault) {
+				console.log(
+					'playerCtaButtonDefault',
+					JSPlayer.Controls.playerCtaButtonDefault
+				)
+				JSPlayer.Controls.playerCtaButtonDefault.classList.remove('hidden')
+			}
 			JSPlayer.Helper.toggleSiblingElement(
 				JSPlayer.Controls.playOrPauseBtn,
 				'svg'
@@ -268,6 +275,7 @@ JSPlayer.Controls = {
 	},
 
 	preparePlayerWhenStartPlaying: function () {
+		this.isPreviewPlaying = false
 		JSPlayer.Controls.commentsContainer.style.visibility = 'visible'
 		// Generate CTA button
 		if (!JSPlayer.CTA.isCTAButtonGenerated) {
@@ -282,7 +290,36 @@ JSPlayer.Controls = {
 			JSPlayer.Controls.playOrPauseBtn,
 			'svg'
 		)
+		JSPlayer.Chapters.chooseActiveChapter()
+		JSPlayer.player.muted = false
+		JSPlayer.player.currentTime = 0
 		JSPlayer.showHideControls()
 		JSPlayer.player.play()
+	},
+
+	initPreviewLoop: function () {
+		JSPlayer.player
+			.play()
+			.then(() => {
+				JSPlayer.player.addEventListener('timeupdate', () => {
+					if (this.isPreviewPlaying) {
+						JSPlayer.player.muted = true
+						document.querySelector('#annotation_canvas').classList.add('hidden')
+
+						document
+							.querySelectorAll('.controls-comments-item')
+							.forEach(item => {
+								item.classList.remove('active')
+							})
+						if (JSPlayer.player.currentTime >= this.PREVIEW_DURATION) {
+							JSPlayer.player.currentTime = 0
+							JSPlayer.Chapters.chooseActiveChapter()
+						}
+					}
+				})
+			})
+			.catch(error => {
+				console.error('Preview autoplay failed:', error)
+			})
 	},
 }
