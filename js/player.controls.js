@@ -298,12 +298,13 @@ JSPlayer.Controls = {
 	},
 
 	initPreviewLoop: function () {
+		JSPlayer.player.muted = true
+
 		JSPlayer.player
 			.play()
 			.then(() => {
 				JSPlayer.player.addEventListener('timeupdate', () => {
 					if (this.isPreviewPlaying) {
-						JSPlayer.player.muted = true
 						document.querySelector('#annotation_canvas').classList.add('hidden')
 
 						document
@@ -319,6 +320,7 @@ JSPlayer.Controls = {
 				})
 			})
 			.catch(error => {
+				JSPlayer.player.currentTime = 0
 				console.error('Preview autoplay failed:', error)
 			})
 	},
