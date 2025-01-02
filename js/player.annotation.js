@@ -28,7 +28,7 @@ JSPlayer.Annotation = {
 		shadowBlur: 1,
 	},
 
-	initialize: function () {
+	init: function () {
 		this.bootstrap()
 		this.attachWindowResizeListener()
 	},
