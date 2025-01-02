@@ -26,8 +26,7 @@ JSPlayer.Controls = {
 	controlsTimeRail: null,
 	playerCtaButtonDefault: null,
 
-	bootstrap : function()
-	{
+	bootstrap: function () {
 		this.init()
 		this.addEventListeners()
 	},
@@ -57,11 +56,13 @@ JSPlayer.Controls = {
 
 		this.playerOverlayEnd = document.querySelector('.player-overlay-end')
 		this.playerOverlayBtnEnd = document.querySelector(
-		'.player-overlay-button-end')
+			'.player-overlay-button-end'
+		)
 		this.loadingBgSpinner = document.querySelector('.loading-bg-img')
-		this.playerCtaButtonDefault = document.querySelector('.player-cta-button-default')
-	
-		
+		this.playerCtaButtonDefault = document.querySelector(
+			'.player-cta-button-default'
+		)
+
 		// TODO
 		this.dataChapters = dataChapters
 
@@ -78,37 +79,38 @@ JSPlayer.Controls = {
 	},
 
 	addEventListeners: function () {
+		document.addEventListener('fullscreenchange', e => {
+			JSPlayer.Controls.toggleFullscreenStyles(e)
+			JSPlayer.resizeVideoPlayerTheatreMode()
+		})
 
-		document.addEventListener(
-			'fullscreenchange',
-			JSPlayer.Controls.toggleFullscreenStyles
-		);
+		document.addEventListener('webkitfullscreenchange', e => {
+			JSPlayer.Controls.toggleFullscreenStyles(e)
+			JSPlayer.resizeVideoPlayerTheatreMode()
+		})
 
-		document.addEventListener(
-			'webkitfullscreenchange',
-			JSPlayer.Controls.toggleFullscreenStyles
-		);
-
-		document.addEventListener(
-			'mozfullscreenchange',
-			JSPlayer.Controls.toggleFullscreenStyles
-		);
+		document.addEventListener('mozfullscreenchange', e => {
+			JSPlayer.Controls.toggleFullscreenStyles(e)
+			JSPlayer.resizeVideoPlayerTheatreMode()
+		})
 
 		// overlay player start
-		this.playerOverlayStart.addEventListener('click', this.preparePlayerWhenStartPlaying)
-		
+		this.playerOverlayStart.addEventListener(
+			'click',
+			this.preparePlayerWhenStartPlaying
+		)
+
 		this.controls.addEventListener('mousemove', () => {
 			JSPlayer.showHideControls()
 			clearTimeout(JSPlayer.Controls.playerControlsTimeout)
-		});
+		})
 
-		
 		this.playerWrap.addEventListener('mouseleave', () => {
 			if (!JSPlayer.player.paused) {
 				JSPlayer.showHideControls(true)
 			}
 		})
-		
+
 		this.fullScreenBtn.addEventListener('click', () => {
 			JSPlayer.Controls.toggleFullScreen()
 		})
@@ -116,14 +118,20 @@ JSPlayer.Controls = {
 		this.controlsTimeRail.addEventListener('mousedown', event => {
 			JSPlayer.Events.isDragging = true
 			JSPlayer.Events.dragType = 'time'
-			JSPlayer.moveSlider(event, JSPlayer.Controls.controlsTimeRail, JSPlayer.Events.dragType)
+			JSPlayer.moveSlider(
+				event,
+				JSPlayer.Controls.controlsTimeRail,
+				JSPlayer.Events.dragType
+			)
 		})
 
 		this.playOrPauseBtn.addEventListener('click', e => JSPlayer.playOrPause(e))
 
 		this.muteBtn.addEventListener('click', () => JSPlayer.Controls.mute())
-		
-		this.playbackRate.addEventListener('click', () => JSPlayer.choosePlaybackRate())
+
+		this.playbackRate.addEventListener('click', () =>
+			JSPlayer.choosePlaybackRate()
+		)
 
 		this.playerOverlayBtnEnd.addEventListener('click', () => {
 			JSPlayer.Controls.commentsContainer.style.visibility = 'visible'
@@ -131,25 +139,35 @@ JSPlayer.Controls = {
 			JSPlayer.player.play()
 			JSPlayer.Controls.playerOverlayEnd.style.display = 'none'
 			JSPlayer.Controls.playerCtaButtonDefault.classList.remove('hidden')
-			JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.playOrPauseBtn, 'svg')
-		});
+			JSPlayer.Helper.toggleSiblingElement(
+				JSPlayer.Controls.playOrPauseBtn,
+				'svg'
+			)
+		})
 
 		document.addEventListener('keydown', e => {
 			const skipAmount = 10
 			const isTyping = ['INPUT', 'TEXTAREA'].includes(
 				document.activeElement.tagName
 			)
-	
+
 			if (JSPlayer.player.currentTime > 0 && !isTyping) {
 				if (e.code === 'Space') {
 					e.preventDefault()
 					if (JSPlayer.player.paused || JSPlayer.player.ended) {
 						JSPlayer.Controls.preparePlayerWhenStartPlaying()
 						JSPlayer.player.play()
-						JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.playOrPauseBtn, 'svg')
+						JSPlayer.Helper.toggleSiblingElement(
+							JSPlayer.Controls.playOrPauseBtn,
+							'svg'
+						)
 					} else {
 						JSPlayer.player.pause()
-						JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.playOrPauseBtn, 'svg', true)
+						JSPlayer.Helper.toggleSiblingElement(
+							JSPlayer.Controls.playOrPauseBtn,
+							'svg',
+							true
+						)
 					}
 				}
 				if (e.code === 'ArrowLeft') {
@@ -171,8 +189,8 @@ JSPlayer.Controls = {
 		// Theatre mode
 		this.theatreBtn.addEventListener('click', () => {
 			JSPlayer.Controls.theatreMode()
-			JSPlayer.resizeVideoPlayerTheatreMode()
-			//JSPlayer.Annotation.resizeAnnotationCanvas()
+			JSPlayer.resizeVideoPlayerTheatreMode(10)
+			JSPlayer.Events.resizeVideoPlayer()
 		})
 
 		// Volume slider
@@ -181,7 +199,6 @@ JSPlayer.Controls = {
 			JSPlayer.Events.dragType = 'volume'
 			JSPlayer.moveSlider(event, JSPlayer.Controls.volumeSlider, dragType)
 		})
-
 	},
 
 	updateVolumeCount: function (percentage) {
@@ -250,7 +267,7 @@ JSPlayer.Controls = {
 		}
 	},
 
-	preparePlayerWhenStartPlaying: function() {
+	preparePlayerWhenStartPlaying: function () {
 		JSPlayer.Controls.commentsContainer.style.visibility = 'visible'
 		// Generate CTA button
 		if (!JSPlayer.CTA.isCTAButtonGenerated) {
@@ -261,8 +278,11 @@ JSPlayer.Controls = {
 		document
 			.querySelector('.player-wrap')
 			.classList.add('player-overlay-played')
-		JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.playOrPauseBtn, 'svg')
+		JSPlayer.Helper.toggleSiblingElement(
+			JSPlayer.Controls.playOrPauseBtn,
+			'svg'
+		)
 		JSPlayer.showHideControls()
 		JSPlayer.player.play()
-	}
+	},
 }
