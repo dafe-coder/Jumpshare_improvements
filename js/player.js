@@ -167,10 +167,10 @@ const JSPlayer = {
 
 	updateSlider: function () {
 		const startValue =
-			JSPlayer.Chapters.data.chapters[JSPlayer.Chapters.activeChapter - 1].line
+			JSPlayer.Chapters.data.chapters[JSPlayer.Chapters.activeChapter - 1]?.line
 		const endValue = JSPlayer.Chapters.data.chapters[
 			JSPlayer.Chapters.activeChapter
-		]
+		]?.line
 			? dataChapters.chapters[JSPlayer.Chapters.activeChapter].line
 			: this.player.duration
 		const progressRailPercent =

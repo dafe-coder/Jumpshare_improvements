@@ -59,7 +59,7 @@ JSPlayer.Annotation = {
 	percentage_to_px_horizontal: function (percentage, initialWindowWidth) {
 		return (parseFloat(percentage).toFixed(2) * initialWindowWidth) / 100
 	},
-
+	addAnnotationPanelID: null,
 	add_annotation_panel: function () {
 		this.handle_annotation.unbind().bind('click', () => {
 			const showAnnotationBtn = document.querySelector('#show-annotation')
@@ -69,6 +69,7 @@ JSPlayer.Annotation = {
 				$('#annotation_canvas').addClass('hide')
 				$('#annotation_canvas').removeClass('pointer-events-none')
 			}
+
 			if (!$('#annotation_canvas').hasClass('hide')) {
 				showAnnotationBtn.classList.remove('active')
 				JSPlayer.Helper.toggleSiblingElement(showAnnotationBtn, 'svg', true)
@@ -88,16 +89,20 @@ JSPlayer.Annotation = {
 				this.shapes = []
 				this.shapes.splice(0, this.shapes.length)
 			} else {
-				showAnnotationBtn.classList.add('active')
-				JSPlayer.Helper.toggleSiblingElement(showAnnotationBtn, 'svg')
-				document.querySelector('#annotation_panel').classList.add('active')
-				$('#annotation_canvas').removeClass('hide')
-				this.initializ_canvas()
-				this.hide_seekbar_and_timed_comments()
-				this.attach_annotation_panel()
-				setTimeout(function () {
-					player.pause()
-				}, 10)
+				JSPlayer.Controls.preparePlayerWhenStartPlaying()
+				player.pause()
+				let time = this.addAnnotationPanelID == null ? 200 : 10
+
+				this.addAnnotationPanelID = setTimeout(() => {
+					showAnnotationBtn.classList.add('active')
+					JSPlayer.Helper.toggleSiblingElement(showAnnotationBtn, 'svg')
+					document.querySelector('#annotation_panel').classList.add('active')
+					$('#annotation_canvas').removeClass('hide')
+					this.initializ_canvas()
+					this.hide_seekbar_and_timed_comments()
+					this.attach_annotation_panel()
+					clearTimeout(this.addAnnotationPanelID)
+				}, time)
 			}
 
 			if (!player.startedPlaying) {
@@ -769,7 +774,7 @@ JSPlayer.Annotation = {
 
 	hide_current_annotation_with_time: function () {
 		$('#annotation_canvas').addClass('hide')
-		$('#resume_the_video').remove()
+		$('#annotation_canvas').removeClass('darwingMode')
 		$('#annotation_canvas').removeClass('pointer-events-none')
 		this.ctx &&
 			this.ctx.clearRect(
@@ -781,7 +786,7 @@ JSPlayer.Annotation = {
 		this.shapes = []
 		// $('#annotation_panel').remove()
 		this.annotation_has_started = false
-		$('#annotation_canvas').removeClass('darwingMode')
+
 		$('.player-cta-button').removeClass('hide')
 		$('#custom_captions_wrapper').removeClass('hide')
 	},

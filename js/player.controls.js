@@ -272,8 +272,26 @@ JSPlayer.Controls = {
 	},
 
 	preparePlayerWhenStartPlaying: function () {
-		this.isPreviewPlaying = false
-		JSPlayer.Controls.commentsContainer.style.visibility = 'visible'
+		console.log(this.isPreviewPlaying)
+		if (this.isPreviewPlaying) {
+			this.isPreviewPlaying = false
+			JSPlayer.player.muted = false
+			JSPlayer.player.currentTime = 0
+			JSPlayer.Chapters.chooseActiveChapter()
+
+			JSPlayer.Controls.commentsContainer.style.visibility = 'visible'
+
+			JSPlayer.Controls.playerOverlayStart.style.display = 'none'
+			document
+				.querySelector('.player-wrap')
+				.classList.add('player-overlay-played')
+			JSPlayer.Helper.toggleSiblingElement(
+				JSPlayer.Controls.playOrPauseBtn,
+				'svg'
+			)
+			JSPlayer.showHideControls()
+			JSPlayer.player.play()
+		}
 		// Generate CTA button
 		if (!JSPlayer.CTA.isCTAButtonGenerated) {
 			JSPlayer.CTA.generateCTAButton(dataCTA)
@@ -282,19 +300,6 @@ JSPlayer.Controls = {
 				'.player-cta-button-default'
 			)
 		}
-		JSPlayer.Controls.playerOverlayStart.style.display = 'none'
-		document
-			.querySelector('.player-wrap')
-			.classList.add('player-overlay-played')
-		JSPlayer.Helper.toggleSiblingElement(
-			JSPlayer.Controls.playOrPauseBtn,
-			'svg'
-		)
-		JSPlayer.Chapters.chooseActiveChapter()
-		JSPlayer.player.muted = false
-		JSPlayer.player.currentTime = 0
-		JSPlayer.showHideControls()
-		JSPlayer.player.play()
 	},
 
 	initPreviewLoop: function () {
@@ -305,7 +310,7 @@ JSPlayer.Controls = {
 			.then(() => {
 				JSPlayer.player.addEventListener('timeupdate', () => {
 					if (this.isPreviewPlaying) {
-						document.querySelector('#annotation_canvas').classList.add('hidden')
+						document.querySelector('#annotation_canvas').classList.add('hide')
 
 						document
 							.querySelectorAll('.controls-comments-item')
