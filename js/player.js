@@ -150,9 +150,13 @@ const JSPlayer = {
 			}
 			if (dragType === 'volume' && percentage >= 0 && percentage <= 1) {
 				if (percentage === 0) {
-					JSPlayer.Helper.toggleSiblingElement(this.muteBtn, 'svg')
+					JSPlayer.Helper.toggleSiblingElement(JSPlayer.Controls.muteBtn, 'svg')
 				} else {
-					JSPlayer.Helper.toggleSiblingElement(this.muteBtn, 'svg', true)
+					JSPlayer.Helper.toggleSiblingElement(
+						JSPlayer.Controls.muteBtn,
+						'svg',
+						true
+					)
 				}
 				JSPlayer.Controls.updateVolumeCount(percentage)
 				this.player.volume = percentage

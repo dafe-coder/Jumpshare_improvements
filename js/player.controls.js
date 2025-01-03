@@ -61,9 +61,6 @@ JSPlayer.Controls = {
 			'.player-overlay-button-end'
 		)
 		this.loadingBgSpinner = document.querySelector('.loading-bg-img')
-		this.playerCtaButtonDefault = document.querySelector(
-			'.player-cta-button-default'
-		)
 
 		// TODO
 		this.dataChapters = dataChapters
@@ -134,16 +131,12 @@ JSPlayer.Controls = {
 			JSPlayer.choosePlaybackRate()
 		)
 
-		this.playerOverlayBtnEnd.addEventListener('click', () => {
+		this.playerOverlayBtnEnd.addEventListener('click', function () {
 			JSPlayer.Controls.commentsContainer.style.visibility = 'visible'
 			JSPlayer.player.currentTime = 0
 			JSPlayer.player.play()
 			JSPlayer.Controls.playerOverlayEnd.style.display = 'none'
 			if (JSPlayer.Controls.playerCtaButtonDefault) {
-				console.log(
-					'playerCtaButtonDefault',
-					JSPlayer.Controls.playerCtaButtonDefault
-				)
 				JSPlayer.Controls.playerCtaButtonDefault.classList.remove('hidden')
 			}
 			JSPlayer.Helper.toggleSiblingElement(
@@ -204,7 +197,11 @@ JSPlayer.Controls = {
 		this.volumeSlider.addEventListener('mousedown', event => {
 			JSPlayer.Events.isDragging = true
 			JSPlayer.Events.dragType = 'volume'
-			JSPlayer.moveSlider(event, JSPlayer.Controls.volumeSlider, dragType)
+			JSPlayer.moveSlider(
+				event,
+				JSPlayer.Controls.volumeSlider,
+				JSPlayer.Events.dragType
+			)
 		})
 	},
 
@@ -281,6 +278,9 @@ JSPlayer.Controls = {
 		if (!JSPlayer.CTA.isCTAButtonGenerated) {
 			JSPlayer.CTA.generateCTAButton(dataCTA)
 			JSPlayer.CTA.isCTAButtonGenerated = true
+			this.playerCtaButtonDefault = document.querySelector(
+				'.player-cta-button-default'
+			)
 		}
 		JSPlayer.Controls.playerOverlayStart.style.display = 'none'
 		document

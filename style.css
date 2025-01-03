@@ -509,6 +509,10 @@ button.playback-rate {
 	background-color: rgba(0, 0, 0, 0.1);
 }
 
+.player-overlay-start {
+	background-color: rgba(0, 0, 0, 0.01);
+}
+
 .player-overlay-start:hover .show-player-timer {
 	opacity: 1;
 }

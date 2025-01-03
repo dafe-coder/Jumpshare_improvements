@@ -1,163 +1,50 @@
 'use strict'
 
-// const dataChapters = {
-// 	chapters: [
-// 		{
-// 			name: 'Foundations of Video Editing',
-// 			line: '0',
-// 		},
-// 		{
-// 			name: 'Organizing Your Workflow',
-// 			line: '100',
-// 		},
-// 		{
-// 			name: 'Utilizing External Drives for Storage',
-// 			line: '240',
-// 		},
-// 		{
-// 			name: 'Choosing the Right Editing Software',
-// 			line: '289',
-// 		},
-// 		{
-// 			name: 'Trimming and Editing Process',
-// 			line: '400',
-// 		},
-// 		{
-// 			name: 'Incorporating B-roll and Stock Footage',
-// 			line: '450',
-// 		},
-// 		{
-// 			name: 'Adding Text and Templates',
-// 			line: '600',
-// 		},
-// 		{
-// 			name: 'Reviewing and Finalizing the Edit',
-// 			line: '700',
-// 		},
-// 		{
-// 			name: 'Rendering and Uploading with Camtasia',
-// 			line: '800',
-// 		},
-// 		{
-// 			name: 'Continuous Improvement in Editing',
-// 			line: '1000',
-// 		},
-// 	],
-// }
+const dataChapters = {
+	chapters: [
+		{
+			name: 'Foundations of Video Editing',
+			line: '0',
+		},
+		{
+			name: 'Organizing Your Workflow',
+			line: '100',
+		},
+		{
+			name: 'Utilizing External Drives for Storage',
+			line: '240',
+		},
+		{
+			name: 'Choosing the Right Editing Software',
+			line: '289',
+		},
+		{
+			name: 'Trimming and Editing Process',
+			line: '400',
+		},
+		{
+			name: 'Incorporating B-roll and Stock Footage',
+			line: '450',
+		},
+		{
+			name: 'Adding Text and Templates',
+			line: '600',
+		},
+		{
+			name: 'Reviewing and Finalizing the Edit',
+			line: '700',
+		},
+		{
+			name: 'Rendering and Uploading with Camtasia',
+			line: '800',
+		},
+		{
+			name: 'Continuous Improvement in Editing',
+			line: '1000',
+		},
+	],
+}
 
-// const dataComments = {
-// 	comments: [
-// 		{
-// 			id: '2912',
-// 			item_code: 'Dino1qV66wxgBu2jL1ID',
-// 			comment: 'This need to be color too.',
-// 			parent_comment_id: '0',
-// 			replies_count: '4',
-// 			media_timestamp: '20.00859',
-// 			commentator: null,
-// 			date_created: '2024-07-18 06:24:34',
-// 			date_updated: null,
-// 			annotation_json:
-// 				'[{"color":"#F73D72","id":"0","type":"rectangle","x1":"52.44","y1":"58.50","x2":"56.45","y2":"53.98"},{"color":"#F73D72","id":"1","type":"arrow","x1":"62.34","y1":"63.14","x2":"56.39","y2":"53.15"}]',
-// 			latest_reply: {
-// 				id: '2923',
-// 				item_code: 'Dino1qV66wxgBu2jL1ID',
-// 				comment: 'Fifth one',
-// 				media_timestamp: '0',
-// 				parent_comment_id: '2912',
-// 				commentator: null,
-// 				date_created: '2024-07-19 15:51:04',
-// 				date_updated: null,
-// 				user: {
-// 					avatar_hash:
-// 						'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
-// 					first_name: 'sal',
-// 					last_name: 'kh',
-// 					email: 'salman@jumpshare.com',
-// 				},
-// 				is_super_owner: true,
-// 				is_owner: true,
-// 				comment_time: 'Jul 19',
-// 			},
-// 			user: {
-// 				avatar_hash:
-// 					'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
-// 				first_name: 'sal',
-// 				last_name: 'kh',
-// 				email: 'salman@jumpshare.com',
-// 			},
-// 			is_super_owner: true,
-// 			is_owner: true,
-// 			comment_time: 'Jul 18',
-// 		},
-// 		{
-// 			id: '2917',
-// 			item_code: 'Dino1qV66wxgBu2jL1ID',
-// 			comment: `Very big comment to check the length. I wonder how it will come out. I assume it will look good. But it's worth checking it out. I'm excited to improve this part of the product. Thanks for the output!`,
-// 			parent_comment_id: '0',
-// 			replies_count: '0',
-// 			media_timestamp: '400.5064',
-// 			commentator: null,
-// 			date_created: '2024-07-19 12:04:22',
-// 			date_updated: null,
-// 			annotation_json:
-// 				'[{"color":"#F73D72","id":"0","type":"rectangle","x1":"64.48","y1":"21.52","x2":"73.24","y2":"31.27"}]',
-// 			user: {
-// 				avatar_hash:
-// 					'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
-// 				first_name: 'sal',
-// 				last_name: 'kh',
-// 				email: 'salman@jumpshare.com',
-// 			},
-// 			is_super_owner: true,
-// 			is_owner: true,
-// 			comment_time: 'Jul 19',
-// 		},
-// 		{
-// 			id: '2924',
-// 			item_code: 'Dino1qV66wxgBu2jL1ID',
-// 			comment:
-// 				'This is first one This is first one This is first one This is first one This is first one This is first one',
-// 			parent_comment_id: '0',
-// 			replies_count: '4',
-// 			media_timestamp: '1600',
-// 			commentator: null,
-// 			date_created: '2024-07-19 15:52:59',
-// 			date_updated: null,
-// 			annotation_json: null,
-// 			latest_reply: {
-// 				id: '2928',
-// 				item_code: 'Dino1qV66wxgBu2jL1ID',
-// 				comment: 'Fifth',
-// 				media_timestamp: '0',
-// 				parent_comment_id: '2924',
-// 				commentator: null,
-// 				date_created: '2024-07-19 15:53:28',
-// 				date_updated: null,
-// 				user: {
-// 					avatar_hash:
-// 						'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
-// 					first_name: 'sal',
-// 					last_name: 'kh',
-// 					email: 'salman@jumpshare.com',
-// 				},
-// 				is_super_owner: true,
-// 				is_owner: true,
-// 				comment_time: 'Jul 19',
-// 			},
-// 			user: {
-// 				avatar_hash:
-// 					'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
-// 				first_name: 'sal',
-// 				last_name: 'kh',
-// 				email: 'salman@jumpshare.com',
-// 			},
-// 			is_super_owner: true,
-// 			is_owner: true,
-// 			comment_time: 'Jul 19',
-// 		},
-// 	],
-// }
 const dataComments = {
 	comments: [
 		{
@@ -166,7 +53,7 @@ const dataComments = {
 			comment: 'This need to be color too.',
 			parent_comment_id: '0',
 			replies_count: '4',
-			media_timestamp: '2',
+			media_timestamp: '20.00859',
 			commentator: null,
 			date_created: '2024-07-18 06:24:34',
 			date_updated: null,
@@ -209,7 +96,7 @@ const dataComments = {
 			comment: `Very big comment to check the length. I wonder how it will come out. I assume it will look good. But it's worth checking it out. I'm excited to improve this part of the product. Thanks for the output!`,
 			parent_comment_id: '0',
 			replies_count: '0',
-			media_timestamp: '10',
+			media_timestamp: '400.5064',
 			commentator: null,
 			date_created: '2024-07-19 12:04:22',
 			date_updated: null,
@@ -233,7 +120,7 @@ const dataComments = {
 				'This is first one This is first one This is first one This is first one This is first one This is first one',
 			parent_comment_id: '0',
 			replies_count: '4',
-			media_timestamp: '24',
+			media_timestamp: '1600',
 			commentator: null,
 			date_created: '2024-07-19 15:52:59',
 			date_updated: null,
@@ -272,42 +159,156 @@ const dataComments = {
 	],
 }
 
-const dataChapters = {
-	chapters: [
-		{
-			name: 'Foundations of Video Editing',
-			line: '0',
-		},
-		{
-			name: 'Organizing Your Workflow',
-			line: '4',
-		},
-		{
-			name: 'Utilizing External Drives for Storage',
-			line: '10',
-		},
-		{
-			name: 'Choosing the Right Editing Software',
-			line: '14',
-		},
-		{
-			name: 'Trimming and Editing Process',
-			line: '16',
-		},
-		{
-			name: 'Incorporating B-roll and Stock Footage',
-			line: '20',
-		},
-		{
-			name: 'Adding Text and Templates',
-			line: '22',
-		},
-		{
-			name: 'Reviewing and Finalizing the Edit',
-			line: '30',
-		},
-	],
-}
+// const dataComments = {
+// 	comments: [
+// 		{
+// 			id: '2912',
+// 			item_code: 'Dino1qV66wxgBu2jL1ID',
+// 			comment: 'This need to be color too.',
+// 			parent_comment_id: '0',
+// 			replies_count: '4',
+// 			media_timestamp: '2',
+// 			commentator: null,
+// 			date_created: '2024-07-18 06:24:34',
+// 			date_updated: null,
+// 			annotation_json:
+// 				'[{"color":"#F73D72","id":"0","type":"rectangle","x1":"52.44","y1":"58.50","x2":"56.45","y2":"53.98"},{"color":"#F73D72","id":"1","type":"arrow","x1":"62.34","y1":"63.14","x2":"56.39","y2":"53.15"}]',
+// 			latest_reply: {
+// 				id: '2923',
+// 				item_code: 'Dino1qV66wxgBu2jL1ID',
+// 				comment: 'Fifth one',
+// 				media_timestamp: '0',
+// 				parent_comment_id: '2912',
+// 				commentator: null,
+// 				date_created: '2024-07-19 15:51:04',
+// 				date_updated: null,
+// 				user: {
+// 					avatar_hash:
+// 						'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
+// 					first_name: 'sal',
+// 					last_name: 'kh',
+// 					email: 'salman@jumpshare.com',
+// 				},
+// 				is_super_owner: true,
+// 				is_owner: true,
+// 				comment_time: 'Jul 19',
+// 			},
+// 			user: {
+// 				avatar_hash:
+// 					'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
+// 				first_name: 'sal',
+// 				last_name: 'kh',
+// 				email: 'salman@jumpshare.com',
+// 			},
+// 			is_super_owner: true,
+// 			is_owner: true,
+// 			comment_time: 'Jul 18',
+// 		},
+// 		{
+// 			id: '2917',
+// 			item_code: 'Dino1qV66wxgBu2jL1ID',
+// 			comment: `Very big comment to check the length. I wonder how it will come out. I assume it will look good. But it's worth checking it out. I'm excited to improve this part of the product. Thanks for the output!`,
+// 			parent_comment_id: '0',
+// 			replies_count: '0',
+// 			media_timestamp: '10',
+// 			commentator: null,
+// 			date_created: '2024-07-19 12:04:22',
+// 			date_updated: null,
+// 			annotation_json:
+// 				'[{"color":"#F73D72","id":"0","type":"rectangle","x1":"64.48","y1":"21.52","x2":"73.24","y2":"31.27"}]',
+// 			user: {
+// 				avatar_hash:
+// 					'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
+// 				first_name: 'sal',
+// 				last_name: 'kh',
+// 				email: 'salman@jumpshare.com',
+// 			},
+// 			is_super_owner: true,
+// 			is_owner: true,
+// 			comment_time: 'Jul 19',
+// 		},
+// 		{
+// 			id: '2924',
+// 			item_code: 'Dino1qV66wxgBu2jL1ID',
+// 			comment:
+// 				'This is first one This is first one This is first one This is first one This is first one This is first one',
+// 			parent_comment_id: '0',
+// 			replies_count: '4',
+// 			media_timestamp: '24',
+// 			commentator: null,
+// 			date_created: '2024-07-19 15:52:59',
+// 			date_updated: null,
+// 			annotation_json: null,
+// 			latest_reply: {
+// 				id: '2928',
+// 				item_code: 'Dino1qV66wxgBu2jL1ID',
+// 				comment: 'Fifth',
+// 				media_timestamp: '0',
+// 				parent_comment_id: '2924',
+// 				commentator: null,
+// 				date_created: '2024-07-19 15:53:28',
+// 				date_updated: null,
+// 				user: {
+// 					avatar_hash:
+// 						'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
+// 					first_name: 'sal',
+// 					last_name: 'kh',
+// 					email: 'salman@jumpshare.com',
+// 				},
+// 				is_super_owner: true,
+// 				is_owner: true,
+// 				comment_time: 'Jul 19',
+// 			},
+// 			user: {
+// 				avatar_hash:
+// 					'<figure class="c-avatar c-avatar--s c-avatar--no-img pull-left" data-original-title="sal kh" data-initials="S" style="border: 1px solid #D12A1E; background-color: #D12A1E"></figure>',
+// 				first_name: 'sal',
+// 				last_name: 'kh',
+// 				email: 'salman@jumpshare.com',
+// 			},
+// 			is_super_owner: true,
+// 			is_owner: true,
+// 			comment_time: 'Jul 19',
+// 		},
+// 	],
+// }
+
+// const dataChapters = {
+// 	chapters: [
+// 		{
+// 			name: 'Foundations of Video Editing',
+// 			line: '0',
+// 		},
+// 		{
+// 			name: 'Organizing Your Workflow',
+// 			line: '4',
+// 		},
+// 		{
+// 			name: 'Utilizing External Drives for Storage',
+// 			line: '10',
+// 		},
+// 		{
+// 			name: 'Choosing the Right Editing Software',
+// 			line: '14',
+// 		},
+// 		{
+// 			name: 'Trimming and Editing Process',
+// 			line: '16',
+// 		},
+// 		{
+// 			name: 'Incorporating B-roll and Stock Footage',
+// 			line: '20',
+// 		},
+// 		{
+// 			name: 'Adding Text and Templates',
+// 			line: '22',
+// 		},
+// 		{
+// 			name: 'Reviewing and Finalizing the Edit',
+// 			line: '30',
+// 		},
+// 	],
+// }
 
 const dataCTA = {
 	status: 1,
@@ -370,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		'https://ocean.mirzabilal.com/iptv/video/prog_index.m3u8',
 	]
 
-	let activePlayerSrc = 0
+	let activePlayerSrc = 1
 
 	if (
 		JSPlayer.player.canPlayType('application/vnd.apple.mpegurl') ||

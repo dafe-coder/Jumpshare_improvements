@@ -69,8 +69,7 @@ JSPlayer.Chapters = {
 	},
 
 	createSliderItem: function (chapter, chapterStart, chapterEnd) {
-		const width =
-			((chapterEnd - chapterStart) / JSPlayer.player.duration) * 100
+		const width = ((chapterEnd - chapterStart) / JSPlayer.player.duration) * 100
 		const item = document.createElement('span')
 		item.classList.add('chapter-slider-item')
 		item.dataset.dataSliderStartTime = chapterStart
@@ -105,7 +104,10 @@ JSPlayer.Chapters = {
 			const end = this.data.chapters[idx + 1]
 				? this.data.chapters[idx + 1].line
 				: JSPlayer.player.duration
-			if (JSPlayer.player.currentTime >= start && JSPlayer.player.currentTime <= end) {
+			if (
+				JSPlayer.player.currentTime >= start &&
+				JSPlayer.player.currentTime <= end
+			) {
 				this.activeChapter = idx + 1
 			}
 		})
@@ -113,7 +115,8 @@ JSPlayer.Chapters = {
 
 	updateActiveChapterTitle: function () {
 		if (!JSPlayer.Chapters.data?.chapters?.length) return
+
 		this.activeChapterTitle.querySelector('span').innerText =
-		JSPlayer.Chapters.data.chapters[JSPlayer.Chapters.activeChapter - 1].name
+			JSPlayer.Chapters.data.chapters[JSPlayer.Chapters.activeChapter - 1]?.name
 	},
 }

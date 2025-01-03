@@ -6,6 +6,9 @@ JSPlayer.CTA = {
 	},
 
 	generateCTAButton: function (dataCTA) {
+		if (this.isCTAButtonGenerated) {
+			return
+		}
 		const ctaButton = document.createElement('a')
 		ctaButton.href = dataCTA.link
 		ctaButton.target = '_blank'
@@ -20,5 +23,7 @@ JSPlayer.CTA = {
 		ctaButtonClone.classList.add('centered')
 		ctaButtonClone.classList.remove('player-cta-button-default')
 		JSPlayer.Controls.playerOverlayEnd.appendChild(ctaButtonClone)
+
+		this.isCTAButtonGenerated = true
 	},
 }
