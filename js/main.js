@@ -378,14 +378,18 @@ document.addEventListener('DOMContentLoaded', () => {
 		playerSrc[activePlayerSrc].includes('.mp4')
 	) {
 		JSPlayer.player.src = playerSrc[activePlayerSrc]
-		JSPlayer.Controls.initPreviewLoop()
+		if (JSPlayer.Controls.isPreviewShow) {
+			JSPlayer.Controls.initPreviewLoop()
+		}
 	} else if (Hls.isSupported()) {
 		var hls = new Hls()
 		hls.loadSource(playerSrc[activePlayerSrc])
 		hls.attachMedia(JSPlayer.player)
-		hls.on(Hls.Events.MANIFEST_PARSED, () =>
-			JSPlayer.Controls.initPreviewLoop()
-		)
+		if (JSPlayer.Controls.isPreviewShow) {
+			hls.on(Hls.Events.MANIFEST_PARSED, () =>
+				JSPlayer.Controls.initPreviewLoop()
+			)
+		}
 	} else {
 		console.warn('HLS not supported')
 	}
@@ -430,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				{
 					id: id,
 					seconds: JSPlayer.player.currentTime,
-					comment: commentText.value,
+					text: commentText.value,
 					shapes,
 				},
 				dataComments

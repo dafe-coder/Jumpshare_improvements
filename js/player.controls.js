@@ -27,6 +27,7 @@ JSPlayer.Controls = {
 	playerCtaButtonDefault: null,
 	isPreviewPlaying: true,
 	PREVIEW_DURATION: 5,
+	isPreviewShow: true,
 
 	bootstrap: function () {
 		this.init()
@@ -272,12 +273,13 @@ JSPlayer.Controls = {
 	},
 
 	preparePlayerWhenStartPlaying: function () {
-		console.log(this.isPreviewPlaying)
 		if (this.isPreviewPlaying) {
-			this.isPreviewPlaying = false
-			JSPlayer.player.muted = false
-			JSPlayer.player.currentTime = 0
-			JSPlayer.Chapters.chooseActiveChapter()
+			if (JSPlayer.Controls.isPreviewShow) {
+				this.isPreviewPlaying = false
+				JSPlayer.player.muted = false
+				JSPlayer.player.currentTime = 0
+				JSPlayer.Chapters.chooseActiveChapter()
+			}
 
 			JSPlayer.Controls.commentsContainer.style.visibility = 'visible'
 

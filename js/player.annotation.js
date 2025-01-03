@@ -91,7 +91,16 @@ JSPlayer.Annotation = {
 			} else {
 				JSPlayer.Controls.preparePlayerWhenStartPlaying()
 				player.pause()
-				let time = this.addAnnotationPanelID == null ? 200 : 10
+				JSPlayer.Helper.toggleSiblingElement(
+					JSPlayer.Controls.playOrPauseBtn,
+					'svg',
+					true
+				)
+
+				let time =
+					this.addAnnotationPanelID == null && JSPlayer.Controls.isPreviewShow
+						? 200
+						: 10
 
 				this.addAnnotationPanelID = setTimeout(() => {
 					showAnnotationBtn.classList.add('active')

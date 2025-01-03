@@ -62,7 +62,7 @@ JSPlayer.Events = {
 		JSPlayer.Comments.init()
 		JSPlayer.Comments.add({
 			seconds: JSPlayer.Helper.parseToSeconds('17:26'),
-			comment: ' Added a comment using the "addComment" method',
+			text: ' Added a comment using the "addComment" method',
 		})
 
 		// Captions
